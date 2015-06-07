@@ -1,0 +1,6 @@
+include ez_setup.py
+include demos/Makefile
+include demos/demo.md
+include demos/img/today.png
+include demos/img/yesterday.png
+include demos/img/earlier.png

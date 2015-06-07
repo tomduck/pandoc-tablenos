@@ -1,0 +1,34 @@
+\begin{longtable}[c]{@{}rlcl@{}}
+\caption{Demonstration of a simple
+table.\label{tbl:demo}}\tabularnewline
+\toprule
+Right & Left & Center & Default\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+Right & Left & Center & Default\tabularnewline
+\midrule
+\endhead
+12 & 12 & 12 & 12\tabularnewline
+123 & 123 & 123 & 123\tabularnewline
+1 & 1 & 1 & 1\tabularnewline
+\bottomrule
+\end{longtable}
+
+Table \ref{tbl:demo} is from the pandoc User's Guide. We can also have
+unreferenceable numbered tables:
+
+\begin{longtable}[c]{@{}ll@{}}
+\caption{Very
+simple.\label{tbl:__-1650883463836839502__}}\tabularnewline
+\toprule
+A & B\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+A & B\tabularnewline
+\midrule
+\endhead
+0 & 1\tabularnewline
+\bottomrule
+\end{longtable}
