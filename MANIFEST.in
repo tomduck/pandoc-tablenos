@@ -1,6 +1,5 @@
 include ez_setup.py
+include README.md
+include LICENSE
 include demos/Makefile
 include demos/demo.md
-include demos/img/today.png
-include demos/img/yesterday.png
-include demos/img/earlier.png
