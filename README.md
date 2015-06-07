@@ -49,9 +49,9 @@ Installation of the filter is straight-forward, with minimal dependencies.  It i
 Markdown Syntax
 ---------------
 
-To tag an image with the label `tbl:description`, use
+To tag a table caption with the label `tbl:description`, use
 
-    ![Caption.](image.png) {#tbl:description}
+    Table: Caption. {#tbl:description}
 
 The prefix `#tbl:` is required whereas `description` can be replaced with any combination of letters, numbers, dashes, slashes and underscores.
 
@@ -74,10 +74,6 @@ To apply the filter, use the following option with pandoc:
     --filter pandoc-tablenos
 
 Note that any use of the `--filter pandoc-citeproc` or `--bibliography=FILE` options with pandoc should come *after* the pandoc-tablenos filter call.
-
-To keep image attributes in the output (e.g., to be processed by additional filters), use:
-
-    --filter pandoc-tablenos -M tablenos-keepattrs
 
 
 Details
