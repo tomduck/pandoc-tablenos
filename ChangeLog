@@ -1,4 +1,9 @@
 
+pandoc-tablenos 0.2 (2015-07-15)
+
+    * Enforce pandoc's requirement of UTF-8.
+
+
 pandoc-tablenos 0.1.1 (2015-06-07)
 
     * Fixed README.
