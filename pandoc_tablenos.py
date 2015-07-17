@@ -41,7 +41,7 @@ import sys
 # pylint: disable=import-error
 import pandocfilters
 from pandocfilters import stringify, walk
-from pandocfilters import RawInline, Str, Space, Para, Table
+from pandocfilters import RawInline, Str, Space, Para, Table, Plain
 from pandocattributes import PandocAttributes
 
 # Patterns for matching attributes, labels and references
@@ -135,8 +135,13 @@ def replace_attrtables(key, value, fmt, meta):
             caption = ast('Table %d. '%references[label]) + list(caption)
 
         # Return the replacement
+        # pylint: disable=star-args
         args = [caption,]+content
-        return Table(*args)  # pylint: disable=star-args
+        if fmt in ('html', 'html5'):
+            anchor = RawInline('html', '<a name="%s"></a>'%label)
+            return [Plain([anchor]), Table(*args)]
+        else:
+            return Table(*args)
 
 # pylint: disable=unused-argument
 def replace_refs(key, value, fmt, meta):
@@ -163,6 +168,9 @@ def replace_refs(key, value, fmt, meta):
         # The replacement depends on the output format
         if fmt == 'latex':
             return prefix + [RawInline('tex', r'\ref{%s}'%label)] + suffix
+        elif fmt in ('html', 'html5'):
+            link = '<a href="#%s">%s</a>' % (label, references[label])
+            return prefix + [RawInline('html', link)] + suffix
         else:
             return prefix + [Str('%d'%references[label])]+suffix
 

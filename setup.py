@@ -11,7 +11,7 @@ pandoc-tablenos is a pandoc filter for numbering tables and table references.
 
 setup(
     name='pandoc-tablenos',
-    version='0.2',
+    version='0.3',
 
     author='Thomas J. Duck',
     author_email='tomduck@tomduck.ca',
@@ -20,7 +20,7 @@ setup(
     license='GPL',
     keywords='pandoc table numbers filter',
     url='https://github.com/tomduck/pandoc-tablenos',
-    download_url = 'https://github.com/tomduck/pandoc-tablenos/tarball/0.2',
+    download_url = 'https://github.com/tomduck/pandoc-tablenos/tarball/0.3',
     
     install_requires=['pandocfilters', 'pandoc-attributes'],
 
