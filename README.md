@@ -6,7 +6,7 @@ pandoc-tablenos
 
 Demonstration: Using [`demo.md`] as input gives output files in [pdf], [tex], [html], [epub], [md] and other formats.
 
-This version of pandoc-tablenos was tested using pandoc 1.15.0.5 and is known to work under linux, Mac OS X and Windows.
+This version of pandoc-tablenos was tested using pandoc 1.16 (the development version) and is known to work under linux, Mac OS X and Windows.
 
 See also: [pandoc-fignos], [pandoc-eqnos]
 
