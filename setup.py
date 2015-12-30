@@ -9,9 +9,11 @@ LONG_DESCRIPTION = """\
 pandoc-tablenos is a pandoc filter for numbering tables and table references.
 """
 
+VERSION = '0.4'
+
 setup(
     name='pandoc-tablenos',
-    version='0.3',
+    version=VERSION,
 
     author='Thomas J. Duck',
     author_email='tomduck@tomduck.ca',
@@ -20,7 +22,8 @@ setup(
     license='GPL',
     keywords='pandoc table numbers filter',
     url='https://github.com/tomduck/pandoc-tablenos',
-    download_url = 'https://github.com/tomduck/pandoc-tablenos/tarball/0.3',
+    download_url = 'https://github.com/tomduck/pandoc-tablenos/tarball/' + \
+                   VERSION,
     
     install_requires=['pandocfilters', 'pandoc-attributes'],
 
