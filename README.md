@@ -89,7 +89,7 @@ Installation
 
 Pandoc-tablenos requires [python], a programming language that comes pre-installed on linux and Mac OS X, and which is easily installed [on Windows].  Either python 2.7 or 3.x will do.
 
-Install pandoc-tablenos as root using the bash command
+Install pandoc-tablenos as root using the shell command
 
     pip install pandoc-tablenos 
 
