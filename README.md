@@ -49,7 +49,7 @@ Installation of the filter is straight-forward, with minimal dependencies.  It i
 Markdown Syntax
 ---------------
 
-To tag a table caption with the label `tbl:description`, use
+To assign a table caption the label `tbl:description`, use
 
     Table: Caption. {#tbl:description}
 
