@@ -1,0 +1,24 @@
+
+To install the most recent sources from github using pip:
+
+    # pip install git+https://github.com/tomduck/pandoc-tablenos.git
+
+(to upgrade use the --upgrade flag).
+    
+
+To test pandoc-tablenos using a specific version of python:
+
+    a) Copy pandoc_tablenos.py into the test directory;
+
+    b) Use a pipe chain on test.md as follows:
+
+       $ pandoc test.md -t json | python2.7 pandoc_tablenos.py | \
+             pandoc -f json -o test.pdf
+
+    
+Uploading to pypi:
+
+    $ python setup.py register -r pypi
+    $ python setup.py sdist upload -r pypi
+
+(from http://peterdowns.com/posts/first-time-with-pypi.html)
