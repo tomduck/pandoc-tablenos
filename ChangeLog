@@ -1,5 +1,5 @@
 
-pandoc-tablenos 0.5
+pandoc-tablenos 0.5 (2016-01-01)
 
     * Flush stdout before exiting.
 
