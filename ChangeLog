@@ -1,4 +1,9 @@
 
+pandoc-tablenos 0.5
+
+    * Flush stdout before exiting.
+
+
 pandoc-tablenos 0.4 (2015-12-30)
 
     * Fixed treatment of curly-braced references in lists.
