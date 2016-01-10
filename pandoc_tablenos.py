@@ -2,7 +2,7 @@
 
 """pandoc-tablenos: a pandoc filter that inserts table nos. and refs."""
 
-# Copyright 2015 Thomas J. Duck.
+# Copyright 2015, 2016 Thomas J. Duck.
 # All rights reserved.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@
 #   2. Replace each reference with a table number.  For LaTeX,
 #      replace with \ref{...} instead.
 #
-#
+# There is also an initial scan to do some preprocessing.
 
 import re
 import functools
@@ -41,7 +41,7 @@ import sys
 # pylint: disable=import-error
 import pandocfilters
 from pandocfilters import stringify, walk
-from pandocfilters import RawInline, Str, Space, Para, Table, Plain
+from pandocfilters import RawInline, Str, Space, Para, Table, Plain, Cite
 from pandocattributes import PandocAttributes
 
 # Patterns for matching attributes, labels and references
@@ -112,6 +112,82 @@ def ast(string):
         ret = [Space()] + ret
     return ret if string[-1] == ' ' else ret[:-1]
 
+def is_broken_ref(key1, value1, key2, value2):
+    """True if this is a broken link; False otherwise."""
+    return key1 == 'Link' and value1[1][0]['c'].endswith('{@tbl') \
+        and key2 == 'Str' and '}' in value2
+
+def repair_broken_refs(value):
+    """Repairs references broken by pandoc's --autolink_bare_uris."""
+
+    # autolink_bare_uris splits {@tbl:label} at the ':' and treats
+    # the first half as if it is a mailto url and the second half as a string.
+    # Let's replace this mess with Cite and Str elements that we normally
+    # get.
+    flag = False
+    for i in range(len(value)-1):
+        if value[i] == None:
+            continue
+        if is_broken_ref(value[i]['t'], value[i]['c'],
+                         value[i+1]['t'], value[i+1]['c']):
+            flag = True  # Found broken reference
+            s1 = value[i]['c'][1][0]['c']  # Get the first half of the ref
+            s2 = value[i+1]['c']           # Get the second half of the ref
+            ref = '@tbl' + s2[:s2.index('}')]  # Form the reference
+            prefix = s1[:s1.index('{@tbl')]    # Get the prefix
+            suffix = s2[s2.index('}')+1:]      # Get the suffix
+            # We need to be careful with the prefix string because it might be
+            # part of another broken reference.  Simply put it back into the
+            # stream and repeat the preprocess() call.
+            if i > 0 and value[i-1]['t'] == 'Str':
+                value[i-1]['c'] = value[i-1]['c'] + prefix
+                value[i] = None
+            else:
+                value[i] = Str(prefix)
+            # Put fixed reference in as a citation that can be processed
+            value[i+1] = Cite(
+                [{"citationId":ref[1:],
+                  "citationPrefix":[],
+                  "citationSuffix":[Str(suffix)],
+                  "citationNoteNum":0,
+                  "citationMode":{"t":"AuthorInText", "c":[]},
+                  "citationHash":0}],
+                [Str(ref)])
+    if flag:
+        return [v for v in value if v is not None]
+
+def is_braced_ref(i, value):
+    """Returns true if a reference is braced; otherwise False."""
+    return is_ref(value[i]['t'], value[i]['c']) \
+      and value[i-1]['t'] == 'Str' and value[i+1]['t'] == 'Str' \
+      and value[i-1]['c'].endswith('{') and value[i+1]['c'].startswith('}')
+
+def remove_braces(value):
+    """Search for references and remove curly braces around them."""
+    flag = False
+    for i in range(len(value)-1)[1:]:
+        if is_braced_ref(i, value):
+            flag = True  # Found reference
+            # Remove the braces
+            value[i-1]['c'] = value[i-1]['c'][:-1]
+            value[i+1]['c'] = value[i+1]['c'][1:]
+    return flag
+
+# pylint: disable=unused-argument
+def preprocess(key, value, fmt, meta):
+    """Preprocesses to correct for problems."""
+    if key in ('Para', 'Plain'):
+        while True:
+            newvalue = repair_broken_refs(value)
+            if newvalue:
+                value = newvalue
+            else:
+                break
+        if key == 'Para':
+            return Para(value)
+        else:
+            return Plain(value)
+
 # pylint: disable=unused-argument
 def replace_attrtables(key, value, fmt, meta):
     """Replaces attributed tables while storing reference labels."""
@@ -147,24 +223,13 @@ def replace_attrtables(key, value, fmt, meta):
 def replace_refs(key, value, fmt, meta):
     """Replaces references to labelled equations."""
 
-    # Search for references and remove curly braces around them
+    # Remove braces around references
     if key in ('Para', 'Plain'):
-        flag = False
-        # Search
-        for i, elem in enumerate(value):
-            k, v = elem['t'], elem['c']
-            if is_ref(k, v) and i > 0 and i < len(value)-1 \
-              and value[i-1]['t'] == 'Str' and value[i+1]['t'] == 'Str' \
-              and value[i-1]['c'].endswith('{') \
-              and value[i+1]['c'].startswith('}'):
-                flag = True  # Found reference
-                value[i-1]['c'] = value[i-1]['c'][:-1]
-                value[i+1]['c'] = value[i+1]['c'][1:]
-
-        if key == 'Para':
-            return Para(value) if flag else None
-        else:
-            return Plain(value) if flag else None
+        if remove_braces(value):
+            if key == 'Para':
+                return Para(value)
+            else:
+                return Plain(value)
 
     # Replace references
     if is_ref(key, value):
@@ -188,7 +253,8 @@ def main():
 
     # Replace attributed equations and references in the AST
     altered = functools.reduce(lambda x, action: walk(x, action, fmt, meta),
-                               [replace_attrtables, replace_refs], doc)
+                               [preprocess, replace_attrtables, replace_refs],
+                               doc)
 
     # Dump the results
     pandocfilters.json.dump(altered, STDOUT)
