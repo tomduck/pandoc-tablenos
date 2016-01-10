@@ -1,4 +1,9 @@
 
+pandoc-tablenos 0.6
+
+    * Fixed problems when --autolink_bare_uris is used.
+
+
 pandoc-tablenos 0.5 (2016-01-01)
 
     * Flush stdout before exiting.
