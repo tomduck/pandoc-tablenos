@@ -1,5 +1,5 @@
 
-pandoc-tablenos 0.6
+pandoc-tablenos 0.6 (2016-01-11)
 
     * Fixed problems when --autolink_bare_uris is used.
 
