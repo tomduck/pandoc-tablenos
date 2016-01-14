@@ -9,7 +9,7 @@ LONG_DESCRIPTION = """\
 pandoc-tablenos is a pandoc filter for numbering tables and table references.
 """
 
-VERSION = '0.6'
+VERSION = '0.6.1'
 
 setup(
     name='pandoc-tablenos',

@@ -1,4 +1,10 @@
 
+pandoc-tablenos 0.6.1 (2016-01-13)
+
+    * Fixed TypeError bug that occurs with pandoc < 1.16.
+      This bug was inadvertently introduced with pandoc-tablenos 0.6.
+
+
 pandoc-tablenos 0.6 (2016-01-11)
 
     * Fixed problems when --autolink_bare_uris is used.
