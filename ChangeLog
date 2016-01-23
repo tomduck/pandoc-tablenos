@@ -1,8 +1,18 @@
 
+pandoc-tablenos 0.7 (2016-01-23)
+
+    * Fixed AttributeError bug that occurred for links
+      emphasized [*like this*](http://example.com/).
+
+    * More work on autolink_bare_uris processing.
+
+
 pandoc-tablenos 0.6.1 (2016-01-13)
 
-    * Fixed TypeError bug that occurs with pandoc < 1.16.
-      This bug was inadvertently introduced with pandoc-tablenos 0.6.
+    * Fixed AttributeError bug that occurred for links
+      emphasized [*like this*](http://example.com/)
+
+    * Fixed TypeError bug that occurred with pandoc < 1.16.
 
 
 pandoc-tablenos 0.6 (2016-01-11)

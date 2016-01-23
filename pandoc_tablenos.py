@@ -115,10 +115,11 @@ def ast(string):
 def is_broken_ref(key1, value1, key2, value2):
     """True if this is a broken link; False otherwise."""
     try:     # Pandoc >= 1.16
-        return key1 == 'Link' and value1[1][0]['c'].endswith('{@eq') \
+        return key1 == 'Link' and value1[1][0]['t'] == 'Str' \
+          and value1[1][0]['c'].endswith('{@tbl') \
             and key2 == 'Str' and '}' in value2
     except TypeError:  # Pandoc < 1.16
-        return key1 == 'Link' and value1[0][0]['c'].endswith('{@eq') \
+        return key1 == 'Link' and value1[0][0]['c'].endswith('{@tbl') \
             and key2 == 'Str' and '}' in value2
 
 def repair_broken_refs(value):
@@ -135,7 +136,10 @@ def repair_broken_refs(value):
         if is_broken_ref(value[i]['t'], value[i]['c'],
                          value[i+1]['t'], value[i+1]['c']):
             flag = True  # Found broken reference
-            s1 = value[i]['c'][1][0]['c']  # Get the first half of the ref
+            try:  # Pandoc >= 1.16
+                s1 = value[i]['c'][1][0]['c']  # Get the first half of the ref
+            except TypeError:  # Pandoc < 1.16
+                s1 = value[i]['c'][0][0]['c']  # Get the first half of the ref
             s2 = value[i+1]['c']           # Get the second half of the ref
             ref = '@tbl' + s2[:s2.index('}')]  # Form the reference
             prefix = s1[:s1.index('{@tbl')]    # Get the prefix
@@ -225,7 +229,7 @@ def replace_attrtables(key, value, fmt, meta):
 
 # pylint: disable=unused-argument
 def replace_refs(key, value, fmt, meta):
-    """Replaces references to labelled equations."""
+    """Replaces references to labelled tables."""
 
     # Remove braces around references
     if key in ('Para', 'Plain'):
@@ -255,7 +259,7 @@ def main():
     doc = pandocfilters.json.loads(STDIN.read())
     meta = doc[0]['unMeta']
 
-    # Replace attributed equations and references in the AST
+    # Replace attributed tables and references in the AST
     altered = functools.reduce(lambda x, action: walk(x, action, fmt, meta),
                                [preprocess, replace_attrtables, replace_refs],
                                doc)
