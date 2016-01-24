@@ -39,7 +39,7 @@ Rationale
 
 Table numbers and references are required for academic writing, but are not currently supported by pandoc.  Pandoc-tablenos is an add-on filter that provides the missing functionality.
 
-The markdown syntax recognized by pandoc-tablenos was worked out in [pandoc Issue #813] (see [this post] by [@scaramouche1]).  It seems likely that this will be close to what pandoc ultimately adopts.  Pandoc-tablenos is a transitional package for those who need table numbers and references now.
+The markdown syntax recognized by pandoc-tablenos was worked out in [pandoc Issue #813] -- see [this post] by [@scaramouche1].  It seems likely that this will be close to what pandoc ultimately adopts.  Pandoc-tablenos is a transitional package for those who need table numbers and references now.
 
 [pandoc Issue #813]: https://github.com/jgm/pandoc/issues/813
 [this post]: https://github.com/jgm/pandoc/issues/813#issuecomment-70423503
