@@ -1,4 +1,11 @@
 
+pandoc-tablenos 0.7.1 (2016-01-24):
+
+    * Added regression tests.
+
+    * Fixed bug discovered during regression testing for pandoc 1.15.
+
+
 pandoc-tablenos 0.7 (2016-01-23)
 
     * Fixed AttributeError bug that occurred for links
