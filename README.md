@@ -4,7 +4,7 @@ pandoc-tablenos 0.7
 
 *pandoc-tablenos* is a [pandoc] filter for numbering tables and table references.
 
-Demonstration: Processing [`demo.md`] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf], [tex], [html], [epub], [md] and other formats.
+Demonstration: Processing [demo.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf], [tex], [html], [epub], [md] and other formats.
 
 This version of pandoc-tablenos was tested using pandoc 1.16.0.2 and 1.15.2, and should be compatible with earlier pandoc versions.  It is known to work under linux, Mac OS X and Windows.
 
@@ -13,7 +13,7 @@ Installation of the filter is straight-forward, with minimal dependencies.  It i
 See also: [pandoc-fignos], [pandoc-eqnos]
 
 [pandoc]: http://pandoc.org/
-[`demo.md`]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo.md
+[demo.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo.md
 [pdf]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo.pdf
 [tex]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo.tex
 [html]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo.html
@@ -37,39 +37,39 @@ Contents
 Rationale
 ---------
 
-Table numbers and references are required for academic writing, but are not supported natively by pandoc.  Pandoc-tablenos is an add-on filter that provides this missing functionality.
+Table numbers and references are required for academic writing, but are not currently supported by pandoc.  Pandoc-tablenos is an add-on filter that provides the missing functionality.
 
-The markdown syntax recognized by pandoc-tablenos was worked out in [pandoc issue #813].  It seems likely that this will be close to what pandoc ultimately adopts.  Pandoc-tablenos is intended to be a transitional package for those who need table numbers and references now.
+The markdown syntax recognized by pandoc-tablenos was worked out in [pandoc Issue #813] (see [this post] by [@scaramouche1]).  It seems likely that this will be close to what pandoc ultimately adopts.  Pandoc-tablenos is a transitional package for those who need table numbers and references now.
 
-[pandoc issue #813]: https://github.com/jgm/pandoc/issues/813
+[pandoc Issue #813]: https://github.com/jgm/pandoc/issues/813
+[this post]: https://github.com/jgm/pandoc/issues/813#issuecomment-70423503
+[@scaramouche1]: https://github.com/scaramouche1
 
 
 Markdown Syntax
 ---------------
 
-Consider a table with a caption:
+To number a table, add the label `tbl:id` to the attributes of its caption:
 
     A B
     - -
     0 1
-    
-    Table: Caption.
 
-To associated the label `tbl:description` with the caption, append the label as an identifier in the image's attributes:
+    Table: Caption. {#tbl:id}
 
-    Table: Caption. {#tbl:description}
-
-The prefix `#tbl:` is required whereas `description` can be replaced with any combination of letters, numbers, dashes, slashes and underscores.
+The prefix `#tbl:` is required. `id` should be replaced with a unique identifier composed of letters, numbers, dashes, slashes and underscores.
 
 To reference the table, use
 
-    @tbl:description
+    @tbl:id
 
 or
 
-    {@tbl:description}
+    {@tbl:id}
 
 Curly braces around a reference are stripped from the output.
+
+See [demo.md] for an example.
 
 
 Usage
@@ -79,7 +79,7 @@ To apply the filter, use the following option with pandoc:
 
     --filter pandoc-tablenos
 
-Note that any use of the `--filter pandoc-citeproc` or `--bibliography=FILE` options with pandoc should come *after* the pandoc-tablenos filter call.
+Note that any use of `--filter pandoc-citeproc` or `--bibliography=FILE` should come *after* the pandoc-tablenos filter call.
 
 
 Details
@@ -95,6 +95,9 @@ Installation
 
 Pandoc-tablenos requires [python], a programming language that comes pre-installed on linux and Mac OS X, and which is easily installed [on Windows].  Either python 2.7 or 3.x will do.
 
+
+### Standard installation ###
+
 Install pandoc-tablenos as root using the shell command
 
     pip install pandoc-tablenos 
@@ -106,7 +109,7 @@ To upgrade to the most recent release, use
 Pip is a script that downloads and installs modules from the Python Package Index, [PyPI].  It should come installed with your python distribution.
 
 
-### Installing on Linux ###
+### Installing on linux ###
 
 If you are running linux, pip may be bundled separately.  On Debian-based systems (including Ubuntu), you can install it as root using
 
@@ -119,10 +122,18 @@ During the install you may be asked to run
 
 owing to the ancient version of setuptools that Debian provides.  The command should be executed as root.  The pip install process detailed above should now work.
 
-
 [python]: https://www.python.org/
 [on Windows]: https://www.python.org/downloads/windows/
 [PyPI]: https://pypi.python.org/pypi
+
+
+### Installing from source ###
+
+You may also choose to install sources [downloaded from github].  Execute the following command as root in the top directory of your download:
+
+    python setup.py install
+
+[downloaded from github]: https://github.com/tomduck/pandoc-tablenos/archive/master.zip
 
 
 Getting Help
