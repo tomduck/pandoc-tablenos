@@ -16,8 +16,6 @@ To install the most recent sources from github using pip:
 Testing
 -------
 
-Regression tests can be run by executing `Make` in test/.  Note that the `Makefile` expects that specific numbered pandoc targets (e.g., pandoc-1.16.0.2) are available.
-
 To test pandoc-tablenos using a specific version of python:
 
     a) Copy pandoc_tablenos.py into the test directory;
@@ -26,6 +24,8 @@ To test pandoc-tablenos using a specific version of python:
 
        $ pandoc test.md -t json | python2.7 pandoc_tablenos.py | \
              pandoc -f json -o test.pdf
+
+A suite of regression tests are provided in test/.  Read the README.md in that directory for instructions.
 
 
 Preparing a Release

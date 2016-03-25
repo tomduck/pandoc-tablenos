@@ -6,7 +6,7 @@ pandoc-tablenos 0.7.1
 
 Demonstration: Processing [demo.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf], [tex], [html], [epub], [md] and other formats.
 
-This version of pandoc-tablenos was tested using pandoc 1.16.0.2 and 1.15.2, and should be compatible with earlier pandoc versions.  It is known to work under linux, Mac OS X and Windows.
+This version of pandoc-tablenos was tested using pandoc 1.17.0.2, 1.16.0.2 and 1.15.2, and should be compatible with earlier pandoc versions.  It is known to work under linux, Mac OS X and Windows.
 
 Installation of the filter is straight-forward, with minimal dependencies.  It is simple to use and has been tested extensively.
 
