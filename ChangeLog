@@ -1,4 +1,9 @@
 
+pandoc-tablenos 0.8 (unreleased)
+
+    * Fixed broken installation in Win 10 (pandoc-eqnos Issue #6).
+
+
 pandoc-tablenos 0.7.1 (2016-01-24):
 
     * Added regression tests.
