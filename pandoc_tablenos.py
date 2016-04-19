@@ -32,22 +32,52 @@
 #
 # There is also an initial scan to do some preprocessing.
 
+# pylint: disable=invalid-name
+
 import re
 import functools
 import itertools
 import io
 import sys
+import os, os.path
+import subprocess
+import psutil
+import argparse
 
 # pylint: disable=import-error
 import pandocfilters
 from pandocfilters import stringify, walk
-from pandocfilters import RawInline, Str, Space, Para, Table, Plain, Cite
+from pandocfilters import RawInline, Str, Space, Para, Plain, Cite, Table
 from pandocattributes import PandocAttributes
 
-# Patterns for matching attributes, labels and references
-ATTR_PATTERN = re.compile(r'(.*)\{(.*)\}')
-LABEL_PATTERN = re.compile(r'(tbl:[\w/-]*)(.*)')
-REF_PATTERN = re.compile(r'@(tbl:[\w/-]+)')
+# Read the command-line arguments
+parser = argparse.ArgumentParser(description='Pandoc figure numbers filter.')
+parser.add_argument('fmt')
+parser.add_argument('--pandocversion', help='The pandoc version.')
+args = parser.parse_args()
+
+# Get the pandoc version.  Inspect the parent process first, then check the
+# python command line args.
+PANDOCVERSION = None
+if os.name == 'nt':
+    # psutil appears to work differently for windows.  Two parent calls?  Weird.
+    command = psutil.Process(os.getpid()).parent().parent().exe()
+else:
+    command = psutil.Process(os.getpid()).parent().exe()
+if 'tablenos' in command:  # Infinite process creation!
+    raise RuntimeError('Could not find parent to pandoc-tablenos. ' \
+                       'Please contact developer.')
+if os.path.basename(command).startswith('pandoc'):
+    output = subprocess.check_output([command, '-v'])
+    line = output.decode('utf-8').split('\n')[0]
+    PANDOCVERSION = line.split(' ')[-1]
+else:
+    if args.pandocversion:
+        PANDOCVERSION = args.pandocversion
+if PANDOCVERSION is None:
+    raise RuntimeError('Cannot determine pandoc version.  '\
+                       'Please file an issue at '\
+                       'https://github.com/tomduck/pandoc-tablenos/issues')
 
 # Detect python 3
 PY3 = sys.version_info > (3,)
@@ -60,43 +90,35 @@ else:    # No decoding; utf-8-encoded strings in means the same out
     STDIN = sys.stdin
     STDOUT = sys.stdout
 
-# pylint: disable=invalid-name
+# Patterns for matching attributes, labels and references.  This is a little
+# different from pandoc-fignos and pandoc-tablenos.  The attributes appear in
+# the caption string.
+ATTR_PATTERN = re.compile(r'(.*)\{(.*)\}')
+LABEL_PATTERN = re.compile(r'(tbl:[\w/-]*)')
+REF_PATTERN = re.compile(r'@(tbl:[\w/-]+)')
+
 references = {}  # Global references tracker
 
 def is_attrtable(key, value):
     """True if this is an attributed table; False otherwise."""
-    try:
-        s = stringify(value[0]).strip()
-        return key == 'Table' and ATTR_PATTERN.match(s)
-    # pylint: disable=bare-except
-    except:
-        return False
+    return key == 'Table' and len(value) == 6
 
 def parse_attrtable(value):
     """Parses an attributed table."""
-    # Extract the attribute string.  There may be text immediately in front
-    # of the attribute string that we will need to retain.
+    # I am not sure what the purpose of x is.  It appears to be a list of
+    # zeros with length equal to the width of the table.
+    o, caption, align, x, head, body = value
+    attrs = PandocAttributes(o, 'pandoc')
+    if attrs.id == 'tbl:': # Make up a unique description
+        attrs.id = 'tbl:' + '__'+str(hash(str(value[1:])))+'__'
+    return attrs, caption, align, x, head, body
 
-    caption, content = value[0], value[1:]
-    c, s = ATTR_PATTERN.match(caption[-1]['c']).groups()
-    if not c:
-        caption = caption[:-1]
-        if caption and caption[-1]['t'] == 'Space':
-            caption = caption[:-1]
-    else:
-        caption[-1]['c'] = c
-    # Extract label from the attributes (label, classes, kvs)
-    label = PandocAttributes(s, 'markdown').to_pandoc()[0]
-    if label == 'tbl:': # Make up a unique description
-        label = label + '__'+str(hash(str(content)))+'__'
-    return content, caption, label
-
-def is_ref(key, value):
+def is_tblref(key, value):
     """True if this is a table reference; False otherwise."""
     return key == 'Cite' and REF_PATTERN.match(value[1][0]['c']) and \
-            parse_ref(value)[1] in references
+            parse_tblref(value)[1] in references
 
-def parse_ref(value):
+def parse_tblref(value):
     """Parses a table reference."""
     prefix = value[0][0]['citationPrefix']
     label = REF_PATTERN.match(value[1][0]['c']).groups()[0]
@@ -114,13 +136,13 @@ def ast(string):
 
 def is_broken_ref(key1, value1, key2, value2):
     """True if this is a broken link; False otherwise."""
-    try:     # Pandoc >= 1.16
-        return key1 == 'Link' and value1[1][0]['t'] == 'Str' \
-          and value1[1][0]['c'].endswith('{@tbl') \
-            and key2 == 'Str' and '}' in value2
-    except TypeError:  # Pandoc < 1.16
+    if PANDOCVERSION < '1.16':
         return key1 == 'Link' and value1[0][0]['t'] == 'Str' \
            and value1[0][0]['c'].endswith('{@tbl') \
+            and key2 == 'Str' and '}' in value2
+    else:
+        return key1 == 'Link' and value1[1][0]['t'] == 'Str' \
+          and value1[1][0]['c'].endswith('{@tbl') \
             and key2 == 'Str' and '}' in value2
 
 def repair_broken_refs(value):
@@ -128,8 +150,7 @@ def repair_broken_refs(value):
 
     # autolink_bare_uris splits {@tbl:label} at the ':' and treats
     # the first half as if it is a mailto url and the second half as a string.
-    # Let's replace this mess with Cite and Str elements that we normally
-    # get.
+    # Let's replace this mess with Cite and Str elements that we normally get.
     flag = False
     for i in range(len(value)-1):
         if value[i] == None:
@@ -137,10 +158,10 @@ def repair_broken_refs(value):
         if is_broken_ref(value[i]['t'], value[i]['c'],
                          value[i+1]['t'], value[i+1]['c']):
             flag = True  # Found broken reference
-            try:  # Pandoc >= 1.16
-                s1 = value[i]['c'][1][0]['c']  # Get the first half of the ref
-            except TypeError:  # Pandoc < 1.16
+            if PANDOCVERSION < '1.16':
                 s1 = value[i]['c'][0][0]['c']  # Get the first half of the ref
+            else:
+                s1 = value[i]['c'][1][0]['c']  # Get the first half of the ref
             s2 = value[i+1]['c']           # Get the second half of the ref
             ref = '@tbl' + s2[:s2.index('}')]  # Form the reference
             prefix = s1[:s1.index('{@tbl')]    # Get the prefix
@@ -163,22 +184,23 @@ def repair_broken_refs(value):
                   "citationHash":0}],
                 [Str(ref)])
     if flag:
-        return [v for v in value if v is not None]
+        return [v for v in value if not v is None]
 
-def is_braced_ref(i, value):
-    """Returns true if a reference is braced; otherwise False."""
-    return is_ref(value[i]['t'], value[i]['c']) \
+def is_braced_tblref(i, value):
+    """Returns true if a reference is braced; otherwise False.
+    i is the index in the value list.
+    """
+    return is_tblref(value[i]['t'], value[i]['c']) \
       and value[i-1]['t'] == 'Str' and value[i+1]['t'] == 'Str' \
       and value[i-1]['c'].endswith('{') and value[i+1]['c'].startswith('}')
 
-def remove_braces(value):
+def remove_braces_from_tblrefs(value):
     """Search for references and remove curly braces around them."""
     flag = False
     for i in range(len(value)-1)[1:]:
-        if is_braced_ref(i, value):
+        if is_braced_tblref(i, value):
             flag = True  # Found reference
-            # Remove the braces
-            value[i-1]['c'] = value[i-1]['c'][:-1]
+            value[i-1]['c'] = value[i-1]['c'][:-1]  # Remove the braces
             value[i+1]['c'] = value[i+1]['c'][1:]
     return flag
 
@@ -197,36 +219,79 @@ def preprocess(key, value, fmt, meta):
         else:
             return Plain(value)
 
+def deQuoted(value):
+    """Replaces Quoted elements that stringify() can't handle."""
+    # pandocfilters.stringify() needs to be updated...
+
+    # The weird thing about this is that chained filters do not see this
+    # element.  Pandoc gives different json depending on whether or it is
+    # calling the filter directly.  This should not be happening.
+    newvalue = []
+    for v in value:
+        if v['t'] != 'Quoted':
+            newvalue.append(v)
+        else:
+            quote = '"' if v['c'][0]['t'] == 'DoubleQuote' else "'"
+            newvalue.append(Str(quote))
+            newvalue += v['c'][1]
+            newvalue.append(Str(quote))
+    return newvalue
+
+def get_attrs(caption):
+    """Extracts attributes from a list of elements.
+    Extracted elements are set to None in the list.
+    """
+    # This is a little different from pandoc-fignos and pandoc-tablenos.
+    # The attributes appear in the caption string.
+
+    # Fix me: This currently does not allow curly braces inside quoted
+    # attributes.  The close bracket is interpreted as the end of the attrs.
+
+    # Set n to the index where the attributes start
+    n = 0
+    while n < len(caption) and not \
+      (caption[n]['t'] == 'Str' and caption[n]['c'].startswith('{')):
+        n += 1
+    if caption[n:] and caption[-1]['t'] == 'Str' and \
+      caption[-1]['c'].strip().endswith('}'):
+        s = stringify(deQuoted(caption[n:]))  # Extract the attrs
+        caption[n:] = [None]*(len(caption[n:]))  # Remove extracted elements
+        return PandocAttributes(s.strip(), 'markdown')
+
 # pylint: disable=unused-argument
 def replace_attrtables(key, value, fmt, meta):
     """Replaces attributed tables while storing reference labels."""
 
-    if is_attrtable(key, value):
+    # Note: We cannot replace the table with an AttrTable because it would
+    # not get reprocessed.  Tables are not enclosed by Para.  The attributes
+    # are contained in the caption.
+    if key == 'Table':
 
         # Parse the table
-        content, caption, label = parse_attrtable(value)
+        caption, align, x, head, body = value
+        attrs = get_attrs(caption)
+        if attrs:
+            caption = [v for v in caption if not v is None]
 
         # Bail out if the label does not conform
-        if not label or not LABEL_PATTERN.match(label):
-            return None
+        if not attrs.id or not LABEL_PATTERN.match(attrs.id):
+            return Table(caption, align, x, head, body)
 
         # Save the reference
-        references[label] = len(references) + 1
+        references[attrs.id] = len(references) + 1
 
         # Adjust caption depending on the output format
         if fmt == 'latex':
-            caption = list(caption) + [RawInline('tex', r'\label{%s}'%label)]
+            caption += [RawInline('tex', r'\label{%s}'%attrs.id)]
         else:
-            caption = ast('Table %d. '%references[label]) + list(caption)
+            caption = ast('Table %d. '%references[attrs.id]) + caption
 
         # Return the replacement
-        # pylint: disable=star-args
-        args = [caption,]+content
         if fmt in ('html', 'html5'):
-            anchor = RawInline('html', '<a name="%s"></a>'%label)
-            return [Plain([anchor]), Table(*args)]
+            anchor = RawInline('html', '<a name="%s"></a>'%attrs.id)
+            return [Plain([anchor]), Table(caption, align, x, head, body)]
         else:
-            return Table(*args)
+            return Table(caption, align, x, head, body)
 
 # pylint: disable=unused-argument
 def replace_refs(key, value, fmt, meta):
@@ -234,15 +299,15 @@ def replace_refs(key, value, fmt, meta):
 
     # Remove braces around references
     if key in ('Para', 'Plain'):
-        if remove_braces(value):
+        if remove_braces_from_tblrefs(value):
             if key == 'Para':
                 return Para(value)
             else:
                 return Plain(value)
 
     # Replace references
-    if is_ref(key, value):
-        prefix, label, suffix = parse_ref(value)
+    if is_tblref(key, value):
+        prefix, label, suffix = parse_tblref(value)
         # The replacement depends on the output format
         if fmt == 'latex':
             return prefix + [RawInline('tex', r'\ref{%s}'%label)] + suffix
@@ -256,7 +321,7 @@ def main():
     """Filters the document AST."""
 
     # Get the output format, document and metadata
-    fmt = sys.argv[1] if len(sys.argv) > 1 else ''
+    fmt = args.fmt
     doc = pandocfilters.json.loads(STDIN.read())
     meta = doc[0]['unMeta']
 

@@ -1,4 +1,10 @@
 
+
+pandoc-tablenos 0.9 (unreleased)
+
+    *
+
+
 pandoc-tablenos 0.8 (2016-04-05)
 
     * Fixed broken installation in Win 10 (pandoc-eqnos Issue #6).
