@@ -2,7 +2,8 @@
 
 pandoc-tablenos 0.9 (unreleased)
 
-    *
+    * Better pandoc version detection.
+    * Significant refactoring.
 
 
 pandoc-tablenos 0.8 (2016-04-05)
