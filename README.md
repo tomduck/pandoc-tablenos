@@ -109,7 +109,7 @@ To upgrade to the most recent release, use
 
     pip install --upgrade pandoc-tablenos 
 
-Pip is a script that downloads and installs modules from the Python Package Index, [PyPI].  It should come installed with your python distribution.
+Pip is a program that downloads and installs modules from the Python Package Index, [PyPI].  It should come installed with your python distribution.
 
 [PyPI]: https://pypi.python.org/pypi
 
