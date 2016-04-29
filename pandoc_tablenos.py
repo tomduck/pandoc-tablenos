@@ -43,11 +43,12 @@ import os, os.path
 import subprocess
 import psutil
 import argparse
+import uuid
 
 # pylint: disable=import-error
 import pandocfilters
 from pandocfilters import stringify, walk
-from pandocfilters import RawInline, Str, Space, Para, Plain, Cite, Table
+from pandocfilters import RawInline, Str, Space, Para, Plain, Cite, elt
 from pandocattributes import PandocAttributes
 
 # Read the command-line arguments
@@ -89,6 +90,9 @@ if PANDOCVERSION is None:
                        'Please file an issue at '\
                        'https://github.com/tomduck/pandoc-tablenos/issues')
 
+# Create our own pandoc table primitives
+Table = elt('Table', 5)
+
 # Detect python 3
 PY3 = sys.version_info > (3,)
 
@@ -106,10 +110,7 @@ else:
     STDIN = sys.stdin
     STDOUT = sys.stdout
 
-# Patterns for matching attributes, labels and references.  This is a little
-# different from pandoc-fignos and pandoc-tablenos.  The attributes appear in
-# the caption string.
-ATTR_PATTERN = re.compile(r'(.*)\{(.*)\}')
+# Patterns for matching labels and references
 LABEL_PATTERN = re.compile(r'(tbl:[\w/-]*)')
 REF_PATTERN = re.compile(r'@(tbl:[\w/-]+)')
 
@@ -126,7 +127,7 @@ def parse_attrtable(value):
     o, caption, align, x, head, body = value
     attrs = PandocAttributes(o, 'pandoc')
     if attrs.id == 'tbl:': # Make up a unique description
-        attrs.id = 'tbl:' + '__'+str(hash(str(value[1:])))+'__'
+        attrs.id = 'tbl:' + '__'+str(uuid.uuid4())+'__'
     return attrs, caption, align, x, head, body
 
 def is_tblref(key, value):
@@ -281,13 +282,23 @@ def replace_attrtables(key, value, fmt, meta):
     # Note: We cannot replace the table with an AttrTable because it would
     # not get reprocessed.  Tables are not enclosed by Para.  The attributes
     # are contained in the caption.
-    if key == 'Table':
+    if key == 'Table' and len(value) == 5:
 
-        # Parse the table
+        # Internally use AttrTable for all attributed tables.  Unattributed
+        # tables will be left as such.
+
+        # The attributes are in the caption
         caption, align, x, head, body = value
         attrs = get_attrs(caption)
         if attrs:
             caption = [v for v in caption if not v is None]
+            # Fake AttrTable values and don't return
+            value = [attrs.to_pandoc(), caption, align, x, head, body]
+
+    if is_attrtable(key, value):
+
+        # Parse the table
+        attrs, caption, align, x, head, body = parse_attrtable(value)
 
         # Bail out if the label does not conform
         if not attrs.id or not LABEL_PATTERN.match(attrs.id):
