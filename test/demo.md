@@ -1,6 +1,9 @@
+---
+tablenos-plus-name: TAB.
+tablenos-star-name: TABLE
+...
 
-
-Tables {@tbl:1} and @tbl:2, Tables {@tbl:1}-{@tbl:3} and Tables {@tbl:1}-{@tbl:2}-{@tbl:3}.
+*@tbl:1 and +@tbl:2, Tables {@tbl:1}-{@tbl:3} and Tables {@tbl:1}-{@tbl:2}-{@tbl:3}.
 
 
 ***
@@ -30,7 +33,7 @@ Table: Even simpler. {#tbl:2}
 
 References in lists:
 
-  * Tables {@tbl:1} and @tbl:2
+  * {*@tbl:1} and +@tbl:2
   * Tables {@tbl:1}-{@tbl:3} and Tables {@tbl:1}-{@tbl:2}-{@tbl:3}.
 
 

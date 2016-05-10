@@ -1,3 +1,9 @@
+---
+tablenos-cleveref: On
+tablenos-plus-name: TAB.
+tablenos-star-name: TABLE
+...
+
   Right     Left     Center     Default
 -------     ------ ----------   -------
      12     12        12            12
@@ -6,7 +12,7 @@
 
 Table: Demonstration of a simple table. {#tbl:1}
 
-Table @tbl:1 is from the Pandoc User's Guide.  A simpler table is given by table @tbl:2:
+*@tbl:1 is from the Pandoc User's Guide.  A simpler table is given by @tbl:2:
 
 A B
 - -

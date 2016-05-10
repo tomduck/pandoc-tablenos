@@ -6,8 +6,8 @@
 
   : Table 1. Demonstration of a simple table.
 
-Table 1 is from the Pandoc User's Guide. A simpler table is given by
-table 2:
+TABLE 1 is from the Pandoc User's Guide. A simpler table is given by
+TAB. 2:
 
   A   B
   --- ---

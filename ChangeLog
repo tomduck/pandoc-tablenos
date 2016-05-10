@@ -1,6 +1,8 @@
 
 pandoc-tablenos 0.10 (unreleased)
 
+    * Added clever referencing.
+    * Moved library code to pandocfiltering project.
     * Fixed numbering of unreferenceable tables (Issue #1).
     * Fixed broken attribute parsing (Issue #2).
     * Improved pandoc version detection.

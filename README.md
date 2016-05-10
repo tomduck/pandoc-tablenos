@@ -1,4 +1,8 @@
 
+
+NOTICE: Clever referencing is now supported -- details below.  A code overhaul was performed during the implementation.  All regressions tests are passing.  If you find anything broken, please file a report on the [Issues tracker].
+
+
 pandoc-tablenos 0.10
 ====================
 
@@ -28,17 +32,18 @@ Contents
 --------
 
  1. [Rationale](#rationale)
- 2. [Markdown Syntax](#markdown-syntax)
- 3. [Usage](#usage)
- 4. [Details](#details)
- 5. [Installation](#installation)
- 6. [Getting Help](#getting-help)
+ 2. [Usage](#usage)
+ 3. [Markdown Syntax](#markdown-syntax)
+ 4. [Customization](#customization)
+ 5. [Details](#details)
+ 6. [Installation](#installation)
+ 7. [Getting Help](#getting-help)
 
 
 Rationale
 ---------
 
-Table numbers and references are required for academic writing, but are not currently supported by pandoc.  Pandoc-tablenos is an add-on filter that provides the missing functionality.
+Table numbers and references are frequently used in academic writing, but are not currently supported by pandoc.  Pandoc-tablenos is an add-on filter that provides the missing functionality.
 
 The markdown syntax recognized by pandoc-tablenos was worked out in [pandoc Issue #813] -- see [this post] by [@scaramouche1].  It seems likely that this will be close to what pandoc ultimately adopts.  Pandoc-tablenos is a transitional package for those who need table numbers and references now.
 
@@ -47,8 +52,23 @@ The markdown syntax recognized by pandoc-tablenos was worked out in [pandoc Issu
 [@scaramouche1]: https://github.com/scaramouche1
 
 
+Usage
+-----
+
+To apply the filter, use the following option with pandoc:
+
+    --filter pandoc-tablenos
+
+Note that any use of `--filter pandoc-citeproc` or `--bibliography=FILE` should come *after* the pandoc-tablenos filter call.
+
+
 Markdown Syntax
 ---------------
+
+The basic syntax is taken from [this post] in [pandoc Issue #813].  The extended syntax goes further.
+
+
+### Basic Syntax ###
 
 To number a table, add the label `tbl:id` to the attributes of its caption:
 
@@ -73,20 +93,75 @@ Curly braces around a reference are stripped from the output.
 See [demo.md] for an example.
 
 
-Usage
------
+### Extended Syntax ###
 
-To apply the filter, use the following option with pandoc:
+Writing markdown like
 
-    --filter pandoc-tablenos
+    See table @tbl:id.
 
-Note that any use of `--filter pandoc-citeproc` or `--bibliography=FILE` should come *after* the pandoc-tablenos filter call.
+seems a bit redundant.  Pandoc-tablenos supports "clever referencing" via single-character modifiers in front of a reference.  You can write
+
+     See +@tbl:id.
+
+to have the reference name (i.e., "table") automatically generated.  The above form is used mid-sentence.  At the beginning of a sentence, use
+
+     *@tbl:id
+
+instead.  If clever referencing is enabled by default (see [Customization](#customization), below), you can disable it for a given reference using
+
+    !@tbl:id
+
+Demonstration: Processing [demo2.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf2], [tex][tex2], [html][html2], [epub][epub2], [md][md2] and other formats.
+
+Note: The disabling modifier "!" is used instead of "-" because [pandoc unnecessarily drops minus signs] in front of references.
+
+[demo2.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo2.md
+[pdf2]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo2.pdf
+[tex2]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo2.tex
+[html2]: https://rawgit.com/tomduck/pandoc-fignos/master/demos/out/demo2.html
+[epub2]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo2.epub
+[md2]: https://github.com/tomduck/pandoc-tablenos/blob/master/demos/out/demo2.md
+[pandoc unnecessarily drops minus signs]: https://github.com/jgm/pandoc/issues/2901
+
+
+Customization
+-------------
+
+Pandoc-tablenos may be customized by setting variables in the [metadata block] or on the command line (using `-M KEY=VAL`).  The following variables are supported:
+
+  * `tablenos-cleveref` or just `cleveref` - Set to `On` to assume
+    "+" clever references by default;
+
+  * `tablenos-plus-name` - Sets the name of a "+" reference 
+    (e.g., change it from "table" to "tab."); and
+
+  * `tablenos-star-name` - Sets the name of a "*" reference 
+    (e.g., change it from "Table" to "Tab.").
+
+[metadata block]: http://pandoc.org/README.html#extension-yaml_metadata_block
+
+Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [md][md3] and other formats.
+
+[demo3.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo3.md
+[pdf3]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo3.pdf
+[tex3]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo3.tex
+[html3]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo3.html
+[epub3]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo3.epub
+[md3]: https://github.com/tomduck/pandoc-tablenos/blob/master/demos/out/demo3.md
 
 
 Details
 -------
 
-For tex/pdf output, LaTeX's native `\label` and `\ref` macros are used; for all others the numbers are hard-coded.
+For TeX/pdf output:
+
+  * The `\label` and `\ref` macros are used for table labels and
+    references;
+  * The clever referencing macros `\cref` and `\Cref` are used
+    if they are available (i.e., included in your pandoc template
+    via `\usepackage{cleveref}`), otherwise they are faked. 
+
+For all other formats the numbers and clever references are hand-coded into the output.
 
 Links are constructed for html and pdf output.
 
@@ -150,6 +225,6 @@ Once python is installed, start the "Command Prompt" program.  Depending on wher
 Getting Help
 ------------
 
-If you have any difficulties with pandoc-tablenos, please [file an issue] on github.
+If you have any difficulties with pandoc-tablenos, or would like to see a new feature, please [file an Issue] on github.
 
-[file an issue]: https://github.com/tomduck/pandoc-tablenos/issues
+[file an Issue]: https://github.com/tomduck/pandoc-tablenos/issues

@@ -14,8 +14,21 @@ Right & Left & Center & Default\tabularnewline
 \bottomrule
 \end{longtable}
 
-Table \ref{tbl:1} is from the Pandoc User's Guide. A simpler table is
-given by table \ref{tbl:2}:
+% Cleveref macros
+\providecommand{\crefformat}[2]{}{}
+\providecommand{\Crefformat}[2]{}{}
+\crefformat{table}{table~#2#1#3}
+\Crefformat{table}{Table~#2#1#3}
+
+% Cleveref fakery
+\providecommand{\plusnamesingular}{}
+\providecommand{\starnamesingular}{}
+\providecommand{\cref}{\plusnamesingular~\ref}
+\providecommand{\Cref}{\starnamesingular~\ref}
+
+\renewcommand{\starnamesingular}{Table}\Cref{tbl:1} is from the Pandoc
+User's Guide. A simpler table is given by
+\renewcommand{\plusnamesingular}{table}\cref{tbl:2}:
 
 \begin{longtable}[]{@{}ll@{}}
 \caption{Even simpler. \label{tbl:2}}\tabularnewline
