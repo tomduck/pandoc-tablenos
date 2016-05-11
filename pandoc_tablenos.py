@@ -101,13 +101,13 @@ def process_tables(key, value, fmt, meta):
 
         # Parse the table
         attrs, caption = value[0:2]  # attrs, caption, align, x, head, body
-
-        if attrs[0] == 'tbl:': # Make up a unique description
-            attrs[0] = 'tbl:' + str(uuid.uuid4())
         
         # Bail out if the label does not conform
         if not attrs[0] or not LABEL_PATTERN.match(attrs[0]):
             return
+
+        if attrs[0] == 'tbl:': # Make up a unique description
+            attrs[0] = 'tbl:' + str(uuid.uuid4())
 
         # Save the reference
         references[attrs[0]] = len(references) + 1
