@@ -15,7 +15,7 @@ tablenos-star-name: TABLE
     123     123       123          123
       1     1          1             1
 
-Table: A simple table. {#tbl:1}
+Table: A simple table. Ref to +@tbl:2. {#tbl:1}
 
 
 ****

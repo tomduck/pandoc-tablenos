@@ -69,29 +69,15 @@ starname = ['Table', 'Tables']  # Used with \Cref
 cleveref_default = False        # Default setting for clever referencing
 
 
-# Helper functions ----------------------------------------------------------
-
-def is_attrtable(key, value):
-    """True if this is an attributed table; False otherwise."""
-    return key == 'Table' and len(value) == 6
-
-def parse_attrtable(value):
-    """Parses an attributed table."""
-    # I am not sure what the purpose of x is.  It appears to be a list of
-    # zeros with length equal to the width of the table.
-    attrs, caption, align, x, head, body = value
-    if attrs[0] == 'tbl:': # Make up a unique description
-        attrs[0] = 'tbl:' + str(uuid.uuid4())
-    return attrs, caption, align, x, head, body
-
 # Actions --------------------------------------------------------------------
 
 def use_attrs_table(key, value, fmt, meta):  # pylint: disable=unused-argument
     """Extracts attributes and attaches them to element."""
+    
     # We can't use use_attrs_factory() because Table is a block-level element
     if key in ['Table']:
         assert len(value) == 5
-        caption = value[0]
+        caption = value[0]  # caption, align, x, head, body
 
         # Set n to the index where the attributes start
         n = 0
@@ -100,7 +86,7 @@ def use_attrs_table(key, value, fmt, meta):  # pylint: disable=unused-argument
             n += 1
 
         try:
-            attrs =  extract_attrs(caption, n)
+            attrs = extract_attrs(caption, n)
             value.insert(0, attrs)
         except (ValueError, IndexError):
             pass
@@ -111,11 +97,14 @@ filter_attrs_table = filter_attrs_factory('Table', 5)
 def process_tables(key, value, fmt, meta):
     """Processes the attributed tables."""
 
-    if is_attrtable(key, value):
+    if key == 'Table' and len(value) == 6:
 
         # Parse the table
-        attrs, caption, align, x, head, body = parse_attrtable(value)
+        attrs, caption = value[0:2]  # attrs, caption, align, x, head, body
 
+        if attrs[0] == 'tbl:': # Make up a unique description
+            attrs[0] = 'tbl:' + str(uuid.uuid4())
+        
         # Bail out if the label does not conform
         if not attrs[0] or not LABEL_PATTERN.match(attrs[0]):
             return
