@@ -38,14 +38,14 @@ import argparse
 import json
 import uuid
 
-from pandocfilters import walk
-from pandocfilters import Str, Space, Plain, RawBlock, RawInline, elt
+from pandocfilters import walk, elt
+from pandocfilters import Table, Str, Space, RawBlock, RawInline
 
-import pandocfiltering
-from pandocfiltering import STRTYPES, STDIN, STDOUT
-from pandocfiltering import get_meta, extract_attrs
-from pandocfiltering import repair_refs, use_refs_factory, replace_refs_factory
-from pandocfiltering import filter_attrs_factory
+import pandocxnos
+from pandocxnos import STRTYPES, STDIN, STDOUT
+from pandocxnos import get_meta, extract_attrs
+from pandocxnos import repair_refs, process_refs_factory, replace_refs_factory
+from pandocxnos import detach_attrs_factory
 
 
 # Read the command-line arguments
@@ -54,9 +54,8 @@ parser.add_argument('fmt')
 parser.add_argument('--pandocversion', help='The pandoc version.')
 args = parser.parse_args()
 
-# Set/get PANDOCVERSION
-pandocfiltering.init(args.pandocversion)
-PANDOCVERSION = pandocfiltering.PANDOCVERSION
+# Initialize pandocxnos
+PANDOCVERSION = pandocxnos.init(args.pandocversion)
 
 # Patterns for matching labels and references
 LABEL_PATTERN = re.compile(r'(tbl:[\w/-]*)')
@@ -71,10 +70,11 @@ cleveref_default = False        # Default setting for clever referencing
 
 # Actions --------------------------------------------------------------------
 
-def use_attrs_table(key, value, fmt, meta):  # pylint: disable=unused-argument
+# pylint: disable=unused-argument
+def attach_attrs_table(key, value, fmt, meta):
     """Extracts attributes and attaches them to element."""
-    
-    # We can't use use_attrs_factory() because Table is a block-level element
+
+    # We can't use attach_attrs_factory() because Table is a block-level element
     if key in ['Table']:
         assert len(value) == 5
         caption = value[0]  # caption, align, x, head, body
@@ -91,7 +91,7 @@ def use_attrs_table(key, value, fmt, meta):  # pylint: disable=unused-argument
         except (ValueError, IndexError):
             pass
 
-filter_attrs_table = filter_attrs_factory('Table', 5)
+detach_attrs_table = detach_attrs_factory(Table)
 
 # pylint: disable=unused-argument
 def process_tables(key, value, fmt, meta):
@@ -101,7 +101,7 @@ def process_tables(key, value, fmt, meta):
 
         # Parse the table
         attrs, caption = value[0:2]  # attrs, caption, align, x, head, body
-        
+
         # Bail out if the label does not conform
         if not attrs[0] or not LABEL_PATTERN.match(attrs[0]):
             return
@@ -180,15 +180,16 @@ def main():
 
     # First pass
     altered = functools.reduce(lambda x, action: walk(x, action, fmt, meta),
-                               [repair_refs, use_attrs_table, process_tables,
-                                filter_attrs_table], doc)
+                               [attach_attrs_table, process_tables,
+                                detach_attrs_table], doc)
 
     # Second pass
-    use_refs = use_refs_factory(references.keys())
-    replace_refs = replace_refs_factory(references, cleveref_default, 'table',
-                                        plusname, starname)
+    process_refs = process_refs_factory(references.keys())
+    replace_refs = replace_refs_factory(references, cleveref_default,
+                                        plusname, starname, 'table')
     altered = functools.reduce(lambda x, action: walk(x, action, fmt, meta),
-                               [use_refs, replace_refs], altered)
+                               [repair_refs, process_refs, replace_refs],
+                               altered)
 
     # Dump the results
     json.dump(altered, STDOUT)
