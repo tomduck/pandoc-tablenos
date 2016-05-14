@@ -1,5 +1,5 @@
 
-pandoc-tablenos 0.10 (unreleased)
+pandoc-tablenos 0.10 (2016-05-14)
 
     * Added clever referencing.
     * Moved library code to pandocfiltering project.
