@@ -118,7 +118,7 @@ Note: The disabling modifier "!" is used instead of "-" because [pandoc unnecess
 [demo2.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo2.md
 [pdf2]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo2.pdf
 [tex2]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo2.tex
-[html2]: https://rawgit.com/tomduck/pandoc-fignos/master/demos/out/demo2.html
+[html2]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo2.html
 [epub2]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo2.epub
 [md2]: https://github.com/tomduck/pandoc-tablenos/blob/master/demos/out/demo2.md
 [pandoc unnecessarily drops minus signs]: https://github.com/jgm/pandoc/issues/2901
