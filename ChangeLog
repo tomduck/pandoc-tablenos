@@ -2,6 +2,8 @@
 pandoc-tablenos 0.11 (unreleased)
 
     * Added tagged tables (Issue #3)
+    * Changed caption separator from period to colon for html output
+      to be consistent with TeX/pdf.
     * Added option to change the caption name.
 
 
