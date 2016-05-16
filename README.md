@@ -1,9 +1,9 @@
 
 
-NOTICE: Clever referencing is now supported.  Details below.
+NOTICE: Clever referencing and tagged tables are now supported.  Details below.
 
 
-pandoc-tablenos 0.10
+pandoc-tablenos 0.11
 ====================
 
 *pandoc-tablenos* is a [pandoc] filter for numbering tables and table references.
@@ -95,6 +95,8 @@ See [demo.md] for an example.
 
 ### Extended Syntax ###
 
+#### Clever References ####
+
 Writing markdown like
 
     See table @tbl:id.
@@ -122,6 +124,19 @@ Note: The disabling modifier "!" is used instead of "-" because [pandoc unnecess
 [epub2]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo2.epub
 [md2]: https://github.com/tomduck/pandoc-tablenos/blob/master/demos/out/demo2.md
 [pandoc unnecessarily drops minus signs]: https://github.com/jgm/pandoc/issues/2901
+
+
+#### Tagged Tables ####
+
+You may optionally override the table number by placing a tag in a table's attributes block as follows:
+
+    A B
+    - -
+    0 1
+
+    Table: Caption. {#tbl:id tag="B.1"}
+
+The tag may be arbitrary text, or an inline equation such as `$\mathrm{B.1'}$`.  Mixtures of the two are not currently supported.
 
 
 Customization

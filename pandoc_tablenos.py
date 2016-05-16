@@ -39,7 +39,9 @@ import json
 import uuid
 
 from pandocfilters import walk, elt
-from pandocfilters import Table, Str, Space, RawBlock, RawInline
+from pandocfilters import Table, Str, Space, RawBlock, RawInline, Math
+
+from pandocattributes import PandocAttributes
 
 import pandocxnos
 from pandocxnos import STRTYPES, STDIN, STDOUT
@@ -60,6 +62,7 @@ PANDOCVERSION = pandocxnos.init(args.pandocversion)
 # Patterns for matching labels and references
 LABEL_PATTERN = re.compile(r'(tbl:[\w/-]*)')
 
+Nreferences = 0  # The numbered references count (i.e., excluding tags)
 references = {}  # Global references tracker
 
 # Meta variables; may be reset elsewhere
@@ -93,6 +96,26 @@ def attach_attrs_table(key, value, fmt, meta):
 
 detach_attrs_table = detach_attrs_factory(Table)
 
+def _store_ref(attrs):
+    """Stores the reference in the global references tracker.
+    Returns True if this is a tagged table; False otherwise."""
+
+    # pylint: disable=global-statement
+    global Nreferences
+
+    attrs = PandocAttributes(attrs, 'pandoc')
+    if 'tag' in attrs.kvs:
+        # Remove any surrounding quotes
+        if attrs['tag'][0] == '"' and attrs['tag'][-1] == '"':
+            attrs['tag'] = attrs['tag'].strip('"')
+        elif attrs['tag'][0] == "'" and attrs['tag'][-1] == "'":
+            attrs['tag'] = attrs['tag'].strip("'")
+        references[attrs.id] = attrs['tag']
+    else:
+        Nreferences += 1
+        references[attrs.id] = Nreferences
+    return 'tag' in attrs.kvs
+
 # pylint: disable=unused-argument
 def process_tables(key, value, fmt, meta):
     """Processes the attributed tables."""
@@ -110,17 +133,37 @@ def process_tables(key, value, fmt, meta):
             attrs[0] = 'tbl:' + str(uuid.uuid4())
 
         # Save the reference
-        references[attrs[0]] = len(references) + 1
+        is_tagged = _store_ref(attrs)
 
         # Adjust caption depending on the output format
         if fmt == 'latex':
             value[1] += [RawInline('tex', r'\label{%s}'%attrs[0])]
-        else:
+        elif type(references[attrs[0]]) is int:
             value[1] = [Str('Table'), Space(),
                         Str('%d.'%references[attrs[0]]), Space()] + \
                         list(caption)
-
-        if fmt in ('html', 'html5'):  # Insert anchor
+        else:  # It is a string
+            assert type(references[attrs[0]]) in STRTYPES
+            # Handle both math and text
+            text = references[attrs[0]]
+            if text.startswith('$') and text.endswith('$'):
+                math = text.replace(' ', r'\ ')[1:-1]
+                el = Math({"t":"InlineMath","c":[]}, math)
+            else:
+                el = Str(text)
+            value[1] = [Str('Table'), Space(), el, Space()] + list(caption)
+        if fmt == 'latex' and is_tagged:  # Code in the tags
+            tex = '\n'.join([r'\let\oldthetable=\thetable',
+                             r'\renewcommand\thetable{%s}'%\
+                             references[attrs[0]]])
+            pre = RawBlock('tex', tex)
+            table = elt('Table', 6)(*value) # pylint: disable=star-args
+            table['c'] = list(table['c'])  # Needed for attr filtering
+            tex = '\n'.join([r'\let\thetable=\oldthetable',
+                             r'\addtocounter{table}{-1}'])
+            post = RawBlock('tex', tex)
+            return [pre, table, post]
+        elif fmt in ('html', 'html5'):  # Insert anchor
             table = elt('Table', 6)(*value) # pylint: disable=star-args
             table['c'] = list(table['c'])  # Needed for attr filtering
             anchor = RawBlock('html', '<a name="%s"></a>'%attrs[0])

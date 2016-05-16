@@ -1,4 +1,9 @@
 
+pandoc-tablenos 0.11 (unreleased)
+
+    * Added tagged tables (Issue #3)
+
+
 pandoc-tablenos 0.10 (2016-05-15)
 
     * Added clever referencing.

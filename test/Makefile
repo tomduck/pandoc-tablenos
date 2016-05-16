@@ -53,7 +53,7 @@ out/test-1.17.pdf: test.md
 
 out/test-1.17.tex: test.md
 	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
-	$(PANDOC-1.17) $< --filter pandoc-tablenos -o $@
+	$(PANDOC-1.17) $< --standalone --filter pandoc-tablenos -o $@
 
 out/test-1.17.md: test.md
 	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi

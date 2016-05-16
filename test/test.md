@@ -95,6 +95,30 @@ X Y
 Table: Another one. {}
 
 
+\newpage
+
+
+****
+
+Tables @tbl:4 and @tbl:5 are tagged tables:
+
+X Y
+- -
+0 1
+
+Table: Another one. {#tbl:4 tag="B.1"}
+
+
+X Y
+- -
+0 1
+
+Table: Another one. {#tbl:5 tag="$\mathrm{B.3'}$"}
+
+
+\newpage
+
+
 ****
 
 
