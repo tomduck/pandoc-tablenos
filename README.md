@@ -144,6 +144,9 @@ Customization
 
 Pandoc-tablenos may be customized by setting variables in the [metadata block] or on the command line (using `-M KEY=VAL`).  The following variables are supported:
 
+  * `tablenos-caption-name` - Sets the name at the beginning of a
+    caption (e.g., change it from "Table to "Tab.");
+
   * `tablenos-cleveref` or just `cleveref` - Set to `On` to assume
     "+" clever references by default;
 

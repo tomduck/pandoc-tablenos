@@ -1,4 +1,5 @@
 ---
+tablenos-caption-name: TABLE
 tablenos-plus-name: TAB.
 tablenos-star-name: TABLE
 ...

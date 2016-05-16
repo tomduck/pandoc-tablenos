@@ -66,6 +66,7 @@ Nreferences = 0  # The numbered references count (i.e., excluding tags)
 references = {}  # Global references tracker
 
 # Meta variables; may be reset elsewhere
+captionname = 'Table'             # Used with \figurename
 plusname = ['table', 'tables']    # Used with \cref
 starname = ['Table', 'Tables']  # Used with \Cref
 cleveref_default = False        # Default setting for clever referencing
@@ -139,7 +140,7 @@ def process_tables(key, value, fmt, meta):
         if fmt == 'latex':
             value[1] += [RawInline('tex', r'\label{%s}'%attrs[0])]
         elif type(references[attrs[0]]) is int:
-            value[1] = [Str('Table'), Space(),
+            value[1] = [Str(captionname), Space(),
                         Str('%d.'%references[attrs[0]]), Space()] + \
                         list(caption)
         else:  # It is a string
@@ -177,9 +178,13 @@ def process(meta):
     computed fields."""
 
     # pylint: disable=global-statement
-    global cleveref_default, plusname, starname
+    global captionname, cleveref_default, plusname, starname
 
     # Read in the metadata fields and do some checking
+
+    if 'tablenos-caption-name' in meta:
+        captionname = get_meta(meta, 'tablenos-caption-name')
+        assert type(captionname) in STRTYPES
 
     if 'cleveref' in meta:
         cleveref_default = get_meta(meta, 'cleveref')
@@ -233,6 +238,17 @@ def main():
     altered = functools.reduce(lambda x, action: walk(x, action, fmt, meta),
                                [repair_refs, process_refs, replace_refs],
                                altered)
+
+    # Assemble supporting TeX
+    if fmt == 'latex':
+        tex = ['% Tablenos directives']
+
+        # Change caption name
+        if captionname != 'Table':
+            tex.append(r'\renewcommand{\tablename}{%s}'%captionname)
+
+        if len(tex) > 1:
+            altered[1] = [RawBlock('tex', '\n'.join(tex))] + altered[1]
 
     # Dump the results
     json.dump(altered, STDOUT)

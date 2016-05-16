@@ -2,6 +2,7 @@
 pandoc-tablenos 0.11 (unreleased)
 
     * Added tagged tables (Issue #3)
+    * Added option to change the caption name.
 
 
 pandoc-tablenos 0.10 (2016-05-15)
