@@ -149,10 +149,12 @@ def process_tables(key, value, fmt, meta):
             text = references[attrs[0]]
             if text.startswith('$') and text.endswith('$'):
                 math = text.replace(' ', r'\ ')[1:-1]
-                el = Math({"t":"InlineMath","c":[]}, math)
+                el = Math({"t":"InlineMath", "c":[]}, math)
             else:
                 el = Str(text)
             value[1] = [Str('Table'), Space(), el, Space()] + list(caption)
+
+        # Context-dependent output
         if fmt == 'latex' and is_tagged:  # Code in the tags
             tex = '\n'.join([r'\let\oldthetable=\thetable',
                              r'\renewcommand\thetable{%s}'%\
