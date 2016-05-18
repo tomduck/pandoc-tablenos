@@ -175,9 +175,12 @@ For TeX/pdf output:
 
   * The `\label` and `\ref` macros are used for table labels and
     references;
+  * Tags are supported by temporarily redefining `\thetable`; and
   * The clever referencing macros `\cref` and `\Cref` are used
-    if they are available (i.e., included in your pandoc template
-    via `\usepackage{cleveref}`), otherwise they are faked. 
+    if they are available (i.e. included in your LaTeX template via
+    `\usepackage{cleveref}`), otherwise they are faked.  Set the 
+    meta variable `xnos-cleveref-fake` to `Off` to disable cleveref
+    faking.
 
 For all other formats the numbers and clever references are hand-coded into the output.
 
