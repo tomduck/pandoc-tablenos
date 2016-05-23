@@ -38,7 +38,7 @@ import argparse
 import json
 import uuid
 
-from pandocfilters import walk, elt
+from pandocfilters import walk
 from pandocfilters import Table, Str, Space, RawBlock, RawInline, Math
 
 from pandocattributes import PandocAttributes
@@ -48,6 +48,8 @@ from pandocxnos import STRTYPES, STDIN, STDOUT
 from pandocxnos import get_meta, extract_attrs
 from pandocxnos import repair_refs, process_refs_factory, replace_refs_factory
 from pandocxnos import detach_attrs_factory
+from pandocxnos import insert_rawblocks_factory
+from pandocxnos import elt
 
 
 # Read the command-line arguments
@@ -66,10 +68,16 @@ Nreferences = 0  # The numbered references count (i.e., excluding tags)
 references = {}  # Global references tracker
 
 # Meta variables; may be reset elsewhere
-captionname = 'Table'             # Used with \figurename
+captionname = 'Table'             # Used with \tablename
 plusname = ['table', 'tables']    # Used with \cref
 starname = ['Table', 'Tables']  # Used with \Cref
 cleveref_default = False        # Default setting for clever referencing
+
+# Element primitives
+AttrTable = elt('Table', 6)
+
+# Flag for unnumbered tables
+has_unnumbered_tables = False
 
 
 # Actions --------------------------------------------------------------------
@@ -121,14 +129,25 @@ def _store_ref(attrs):
 def process_tables(key, value, fmt, meta):
     """Processes the attributed tables."""
 
-    if key == 'Table' and len(value) == 6:
+    global has_unnumbered_tables  # pylint: disable=global-statement
+
+    if key == 'Table' and len(value) == 5:
+        if fmt == 'latex':
+            return [RawBlock('tex', r'\begin{no-prefix-table-caption}'),
+                    Table(*value),
+                    RawBlock('tex', r'\end{no-prefix-table-caption}')]
+
+    elif key == 'Table' and len(value) == 6:
 
         # Parse the table
         attrs, caption = value[0:2]  # attrs, caption, align, x, head, body
 
         # Bail out if the label does not conform
         if not attrs[0] or not LABEL_PATTERN.match(attrs[0]):
-            return
+            has_unnumbered_tables = True
+            unnumbered = True
+        else:
+            unnumbered = False
 
         if attrs[0] == 'tbl:': # Make up a unique description
             attrs[0] = 'tbl:' + str(uuid.uuid4())
@@ -138,6 +157,11 @@ def process_tables(key, value, fmt, meta):
 
         # Adjust caption depending on the output format
         if fmt == 'latex':
+            if unnumbered:
+                return [RawBlock('tex', r'\begin{no-prefix-table-caption}'),
+                        AttrTable(*value),
+                        RawBlock('tex', r'\end{no-prefix-table-caption}')]
+
             value[1] += [RawInline('tex', r'\label{%s}'%attrs[0])]
         elif type(references[attrs[0]]) is int:
             value[1] = [Str(captionname), Space(),
@@ -160,20 +184,75 @@ def process_tables(key, value, fmt, meta):
                              r'\renewcommand\thetable{%s}'%\
                              references[attrs[0]]])
             pre = RawBlock('tex', tex)
-            table = elt('Table', 6)(*value) # pylint: disable=star-args
-            table['c'] = list(table['c'])  # Needed for attr filtering
+            table = AttrTable(*value) # pylint: disable=star-args
             tex = '\n'.join([r'\let\thetable=\oldthetable',
                              r'\addtocounter{table}{-1}'])
             post = RawBlock('tex', tex)
             return [pre, table, post]
         elif fmt in ('html', 'html5'):  # Insert anchor
-            table = elt('Table', 6)(*value) # pylint: disable=star-args
-            table['c'] = list(table['c'])  # Needed for attr filtering
+            table = AttrTable(*value) # pylint: disable=star-args
             anchor = RawBlock('html', '<a name="%s"></a>'%attrs[0])
             return [anchor, table]
 
 
 # Main program ---------------------------------------------------------------
+
+# Define \LT@makenoprefixcaption to make a caption without a prefix.  This
+# should replace \@makecaption as needed.  See the standard \@makecaption TeX
+# at https://stackoverflow.com/questions/2039690.  The macro gets installed
+# using an environment.  The \thefigure counter must be set to something unique
+# so that duplicate names are avoided.  This must be done the hyperref
+# counter \theHfigure as well; see Sect. 3.9 of
+# http://ctan.mirror.rafal.ca/macros/latex/contrib/hyperref/doc/manual.html.
+
+TEX0 = r"""
+% pandoc-xnos: macro to create a caption without a prefix
+\makeatletter
+\def\LT@makenoprefixcaption#1#2#3{%
+  \LT@mcol\LT@cols c{\hbox to\z@{\hss\parbox[t]\LTcapwidth{
+    \sbox\@tempboxa{#1{}#3}
+    \ifdim\wd\@tempboxa>\hsize
+      #1{}#3
+    \else
+      \hbox to\hsize{\hfil\box\@tempboxa\hfil}%
+    \fi
+    \endgraf\vskip\baselineskip}
+  \hss}}}
+\makeatother
+""".strip()
+
+TEX1 = r"""
+% pandoc-tablenos: save original macros
+\makeatletter
+\let\LT@oldmakecaption=\LT@makecaption
+\let\oldthetable=\thetable
+\let\oldtheHtable=\theHtable
+\makeatother
+""".strip()
+
+TEX2 = r"""
+% pandoc-tablenos: environment disables table caption prefixes
+\makeatletter
+\newcounter{tableno}
+\newenvironment{no-prefix-table-caption}{
+  \let\LT@makecaption=\LT@makenoprefixcaption
+  \renewcommand\thetable{x.\thetableno}
+  \renewcommand\theHtable{x.\thetableno}
+  \stepcounter{tableno}
+}{
+  \let\thetable=\oldthetable
+  \let\theHtable=\oldtheHtable
+  \let\LT@makecaption=\LT@oldmakecaption
+  \addtocounter{table}{-1}
+}
+\makeatother
+""".strip()
+
+# TeX to set the caption name
+TEX3 = r"""
+%% pandoc-tablenos: caption name
+\renewcommand{\tablename}{%s}
+""".strip()
 
 def process(meta):
     """Saves metadata fields in global variables and returns a few
@@ -241,16 +320,23 @@ def main():
                                [repair_refs, process_refs, replace_refs],
                                altered)
 
-    # Assemble supporting TeX
+    # Insert supporting TeX
     if fmt == 'latex':
-        tex = ['% Tablenos directives']
 
-        # Change caption name
+        rawblocks = []
+
+        if has_unnumbered_tables:
+            rawblocks += [RawBlock('tex', TEX0),
+                          RawBlock('tex', TEX1),
+                          RawBlock('tex', TEX2)]
+
         if captionname != 'Table':
-            tex.append(r'\renewcommand{\tablename}{%s}'%captionname)
+            rawblocks += [RawBlock('tex', TEX3 % captionname)]
 
-        if len(tex) > 1:
-            altered[1] = [RawBlock('tex', '\n'.join(tex))] + altered[1]
+        insert_rawblocks = insert_rawblocks_factory(rawblocks)
+
+        altered = functools.reduce(lambda x, action: walk(x, action, fmt, meta),
+                                   [insert_rawblocks], altered)
 
     # Dump the results
     json.dump(altered, STDOUT)

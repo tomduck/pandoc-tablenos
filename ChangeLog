@@ -1,4 +1,9 @@
 
+pandoc-tablenos 0.12 (2016-05-18)
+
+    * Support for unnumbered figures in TeX/pdf.
+
+
 pandoc-tablenos 0.11 (2016-05-18)
 
     * Added tagged tables (Issue #3)

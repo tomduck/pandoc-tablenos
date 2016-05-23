@@ -3,7 +3,7 @@
 NOTICE: Clever referencing and tagged tables are now supported.  Details below.
 
 
-pandoc-tablenos 0.11
+pandoc-tablenos 0.12
 ====================
 
 *pandoc-tablenos* is a [pandoc] filter for numbering tables and table references.
@@ -78,7 +78,7 @@ To number a table, add the label `tbl:id` to the attributes of its caption:
 
     Table: Caption. {#tbl:id}
 
-The prefix `#tbl:` is required. `id` should be replaced with a unique identifier composed of letters, numbers, dashes, slashes and underscores.
+The prefix `#tbl:` is required. `id` should be replaced with a unique identifier composed of letters, numbers, dashes, slashes and underscores.  If `id` is omitted then the figure will be numbered but unreferenceable.
 
 To reference the table, use
 

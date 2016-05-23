@@ -75,7 +75,7 @@ Corner Cases
 ------------
 
 
-Here is a table with no attributes.  This should not be numbered, but is for tex/pdf (a bug).
+An unnumbered table with no attributes:
 
 X Y
 - -
@@ -87,7 +87,7 @@ Table: Another one.
 ****
 
 
-Similarly, a table with empty attributes should not be numbered, but is for tex/pdf (a bug).
+An unnumbered table with empty attributes:
 
 X Y
 - -
@@ -123,7 +123,7 @@ Table: Another one. {#tbl:5 tag="$\mathrm{B.3'}$"}
 ****
 
 
-Below is a series of three unreferenceable numbered tables.  Make sure the numbers are incrementing.
+A series of three unreferenceable numbered tables:
 
 X Y
 - -
