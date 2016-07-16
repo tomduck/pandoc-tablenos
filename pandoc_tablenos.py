@@ -134,11 +134,13 @@ def process_tables(key, value, fmt, meta):
     if key == 'Table' and len(value) == 5:
         if fmt == 'latex':
             return [RawBlock('tex', r'\begin{no-prefix-table-caption}'),
-                    Table(*value),
+                    Table(*value),  # pylint: disable=star-args
                     RawBlock('tex', r'\end{no-prefix-table-caption}')]
 
     elif key == 'Table' and len(value) == 6:
 
+        return _process_table(value, fmt)
+        
         # Parse the table
         attrs, caption = value[0:2]  # attrs, caption, align, x, head, body
 
@@ -159,7 +161,7 @@ def process_tables(key, value, fmt, meta):
         if fmt == 'latex':
             if unnumbered:
                 return [RawBlock('tex', r'\begin{no-prefix-table-caption}'),
-                        AttrTable(*value),
+                        AttrTable(*value),  # pylint: disable=star-args
                         RawBlock('tex', r'\end{no-prefix-table-caption}')]
 
             value[1] += [RawInline('tex', r'\label{%s}'%attrs[0])]
