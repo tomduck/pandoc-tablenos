@@ -64,8 +64,9 @@ PANDOCVERSION = pandocxnos.init(args.pandocversion)
 # Patterns for matching labels and references
 LABEL_PATTERN = re.compile(r'(tbl:[\w/-]*)')
 
-Nreferences = 0  # The numbered references count (i.e., excluding tags)
-references = {}  # Global references tracker
+Nreferences = 0        # The numbered references count (i.e., excluding tags)
+references = {}        # Global references tracker
+unreferenceable = []   # List of labels that are unreferenceable
 
 # Meta variables; may be reset elsewhere
 captionname = 'Table'             # Used with \tablename
@@ -105,73 +106,61 @@ def attach_attrs_table(key, value, fmt, meta):
 
 detach_attrs_table = detach_attrs_factory(Table)
 
-def _store_ref(attrs):
-    """Stores the reference in the global references tracker.
-    Returns True if this is a tagged table; False otherwise."""
+
+def _process_table(value, fmt):
+    """Processes the table.  Returns a dict containing table properties."""
 
     # pylint: disable=global-statement
     global Nreferences
+    global has_unnumbered_tables
 
-    attrs = PandocAttributes(attrs, 'pandoc')
-    if 'tag' in attrs.kvs:
+    # Parse the table
+    attrs, caption = value[:2]
+
+    # Initialize the return value
+    table = {'is_unnumbered': False,
+             'is_unreferenceable': False,
+             'is_tagged': False,
+             'attrs': attrs}
+
+    # Bail out if the label does not conform
+    if not LABEL_PATTERN.match(attrs[0]):
+        has_unnumbered_tables = True
+        table['is_unnumbered'] = True
+        table['is_unreferenceable'] = True
+        return table
+
+    # Process unreferenceable tables
+    if attrs[0] == 'tbl:': # Make up a unique description
+        attrs[0] = 'tbl:' + str(uuid.uuid4())
+        table['is_unreferenceable'] = True
+        unreferenceable.append(attrs[0])
+
+    # Save to the global references tracker
+    kvs = PandocAttributes(attrs, 'pandoc').kvs
+    table['is_tagged'] = 'tag' in kvs
+    if table['is_tagged']:
         # Remove any surrounding quotes
-        if attrs['tag'][0] == '"' and attrs['tag'][-1] == '"':
-            attrs['tag'] = attrs['tag'].strip('"')
-        elif attrs['tag'][0] == "'" and attrs['tag'][-1] == "'":
-            attrs['tag'] = attrs['tag'].strip("'")
-        references[attrs.id] = attrs['tag']
+        if kvs['tag'][0] == '"' and kvs['tag'][-1] == '"':
+            kvs['tag'] = kvs['tag'].strip('"')
+        elif kvs['tag'][0] == "'" and kvs['tag'][-1] == "'":
+            kvs['tag'] = kvs['tag'].strip("'")
+        references[attrs[0]] = kvs['tag']
     else:
         Nreferences += 1
-        references[attrs.id] = Nreferences
-    return 'tag' in attrs.kvs
+        references[attrs[0]] = Nreferences
 
-# pylint: disable=unused-argument
-def process_tables(key, value, fmt, meta):
-    """Processes the attributed tables."""
-
-    global has_unnumbered_tables  # pylint: disable=global-statement
-
-    if key == 'Table' and len(value) == 5:
-        if fmt == 'latex':
-            return [RawBlock('tex', r'\begin{no-prefix-table-caption}'),
-                    Table(*value),  # pylint: disable=star-args
-                    RawBlock('tex', r'\end{no-prefix-table-caption}')]
-
-    elif key == 'Table' and len(value) == 6:
-
-        return _process_table(value, fmt)
-        
-        # Parse the table
-        attrs, caption = value[0:2]  # attrs, caption, align, x, head, body
-
-        # Bail out if the label does not conform
-        if not attrs[0] or not LABEL_PATTERN.match(attrs[0]):
-            has_unnumbered_tables = True
-            unnumbered = True
-        else:
-            unnumbered = False
-
-        if attrs[0] == 'tbl:': # Make up a unique description
-            attrs[0] = 'tbl:' + str(uuid.uuid4())
-
-        # Save the reference
-        is_tagged = _store_ref(attrs)
-
-        # Adjust caption depending on the output format
-        if fmt == 'latex':
-            if unnumbered:
-                return [RawBlock('tex', r'\begin{no-prefix-table-caption}'),
-                        AttrTable(*value),  # pylint: disable=star-args
-                        RawBlock('tex', r'\end{no-prefix-table-caption}')]
-
+    # Adjust caption depending on the output format
+    if fmt == 'latex':
+        if not table['is_unreferenceable']:
             value[1] += [RawInline('tex', r'\label{%s}'%attrs[0])]
-        elif type(references[attrs[0]]) is int:
+    else:  # Hard-code in the caption name and number/tag
+        if type(references[attrs[0]]) is int:
             value[1] = [Str(captionname), Space(),
                         Str('%d:'%references[attrs[0]]), Space()] + \
                         list(caption)
-        else:  # It is a string
+        else:  # Tagged reference
             assert type(references[attrs[0]]) in STRTYPES
-            # Handle both math and text
             text = references[attrs[0]]
             if text.startswith('$') and text.endswith('$'):
                 math = text.replace(' ', r'\ ')[1:-1]
@@ -180,21 +169,56 @@ def process_tables(key, value, fmt, meta):
                 els = [Str(text + ':')]
             value[1] = [Str('Table'), Space()] + els + [Space()] + list(caption)
 
+    return table
+
+# pylint: disable=unused-argument
+def process_tables(key, value, fmt, meta):
+    """Processes the attributed tables."""
+
+    # Process block-level Table elements
+    if key == 'Table':
+
+        # Inspect the table
+        if len(value) == 5:  # Unattributed, bail out
+            if fmt == 'latex':
+                return [RawBlock('tex', r'\begin{no-prefix-table-caption}'),
+                        Table(*value),  # pylint: disable=star-args
+                        RawBlock('tex', r'\end{no-prefix-table-caption}')]
+            else:
+                return
+
+        # Process the table
+        table = _process_table(value, fmt)
+
         # Context-dependent output
-        if fmt == 'latex' and is_tagged:  # Code in the tags
-            tex = '\n'.join([r'\let\oldthetable=\thetable',
-                             r'\renewcommand\thetable{%s}'%\
-                             references[attrs[0]]])
-            pre = RawBlock('tex', tex)
-            table = AttrTable(*value) # pylint: disable=star-args
-            tex = '\n'.join([r'\let\thetable=\oldthetable',
-                             r'\addtocounter{table}{-1}'])
-            post = RawBlock('tex', tex)
-            return [pre, table, post]
-        elif fmt in ('html', 'html5'):  # Insert anchor
-            table = AttrTable(*value) # pylint: disable=star-args
+        attrs = table['attrs']
+        if table['is_unnumbered']:
+            if fmt == 'latex':
+                return [RawBlock('tex', r'\begin{no-prefix-table-caption}'),
+                        AttrTable(*value),  # pylint: disable=star-args
+                        RawBlock('tex', r'\end{no-prefix-table-caption}')]
+            else:
+                return
+
+        elif fmt == 'latex':
+            if table['is_tagged']:  # Code in the tags
+                tex = '\n'.join([r'\let\oldthetable=\thetable',
+                                 r'\renewcommand\thetable{%s}'%\
+                                 references[attrs[0]]])
+                pre = RawBlock('tex', tex)
+                tex = '\n'.join([r'\let\thetable=\oldthetable',
+                                 r'\addtocounter{table}{-1}'])
+                post = RawBlock('tex', tex)
+                # pylint: disable=star-args
+                return [pre, AttrTable(*value), post]
+        elif table['is_unreferenceable']:
+            attrs[0] = ''  # The label isn't needed any further
+            return
+        elif fmt in ('html', 'html5') and LABEL_PATTERN.match(attrs[0]):
+            # Insert anchor
             anchor = RawBlock('html', '<a name="%s"></a>'%attrs[0])
-            return [anchor, table]
+            # pylint: disable=star-args
+            return [anchor, AttrTable(*value)]
 
 
 # Main program ---------------------------------------------------------------
