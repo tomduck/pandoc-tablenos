@@ -1,4 +1,9 @@
 
+pandoc-tablenos 0.12.1 (2016-08-21)
+
+    * Require pandoc-xnos >= 0.4.1
+
+
 pandoc-tablenos 0.12 (2016-08-21)
 
     * Support for unnumbered figures in TeX/pdf.
