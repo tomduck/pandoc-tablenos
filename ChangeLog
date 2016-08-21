@@ -1,5 +1,5 @@
 
-pandoc-tablenos 0.12 (2016-05-18)
+pandoc-tablenos 0.12 (2016-08-21)
 
     * Support for unnumbered figures in TeX/pdf.
 

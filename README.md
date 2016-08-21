@@ -1,8 +1,5 @@
 
 
-NOTICE: Clever referencing and tagged tables are now supported.  Details below.
-
-
 pandoc-tablenos 0.12
 ====================
 
