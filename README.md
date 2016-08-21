@@ -183,7 +183,7 @@ For TeX/pdf output:
     meta variable `xnos-cleveref-fake` to `Off` to disable cleveref
     faking.
 
-For all other formats the numbers and clever references are hand-coded into the output.
+For all other formats the numbers and clever references are hard-coded into the output.
 
 Links are constructed for html and pdf output.
 
