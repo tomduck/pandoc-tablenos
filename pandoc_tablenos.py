@@ -175,11 +175,14 @@ def _process_table(value, fmt):
 def process_tables(key, value, fmt, meta):
     """Processes the attributed tables."""
 
+    global has_unnumbered_tables
+
     # Process block-level Table elements
     if key == 'Table':
 
         # Inspect the table
         if len(value) == 5:  # Unattributed, bail out
+            has_unnumbered_tables = True
             if fmt == 'latex':
                 return [RawBlock('tex', r'\begin{no-prefix-table-caption}'),
                         Table(*value),  # pylint: disable=star-args
@@ -226,9 +229,9 @@ def process_tables(key, value, fmt, meta):
 # Define \LT@makenoprefixcaption to make a caption without a prefix.  This
 # should replace \@makecaption as needed.  See the standard \@makecaption TeX
 # at https://stackoverflow.com/questions/2039690.  The macro gets installed
-# using an environment.  The \thefigure counter must be set to something unique
+# using an environment.  The \thetable counter must be set to something unique
 # so that duplicate names are avoided.  This must be done the hyperref
-# counter \theHfigure as well; see Sect. 3.9 of
+# counter \theHtable as well; see Sect. 3.9 of
 # http://ctan.mirror.rafal.ca/macros/latex/contrib/hyperref/doc/manual.html.
 
 TEX0 = r"""
