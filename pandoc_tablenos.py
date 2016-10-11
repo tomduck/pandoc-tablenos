@@ -175,7 +175,7 @@ def _process_table(value, fmt):
 def process_tables(key, value, fmt, meta):
     """Processes the attributed tables."""
 
-    global has_unnumbered_tables
+    global has_unnumbered_tables  # pylint: disable=global-statement
 
     # Process block-level Table elements
     if key == 'Table':
@@ -200,8 +200,6 @@ def process_tables(key, value, fmt, meta):
                 return [RawBlock('tex', r'\begin{no-prefix-table-caption}'),
                         AttrTable(*value),  # pylint: disable=star-args
                         RawBlock('tex', r'\end{no-prefix-table-caption}')]
-            else:
-                return
 
         elif fmt == 'latex':
             if table['is_tagged']:  # Code in the tags
@@ -216,7 +214,6 @@ def process_tables(key, value, fmt, meta):
                 return [pre, AttrTable(*value), post]
         elif table['is_unreferenceable']:
             attrs[0] = ''  # The label isn't needed any further
-            return
         elif fmt in ('html', 'html5') and LABEL_PATTERN.match(attrs[0]):
             # Insert anchor
             anchor = RawBlock('html', '<a name="%s"></a>'%attrs[0])
