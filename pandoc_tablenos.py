@@ -365,7 +365,7 @@ def main():
                                    [insert_rawblocks], altered)
 
     # Dump the results
-    json.dump(doc[1:] + altered, STDOUT)
+    json.dump(doc[:1] + altered, STDOUT)
 
     # Flush stdout
     STDOUT.flush()
