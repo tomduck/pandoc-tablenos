@@ -333,10 +333,10 @@ def main():
     # Process the metadata variables
     process(meta)
 
-    # First pass
+    # First pass; don't walk metadata
     altered = functools.reduce(lambda x, action: walk(x, action, fmt, meta),
                                [attach_attrs_table, process_tables,
-                                detach_attrs_table], doc)
+                                detach_attrs_table], doc[1:])
 
     # Second pass
     process_refs = process_refs_factory(references.keys())
@@ -365,7 +365,7 @@ def main():
                                    [insert_rawblocks], altered)
 
     # Dump the results
-    json.dump(altered, STDOUT)
+    json.dump(doc[1:] + altered, STDOUT)
 
     # Flush stdout
     STDOUT.flush()
