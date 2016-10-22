@@ -1,7 +1,7 @@
-pandoc-tablenos 0.13 (unreleased)
+pandoc-tablenos 0.13 (2016-10-22)
 
-    * Fixed no-prefix-figure-caption bug.
-    * Fixed python 2.7 install on Windows.
+    * Fixed metadata corruption bug (pandoc-fignos Issue #23).
+    * Fixed python 2.7 install on Windows (pandoc-fignos Issue #27).
     * Require pandoc-xnos >= 0.5.
 
 
@@ -98,5 +98,5 @@ pandoc-tablenos 0.1.1 (2015-06-07)
 
 pandoc-tablenos 0.1 (2015-06-07)
 
-    * initial release
+    * initial release.
 
