@@ -40,7 +40,7 @@ Contents
 Rationale
 ---------
 
-Table numbers and references are frequently used in academic writing, but are not currently supported by pandoc.  Pandoc-tablenos is an add-on filter that provides the missing functionality.
+Table numbers and references are frequently used in academic writing, but are not supported natively by pandoc.  Pandoc-tablenos is an add-on filter that provides the missing functionality.
 
 The markdown syntax recognized by pandoc-tablenos was worked out in [pandoc Issue #813] -- see [this post] by [@scaramouche1].  It seems likely that this will be close to what pandoc ultimately adopts.  Pandoc-tablenos is a transitional package for those who need table numbers and references now.
 
@@ -61,11 +61,6 @@ Note that any use of `--filter pandoc-citeproc` or `--bibliography=FILE` should 
 
 Markdown Syntax
 ---------------
-
-The basic syntax is taken from [this post] in [pandoc Issue #813].  The extended syntax goes further.
-
-
-### Basic Syntax ###
 
 To number a table, add the label `tbl:id` to the attributes of its caption:
 
@@ -89,8 +84,6 @@ Curly braces around a reference are stripped from the output.
 
 See [demo.md] for an example.
 
-
-### Extended Syntax ###
 
 #### Clever References ####
 
