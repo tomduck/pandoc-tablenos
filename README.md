@@ -1,6 +1,6 @@
 
 
-pandoc-tablenos 0.13
+pandoc-tablenos 0.14
 ====================
 
 *pandoc-tablenos* is a [pandoc] filter for numbering tables and table references.
