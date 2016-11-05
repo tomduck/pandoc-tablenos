@@ -58,9 +58,6 @@ parser.add_argument('fmt')
 parser.add_argument('--pandocversion', help='The pandoc version.')
 args = parser.parse_args()
 
-# Initialize pandocxnos
-PANDOCVERSION = pandocxnos.init(args.pandocversion)
-
 # Patterns for matching labels and references
 LABEL_PATTERN = re.compile(r'(tbl:[\w/-]*)')
 
@@ -74,11 +71,11 @@ plusname = ['table', 'tables']    # Used with \cref
 starname = ['Table', 'Tables']  # Used with \Cref
 cleveref_default = False        # Default setting for clever referencing
 
-# Element primitives
-AttrTable = elt('Table', 6)
-
 # Flag for unnumbered tables
 has_unnumbered_tables = False
+
+PANDOCVERSION = None
+AttrTable = None
 
 
 # Actions --------------------------------------------------------------------
@@ -103,9 +100,6 @@ def attach_attrs_table(key, value, fmt, meta):
             value.insert(0, attrs)
         except (ValueError, IndexError):
             pass
-
-detach_attrs_table = detach_attrs_factory(Table)
-
 
 def _process_table(value, fmt):
     """Processes the table.  Returns a dict containing table properties."""
@@ -325,18 +319,33 @@ def process(meta):
 def main():
     """Filters the document AST."""
 
-    # Get the output format, document and metadata
+    # pylint: disable=global-statement
+    global PANDOCVERSION
+    global AttrTable
+
+    # Get the output format and document
     fmt = args.fmt
     doc = json.loads(STDIN.read())
-    meta = doc[0]['unMeta']
+
+    # Initialize pandocxnos
+    # pylint: disable=too-many-function-args
+    PANDOCVERSION = pandocxnos.init(args.pandocversion, doc)
+
+    # Element primitives
+    AttrTable = elt('Table', 6)
+
+    # Chop up the doc
+    meta = doc['meta'] if PANDOCVERSION >= '1.18' else doc[0]['unMeta']
+    blocks = doc['blocks'] if PANDOCVERSION >= '1.18' else doc[1:]
 
     # Process the metadata variables
     process(meta)
 
     # First pass; don't walk metadata
+    detach_attrs_table = detach_attrs_factory(Table)
     altered = functools.reduce(lambda x, action: walk(x, action, fmt, meta),
                                [attach_attrs_table, process_tables,
-                                detach_attrs_table], doc[1:])
+                                detach_attrs_table], blocks)
 
     # Second pass
     process_refs = process_refs_factory(references.keys())
@@ -364,8 +373,14 @@ def main():
         altered = functools.reduce(lambda x, action: walk(x, action, fmt, meta),
                                    [insert_rawblocks], altered)
 
+    # Update the doc
+    if PANDOCVERSION >= '1.18':
+        doc['blocks'] = altered
+    else:
+        doc = doc[:1] + altered
+
     # Dump the results
-    json.dump(doc[:1] + altered, STDOUT)
+    json.dump(doc, STDOUT)
 
     # Flush stdout
     STDOUT.flush()
