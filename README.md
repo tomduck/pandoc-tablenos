@@ -165,13 +165,12 @@ Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` give
 
 Some of pandoc's command-line flags impact table numbering:
 
-`-N`, `--number-sections`
-  ~ Numbers section (or chapter) headings in LaTeX/pdf, ConTeXt,
-    html, and epub output.  Table numbers are given in X.Y format,
-    where X is the section (or chapter) number and Y is the figure
-    number.  Table numbers restart at 1 for each section (or
-    chapter).  See also the `--top-level-division` flag and
-    `documentclass` meta variable.
+  * `-N`, `--number-sections`: Numbers section (or chapter) headings
+    in LaTeX/pdf, ConTeXt, html, and epub output.  Table numbers are
+    given in X.Y format, where X is the section (or chapter) number
+    and Y is the figure number.  Table numbers restart at 1 for each
+    section (or chapter).  See also pandoc's `--top-level-division`
+    flag and `documentclass` meta variable.
 
 
 #### Latex/PDF Specializations ####
