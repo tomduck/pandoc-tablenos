@@ -129,7 +129,7 @@ You may optionally override the table number by placing a tag in a table's attri
 
     Table: Caption. {#tbl:id tag="B.1"}
 
-The tag may be arbitrary text, or an inline equation such as `$\mathrm{B.1'}$`.  Mixtures of the two are not currently supported.
+The tag may be arbitrary text, or an inline equation such as `$\text{B.1}'$`.  Mixtures of the two are not currently supported.
 
 
 Customization
