@@ -114,7 +114,7 @@ X Y
 - -
 0 1
 
-Table: Another one. {#tbl:5 tag="$\mathrm{B.3'}$"}
+Table: Another one. {#tbl:5 tag="$\text{B.3}'$"}
 
 
 \newpage
