@@ -161,7 +161,7 @@ def _process_table(value, fmt):
                 els = [Math({"t":"InlineMath", "c":[]}, math), Str(':')]
             else:
                 els = [Str(text + ':')]
-            value[1] = [Str('Table'), Space()] + els + [Space()] + list(caption)
+            value[1] = [Str(captionname), Space()] + els + [Space()] + list(caption)
 
     return table
 
