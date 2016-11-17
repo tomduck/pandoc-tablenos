@@ -1,9 +1,9 @@
 
 
-pandoc-tablenos 0.14
-====================
+pandoc-tablenos 0.14.1
+======================
 
-*pandoc-tablenos* is a [pandoc] filter for numbering tables and table references.
+*pandoc-tablenos* is a [pandoc] filter that numbers tables and table references in processed markdown documents.  A cross-referencing syntax is added to markdown for this purpose.
 
 Demonstration: Processing [demo.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf], [tex], [html], [epub], [md] and other formats.
 
@@ -29,31 +29,18 @@ See also: [pandoc-fignos], [pandoc-eqnos]
 Contents
 --------
 
- 1. [Rationale](#rationale)
- 2. [Usage](#usage)
- 3. [Markdown Syntax](#markdown-syntax)
- 4. [Customization](#customization)
- 5. [Details](#details)
- 6. [Installation](#installation)
- 7. [Getting Help](#getting-help)
-
-
-Rationale
----------
-
-Table numbers and references are frequently used in academic writing, but are not supported natively by pandoc.  Pandoc-tablenos is an add-on filter that provides the missing functionality.
-
-The markdown syntax used by pandoc-tablenos was worked out in [pandoc Issue #813] -- see [this post] by [@scaramouche1].  It seems likely that this will be close to what pandoc ultimately adopts.  Pandoc-tablenos is a transitional package for those who need table numbers and references now.
-
-[pandoc Issue #813]: https://github.com/jgm/pandoc/issues/813
-[this post]: https://github.com/jgm/pandoc/issues/813#issuecomment-70423503
-[@scaramouche1]: https://github.com/scaramouche1
+ 1. [Usage](#usage)
+ 2. [Markdown Syntax](#markdown-syntax)
+ 3. [Customization](#customization)
+ 4. [Details](#details)
+ 5. [Installation](#installation)
+ 6. [Getting Help](#getting-help)
 
 
 Usage
 -----
 
-To apply the filter, use the following option with pandoc:
+To apply the filter during document processing, use the following option with pandoc:
 
     --filter pandoc-tablenos
 
@@ -62,6 +49,8 @@ Note that any use of `--filter pandoc-citeproc` or `--bibliography=FILE` should 
 
 Markdown Syntax
 ---------------
+
+The markdown syntax used by pandoc-tablenos was worked out in [pandoc Issue #813] -- see [this post] by [@scaramouche1].
 
 To number a table, add the label `tbl:id` to the attributes of its caption:
 
@@ -84,6 +73,10 @@ or
 Curly braces around a reference are stripped from the output.
 
 See [demo.md] for an example.
+
+[pandoc Issue #813]: https://github.com/jgm/pandoc/issues/813
+[this post]: https://github.com/jgm/pandoc/issues/813#issuecomment-70423503
+[@scaramouche1]: https://github.com/scaramouche1
 
 
 #### Clever References ####

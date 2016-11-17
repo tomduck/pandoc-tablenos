@@ -1,7 +1,9 @@
 
-pandoc-tables ??? (unreleased)
+pandoc-tables 0.14.1 (2016-11-17)
 
     * Use custom caption name for tagged tables.
+    * Python 2.7.3 bug addressed with pandoc-xnos 0.7.
+    * Clarified purpose of this filter in README.md (Issue #4).
 
 
 pandoc-tablenos 0.14 (2016-11-05)
