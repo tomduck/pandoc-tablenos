@@ -3,7 +3,7 @@
 pandoc-tablenos 0.14.1
 ======================
 
-*pandoc-tablenos* is a [pandoc] filter that numbers tables and table references in processed markdown documents.  A cross-referencing syntax is added to markdown for this purpose.
+*pandoc-tablenos* is a [pandoc] filter for numbering tables and table references in processed markdown documents.  A cross-referencing syntax is added to markdown for this purpose.
 
 Demonstration: Processing [demo.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf], [tex], [html], [epub], [md] and other formats.
 
