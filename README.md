@@ -50,9 +50,9 @@ Note that any use of `--filter pandoc-citeproc` or `--bibliography=FILE` should 
 Markdown Syntax
 ---------------
 
-The markdown syntax used by pandoc-tablenos was worked out in [pandoc Issue #813] -- see [this post] by [@scaramouche1].
+The markdown syntax extension used by pandoc-tablenos was worked out in [pandoc Issue #813] -- see [this post] by [@scaramouche1].
 
-To number a table, add the label `tbl:id` to the attributes of its caption:
+To mark a table for numbering, add the label `tbl:id` to the attributes of its caption:
 
     A B
     - -
