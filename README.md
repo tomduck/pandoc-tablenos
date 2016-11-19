@@ -93,7 +93,7 @@ to have the reference name (i.e., "table") automatically generated.  The above f
 
      *@tbl:id
 
-instead.  If clever referencing is enabled by default (see [Customization](#customization), below), you can disable it for a given reference using
+instead.  If clever referencing is enabled by default (see [Customization](#customization), below), you can disable it for a given reference using<sup>[1](#footnote1)</sup>
 
     !@tbl:id
 
@@ -101,15 +101,12 @@ Demonstration: Processing [demo2.md] with `pandoc --filter pandoc-tablenos` give
 
 Note: If you use `*tbl:id` and emphasis (e.g., `*italics*`) in the same sentence, then you must backslash escape the `*` in the clever reference; e.g., `\*tbl:id`.
 
-Note: The disabling modifier "!" is used instead of "-" because [pandoc unnecessarily drops minus signs] in front of references.
-
 [demo2.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo2.md
 [pdf2]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo2.pdf
 [tex2]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo2.tex
 [html2]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo2.html
 [epub2]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo2.epub
 [md2]: https://github.com/tomduck/pandoc-tablenos/blob/master/demos/out/demo2.md
-[pandoc unnecessarily drops minus signs]: https://github.com/jgm/pandoc/issues/2901
 
 
 #### Tagged Tables ####
@@ -256,3 +253,12 @@ Getting Help
 If you have any difficulties with pandoc-tablenos, or would like to see a new feature, please [file an Issue] on github.
 
 [file an Issue]: https://github.com/tomduck/pandoc-tablenos/issues
+
+
+----
+
+**Footnotes**
+
+<a name="footnote1">1</a>: The disabling modifier "!" is used instead of "-" because [pandoc unnecessarily drops minus signs] in front of references.
+
+[pandoc unnecessarily drops minus signs]: https://github.com/jgm/pandoc/issues/2901
