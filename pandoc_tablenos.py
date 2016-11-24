@@ -213,6 +213,16 @@ def process_tables(key, value, fmt, meta):
             anchor = RawBlock('html', '<a name="%s"></a>'%attrs[0])
             # pylint: disable=star-args
             return [anchor, AttrTable(*value)]
+        elif fmt == 'docx':
+            # As per http://officeopenxml.com/WPhyperlink.php
+            bookmarkstart = \
+              RawBlock('openxml',
+                       '<w:p><w:bookmarkStart w:id="0" w:name="%s"/><w:r><w:t>'
+                       %attrs[0])
+            bookmarkend = \
+              RawBlock('openxml', '</w:t></w:r><w:bookmarkEnd w:id="0"/></w:p>')
+            return [bookmarkstart, AttrTable(*value), bookmarkend]
+
 
 
 # Main program ---------------------------------------------------------------

@@ -1,5 +1,10 @@
 
-pandoc-tables 0.14.1 (2016-11-17)
+pandoc-tablenos 0.15 (unreleased)
+
+    * Clickable internal links for docx (pandoc-fignos Issue #25).
+
+
+pandoc-tablenos 0.14.1 (2016-11-17)
 
     * Use custom caption name for tagged tables.
     * Python 2.7.3 bug addressed with pandoc-xnos 0.7.

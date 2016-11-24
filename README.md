@@ -1,10 +1,14 @@
 
-pandoc-tablenos 0.14.1
-======================
+
+NEW: Clickable references in docx!
+
+
+pandoc-tablenos 0.15
+====================
 
 *pandoc-tablenos* is a [pandoc] filter for numbering tables and table references in processed markdown documents.  A cross-referencing syntax is added to markdown for this purpose.
 
-Demonstration: Processing [demo.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf], [tex], [html], [epub], [md] and other formats.   A design goal of pandoc-tablenos is that all output formats should be equally supported.
+Demonstration: Processing [demo.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf], [tex], [html], [epub], [docx] and other formats.   A design goal of pandoc-tablenos is that all output formats should be equally supported.
 
 This version of pandoc-tablenos was tested using pandoc 1.15 - 1.18.  It works under linux, Mac OS X and Windows.  Older versions and other platforms can be supported on request.  I am pleased to receive bug reports and feature requests on the project's [Issues tracker].
 
@@ -13,12 +17,12 @@ If you find pandoc-tablenos useful, then please encourage further development by
 See also: [pandoc-fignos], [pandoc-eqnos]
 
 [pandoc]: http://pandoc.org/
-[demo.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo.md
-[pdf]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo.pdf
-[tex]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo.tex
+[demo.md]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/demo.md
+[pdf]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo.pdf
+[tex]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo.tex
 [html]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo.html
-[epub]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo.epub
-[md]: https://github.com/tomduck/pandoc-tablenos/blob/master/demos/out/demo.md
+[epub]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo.epub
+[docx]: https://github.com/tomduck/pandoc-tablenos/blob/master/demos/out/demo.docx
 [Issues tracker]: https://github.com/tomduck/pandoc-tablenos/issues
 [on GitHub]: https://github.com/tomduck/pandoc-tablenos
 [pandoc-fignos]: https://github.com/tomduck/pandoc-fignos
@@ -96,16 +100,16 @@ instead.  If clever referencing is enabled by default (see [Customization](#cust
 
     !@tbl:id
 
-Demonstration: Processing [demo2.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf2], [tex][tex2], [html][html2], [epub][epub2], [md][md2] and other formats.
+Demonstration: Processing [demo2.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf2], [tex][tex2], [html][html2], [epub][epub2], [docx][docx2] and other formats.
 
 Note: If you use `*tbl:id` and emphasis (e.g., `*italics*`) in the same sentence, then you must backslash escape the `*` in the clever reference; e.g., `\*tbl:id`.
 
-[demo2.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo2.md
-[pdf2]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo2.pdf
-[tex2]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo2.tex
+[demo2.md]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/demo2.md
+[pdf2]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo2.pdf
+[tex2]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo2.tex
 [html2]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo2.html
-[epub2]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo2.epub
-[md2]: https://github.com/tomduck/pandoc-tablenos/blob/master/demos/out/demo2.md
+[epub2]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo2.epub
+[docx2]: https://github.com/tomduck/pandoc-tablenos/blob/master/demos/out/demo2.docx
 
 
 #### Tagged Tables ####
@@ -140,14 +144,14 @@ Pandoc-tablenos may be customized by setting variables in the [metadata block] o
 
 [metadata block]: http://pandoc.org/README.html#extension-yaml_metadata_block
 
-Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [md][md3] and other formats.
+Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats.
 
-[demo3.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo3.md
-[pdf3]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo3.pdf
-[tex3]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo3.tex
+[demo3.md]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/demo3.md
+[pdf3]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo3.pdf
+[tex3]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo3.tex
 [html3]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo3.html
-[epub3]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/out/demo3.epub
-[md3]: https://github.com/tomduck/pandoc-tablenos/blob/master/demos/out/demo3.md
+[epub3]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo3.epub
+[docx3]: https://github.com/tomduck/pandoc-tablenos/blob/master/demos/out/demo3.docx
 
 
 #### Pandoc Flags ####

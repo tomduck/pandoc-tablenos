@@ -16,8 +16,7 @@ PDFFLAGS = --variable geometry:margin=1in --standalone --variable urlcolor=blue
 HTMLFLAGS = --standalone --variable urlcolor=blue
 
 
-all: pdf html
-
+all: pdf html docx
 
 pdf: out/test-1.18.pdf \
      out/test-1.18-py2.7.pdf \
@@ -36,11 +35,9 @@ pdf: out/test-1.18.pdf \
      out/test-1.15-py3.4.pdf \
      out/test-1.15-cleveref.pdf
 
+html: out/test-1.18.html
 
-html: out/test-1.18.html \
-      out/test-1.17.html \
-      out/test-1.16.html \
-      out/test-1.15.html
+docx: out/test-1.18.docx
 
 
 out/test-%.html: test.md
@@ -62,6 +59,10 @@ out/test-%-cleveref.pdf: test.md
 out/test-%.pdf: test.md
 	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 	$(PANDOC-$*) $< --filter pandoc-tablenos $(PDFFLAGS) -o $@
+
+out/test-%.docx: test.md
+	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
+	$(PANDOC-$*) $< --filter pandoc-tablenos -o $@
 
 
 .PHONY: clean
