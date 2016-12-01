@@ -74,7 +74,7 @@ Demonstration: Processing [demo.md] with `pandoc --filter pandoc-tablenos` gives
 [pandoc Issue #813]: https://github.com/jgm/pandoc/issues/813
 [this post]: https://github.com/jgm/pandoc/issues/813#issuecomment-70423503
 [@scaramouche1]: https://github.com/scaramouche1
-[demo.md]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/demo.md
+[demo.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo.md
 [pdf]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo.pdf
 [tex]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo.tex
 [html]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo.html
@@ -104,7 +104,7 @@ Demonstration: Processing [demo2.md] with `pandoc --filter pandoc-tablenos` give
 
 Note: If you use `*tbl:id` and emphasis (e.g., `*italics*`) in the same sentence, then you must backslash escape the `*` in the clever reference; e.g., `\*tbl:id`.
 
-[demo2.md]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/demo2.md
+[demo2.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo2.md
 [pdf2]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo2.pdf
 [tex2]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo2.tex
 [html2]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo2.html
@@ -146,7 +146,7 @@ Pandoc-tablenos may be customized by setting variables in the [metadata block] o
 
 Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats.
 
-[demo3.md]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/demo3.md
+[demo3.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo3.md
 [pdf3]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo3.pdf
 [tex3]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo3.tex
 [html3]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo3.html
