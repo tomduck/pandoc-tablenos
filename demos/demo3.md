@@ -1,7 +1,6 @@
 ---
 tablenos-cleveref: On
-tablenos-plus-name: TAB.
-tablenos-star-name: TABLE
+tablenos-plus-name: Tab.
 ...
 
   Right     Left     Center     Default

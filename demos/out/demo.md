@@ -4,15 +4,15 @@
       123 123      123    123
         1 1         1     1
 
-  : Table 1. Demonstration of a simple table.
+  : Demonstration of a simple table. {\#tbl:1}
 
-Table 1 is from the Pandoc User's Guide. A simpler table is given by
-table 2:
+Table @tbl:1 is from the Pandoc User's Guide. A simpler table is given
+by table @tbl:2:
 
   A   B
   --- ---
   0   1
 
-  : Table 2. Even simpler.
+  : Even simpler. {\#tbl:2}
 
 
