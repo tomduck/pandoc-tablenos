@@ -220,6 +220,19 @@ Pip is a program that downloads and installs modules from the Python Package Ind
 [PyPI]: https://pypi.python.org/pypi
 
 
+#### Troubleshooting ####
+
+If you are prompted to upgrade `pip`, then do so.  Installation errors may occur with older versions.   The command you need to execute (as root) is
+
+    python -m pip install --upgrade pip
+
+You may test the installation as a regular user using the shell command
+
+    which pandoc-tablenos
+
+This will tell you where pandoc-tablenos is installed.  If it is not found, then please submit a report to our [Issues tracker].
+
+
 #### Installing on linux ####
 
 If you are running linux, pip may be packaged separately from python.  On Debian-based systems (including Ubuntu), you can install pip as root using
@@ -234,6 +247,15 @@ During the install you may be asked to run
 owing to the ancient version of setuptools that Debian provides.  The command should be executed as root.  You may now follow the [standard installation] procedure given above.
 
 [standard installation]: #standard-installation
+
+
+#### Installing on Mac OS X ####
+
+To install as root on Mac OS X, you will need to use the `sudo` command.  For example:
+
+    sudo pip install pandoc-tablenos
+
+Testing with `which` should be done as a regular user (i.e., without using `sudo`).
 
 
 #### Installing on Windows ####
