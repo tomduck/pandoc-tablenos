@@ -1,5 +1,5 @@
 
-pandoc-tablenos 0.15 (unreleased)
+pandoc-tablenos 0.15 (2016-11-30)
 
     * Clickable internal links for docx (pandoc-fignos Issue #25).
 
