@@ -236,6 +236,15 @@ owing to the ancient version of setuptools that Debian provides.  The command sh
 [standard installation]: #standard-installation
 
 
+#### Installing on Mac OS X ####
+
+To install as root on Mac OS X, you will need to use the `sudo` command.  For example:
+
+    sudo pip install pandoc-tablenos
+
+Testing with `which` should be done as a regular user (i.e., without using `sudo`).
+
+
 #### Installing on Windows ####
 
 It is easy to install python on Windows.  First, [download] the latest release.  Run the installer and complete the following steps:
@@ -256,9 +265,7 @@ Once python is installed, start the "Command Prompt" program.  Depending on wher
 Getting Help
 ------------
 
-If you have any difficulties with pandoc-tablenos, or would like to see a new feature, please [file an Issue] on github.
-
-[file an Issue]: https://github.com/tomduck/pandoc-tablenos/issues
+If you have any difficulties with pandoc-tablenos, or would like to see a new feature, please submit a report to our [Issues tracker].
 
 
 ----
