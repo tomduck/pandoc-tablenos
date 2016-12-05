@@ -1,4 +1,9 @@
 
+pandoc-tablenos 0.16 (2016-12-05)
+
+    * Added numbering tables by section for html and pdf.
+
+
 pandoc-tablenos 0.15 (2016-11-30)
 
     * Clickable internal links for docx (pandoc-fignos Issue #25).

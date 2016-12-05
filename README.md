@@ -1,9 +1,9 @@
 
 
-NEW: Clickable references in docx!
+NEW: Clickable references in docx; Table numbers by section in LaTeX/pdf and html.
 
 
-pandoc-tablenos 0.15
+pandoc-tablenos 0.16
 ====================
 
 *pandoc-tablenos* is a [pandoc] filter for numbering tables and table references in processed markdown documents.  A cross-referencing syntax is added to markdown for this purpose.
@@ -154,16 +154,34 @@ Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` give
 [docx3]: https://github.com/tomduck/pandoc-tablenos/blob/master/demos/out/demo3.docx
 
 
-#### Pandoc Flags ####
+#### Table Numbers by Section ####
 
-Some of pandoc's command-line flags impact table numbering:
+The `--number-sections` option enables section numbers in pandoc.  Table numbers by section (e.g., "Tab. 2.1") can be obtained as follows:
 
-  * `-N`, `--number-sections`: Numbers section (or chapter) headings
-    in LaTeX/pdf, ConTeXt, html, and epub output.  Table numbers are
-    given in X.Y format, where X is the section (or chapter) number
-    and Y is the figure number.  Table numbers restart at 1 for each
-    section (or chapter).  See also pandoc's `--top-level-division`
-    flag and `documentclass` meta variable.
+ 1) **html:** Add `xnos-section-numbers: On` to your YAML metadata or
+    use the `-M xnos-section-numbers=On` option with pandoc.  This
+    variable is ignored for other output formats.
+
+ 2) **LaTeX/pdf:** Add 
+    `header-includes: \numberwithin{table}{section}` to your YAML
+    metadata.  If you need multiple header includes, then add
+    something like this:
+
+    ~~~
+    header-includes:
+      - \numberwithin{figure}{section}
+      - \numberwithin{equation}{section}
+      - \numberwithin{table}{section}
+    ~~~
+
+    Alternatively, write your header includes into FILE,
+    and use the `--include-in-header=FILE` option with pandoc.
+
+    If you set either `--top-level-division=part` or
+    `--top-level-division=chapter` then these header includes can be
+    dropped.
+
+    LaTeX header-includes are ignored for html output.
 
 
 #### Latex/PDF Specializations ####

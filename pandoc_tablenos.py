@@ -47,6 +47,7 @@ import pandocxnos
 from pandocxnos import STRTYPES, STDIN, STDOUT
 from pandocxnos import get_meta, extract_attrs
 from pandocxnos import repair_refs, process_refs_factory, replace_refs_factory
+from pandocxnos import insert_secnos_factory, delete_secnos_factory
 from pandocxnos import detach_attrs_factory
 from pandocxnos import insert_rawblocks_factory
 from pandocxnos import elt
@@ -61,7 +62,7 @@ args = parser.parse_args()
 # Patterns for matching labels and references
 LABEL_PATTERN = re.compile(r'(tbl:[\w/-]*)')
 
-Nreferences = 0        # The numbered references count (i.e., excluding tags)
+Nreferences = 0        # Global references counter
 references = {}        # Global references tracker
 unreferenceable = []   # List of labels that are unreferenceable
 
@@ -73,6 +74,10 @@ cleveref_default = False        # Default setting for clever referencing
 
 # Flag for unnumbered tables
 has_unnumbered_tables = False
+
+# Variables for tracking section numbers
+numbersections = False
+cursec = None
 
 PANDOCVERSION = None
 AttrTable = None
@@ -101,12 +106,14 @@ def attach_attrs_table(key, value, fmt, meta):
         except (ValueError, IndexError):
             pass
 
+# pylint: disable=too-many-branches
 def _process_table(value, fmt):
     """Processes the table.  Returns a dict containing table properties."""
 
     # pylint: disable=global-statement
-    global Nreferences
-    global has_unnumbered_tables
+    global Nreferences            # Global references counter
+    global has_unnumbered_tables  # Flags unnumbered tables were found
+    global cursec                 # Current section
 
     # Parse the table
     attrs, caption = value[:2]
@@ -130,8 +137,16 @@ def _process_table(value, fmt):
         table['is_unreferenceable'] = True
         unreferenceable.append(attrs[0])
 
-    # Save to the global references tracker
+    # For html, hard-code in the section numbers as tags
     kvs = PandocAttributes(attrs, 'pandoc').kvs
+    if numbersections and fmt in ['html', 'html5'] and not 'tag' in kvs:
+        if kvs['secno'] != cursec:
+            cursec = kvs['secno']
+            Nreferences = 1
+        kvs['tag'] = cursec + '.' + str(Nreferences)
+        Nreferences += 1
+
+    # Save to the global references tracker
     table['is_tagged'] = 'tag' in kvs
     if table['is_tagged']:
         # Remove any surrounding quotes
@@ -161,7 +176,8 @@ def _process_table(value, fmt):
                 els = [Math({"t":"InlineMath", "c":[]}, math), Str(':')]
             else:
                 els = [Str(text + ':')]
-            value[1] = [Str(captionname), Space()] + els + [Space()] + list(caption)
+            value[1] = [Str(captionname), Space()] + els + [Space()] + \
+              list(caption)
 
     return table
 
@@ -221,6 +237,7 @@ def process_tables(key, value, fmt, meta):
                        %attrs[0])
             bookmarkend = \
               RawBlock('openxml', '</w:t></w:r><w:bookmarkEnd w:id="0"/></w:p>')
+            # pylint: disable=star-args
             return [bookmarkstart, AttrTable(*value), bookmarkend]
 
 
@@ -289,7 +306,7 @@ def process(meta):
     computed fields."""
 
     # pylint: disable=global-statement
-    global captionname, cleveref_default, plusname, starname
+    global captionname, cleveref_default, plusname, starname, numbersections
 
     # Read in the metadata fields and do some checking
 
@@ -325,6 +342,9 @@ def process(meta):
         for name in starname:
             assert type(name) in STRTYPES
 
+    if 'xnos-number-sections' in meta and meta['xnos-number-sections']['c']:
+        numbersections = True
+
 
 def main():
     """Filters the document AST."""
@@ -351,10 +371,13 @@ def main():
     # Process the metadata variables
     process(meta)
 
-    # First pass; don't walk metadata
+    # First pass
     detach_attrs_table = detach_attrs_factory(Table)
+    insert_secnos = insert_secnos_factory(Table)
+    delete_secnos = delete_secnos_factory(Table)
     altered = functools.reduce(lambda x, action: walk(x, action, fmt, meta),
-                               [attach_attrs_table, process_tables,
+                               [attach_attrs_table, insert_secnos,
+                                process_tables, delete_secnos,
                                 detach_attrs_table], blocks)
 
     # Second pass
