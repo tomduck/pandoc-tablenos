@@ -1,7 +1,8 @@
 
 pandoc-tablenos 0.16 (2016-12-05)
 
-    * Added numbering tables by section for html and pdf.
+    * Added numbering tables by section for html and pdf
+      (pandoc-eqnos Issue #15).
 
 
 pandoc-tablenos 0.15 (2016-11-30)
