@@ -94,7 +94,7 @@ setup(
     download_url='https://github.com/tomduck/pandoc-tablenos/tarball/' + \
                  VERSION,
 
-    install_requires=['pandoc-xnos>=0.8.2',
+    install_requires=['pandoc-xnos>=0.9',
                       'pandocfilters',
                       'pandoc-attributes'],
 

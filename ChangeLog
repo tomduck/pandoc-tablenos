@@ -1,4 +1,7 @@
 
+pandoc-tablenos 0.17 (unreleased)
+
+
 pandoc-tablenos 0.16 (2016-12-05)
 
     * Added numbering tables by section for html and pdf

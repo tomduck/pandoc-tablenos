@@ -3,7 +3,7 @@
 NEW: Clickable references in docx; Table numbers by section in LaTeX/pdf and html.
 
 
-pandoc-tablenos 0.16
+pandoc-tablenos 0.17
 ====================
 
 *pandoc-tablenos* is a [pandoc] filter for numbering tables and table references in processed markdown documents.  A cross-referencing syntax is added to markdown for this purpose.
