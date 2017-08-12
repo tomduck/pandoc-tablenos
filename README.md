@@ -1,8 +1,4 @@
 
-
-NEW: Clickable references in docx; Table numbers by section in LaTeX/pdf and html.
-
-
 pandoc-tablenos 0.17
 ====================
 
@@ -10,7 +6,7 @@ pandoc-tablenos 0.17
 
 Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats.
 
-This version of pandoc-tablenos was tested using pandoc 1.15.2 - 1.19.1.  It works under linux, Mac OS X and Windows.  Older versions and other platforms can be supported on request.  I am pleased to receive bug reports and feature requests on the project's [Issues tracker].
+This version of pandoc-tablenos was tested using pandoc 1.15.2 - 1.19.2.  It works under linux, Mac OS X and Windows.  Older versions and other platforms can be supported on request.  I am pleased to receive bug reports and feature requests on the project's [Issues tracker].
 
 If you find pandoc-tablenos useful, then please encourage further development by giving it a star [on GitHub].
 
@@ -158,8 +154,8 @@ Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` give
 
 The `--number-sections` option enables section numbers in pandoc.  Table numbers by section (e.g., "Tab. 2.1") can be obtained as follows:
 
- 1) **html:** Add `xnos-section-numbers: On` to your YAML metadata or
-    use the `-M xnos-section-numbers=On` option with pandoc.  This
+ 1) **html:** Add `xnos-number-sections: On` to your YAML metadata or
+    use the `-M xnos-number-sections=On` option with pandoc.  This
     variable is ignored for other output formats.
 
  2) **LaTeX/pdf:** Add 
@@ -235,6 +231,8 @@ To upgrade to the most recent release, use
 
 Pip is a program that downloads and installs modules from the Python Package Index, [PyPI].  It should come installed with your python distribution.
 
+Note that on some systems for `python3` you may need to use `pip3` instead.
+
 [PyPI]: https://pypi.python.org/pypi
 
 
@@ -243,6 +241,13 @@ Pip is a program that downloads and installs modules from the Python Package Ind
 If you are prompted to upgrade `pip`, then do so.  Installation errors may occur with older versions.   The command you need to execute (as root) is
 
     python -m pip install --upgrade pip
+
+One user reported that they had to manually upgrade the `six` and `setuptools` modules:
+
+    pip install --upgrade six
+    pip install pandoc-tablenos
+
+This should not normally be necessary.
 
 You may test the installation as a regular user using the shell command
 
