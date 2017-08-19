@@ -1,5 +1,10 @@
 
-pandoc-fignos 0.16.1 (2017-09-12)
+pandoc-tablenos 0.17 (2017-09-19)
+
+    * Fixes for beamer (pandoc-fignos Issue #38).
+
+
+pandoc-tablenos 0.16.1 (2017-09-12)
 
     * Documentation updates.
 

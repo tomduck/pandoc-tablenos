@@ -1,10 +1,14 @@
 
-pandoc-tablenos 0.16.1
-======================
+
+*NEW: Beamer slideshow support.*
+
+
+pandoc-tablenos 0.17
+====================
 
 *pandoc-tablenos* is a [pandoc] filter for numbering tables and table references in processed markdown documents.  A cross-referencing syntax is added to markdown for this purpose.
 
-Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats.
+Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats (including beamer slideshows).
 
 This version of pandoc-tablenos was tested using pandoc 1.15.2 - 1.19.2.  It works under linux, Mac OS X and Windows.  Older versions and other platforms can be supported on request.  I am pleased to receive bug reports and feature requests on the project's [Issues tracker].
 
@@ -255,6 +259,12 @@ You may test the installation as a regular user using the shell command
 
 This will tell you where pandoc-tablenos is installed.  If it is not found, then please submit a report to our [Issues tracker].
 
+To determine which version of pandoc-tablenos you have installed, use
+
+    pip show pandoc-tablenos
+
+Please be sure you have the latest version installed before reporting a bug on our [Issues tracker]
+
 
 #### Installing on linux ####
 
@@ -278,7 +288,7 @@ To install as root on Mac OS X, you will need to use the `sudo` command.  For ex
 
     sudo pip install pandoc-tablenos
 
-Troubleshooting with `which` should be done as a regular user (i.e., without using `sudo`).
+Troubleshooting should be done as a regular user (i.e., without using `sudo`).
 
 
 #### Installing on Windows ####

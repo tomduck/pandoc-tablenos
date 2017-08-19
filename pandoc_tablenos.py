@@ -2,7 +2,7 @@
 
 """pandoc-tablenos: a pandoc filter that inserts table nos. and refs."""
 
-# Copyright 2015, 2016 Thomas J. Duck.
+# Copyright 2015-2017 Thomas J. Duck.
 # All rights reserved.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -160,7 +160,7 @@ def _process_table(value, fmt):
         references[attrs[0]] = Nreferences
 
     # Adjust caption depending on the output format
-    if fmt == 'latex':
+    if fmt in['latex', 'beamer']:
         if not table['is_unreferenceable']:
             value[1] += [RawInline('tex', r'\label{%s}'%attrs[0])]
     else:  # Hard-code in the caption name and number/tag
@@ -193,7 +193,7 @@ def process_tables(key, value, fmt, meta):
         # Inspect the table
         if len(value) == 5:  # Unattributed, bail out
             has_unnumbered_tables = True
-            if fmt == 'latex':
+            if fmt in ['latex']:
                 return [RawBlock('tex', r'\begin{no-prefix-table-caption}'),
                         Table(*value),  # pylint: disable=star-args
                         RawBlock('tex', r'\end{no-prefix-table-caption}')]
@@ -206,12 +206,12 @@ def process_tables(key, value, fmt, meta):
         # Context-dependent output
         attrs = table['attrs']
         if table['is_unnumbered']:
-            if fmt == 'latex':
+            if fmt in ['latex']:
                 return [RawBlock('tex', r'\begin{no-prefix-table-caption}'),
                         AttrTable(*value),  # pylint: disable=star-args
                         RawBlock('tex', r'\end{no-prefix-table-caption}')]
 
-        elif fmt == 'latex':
+        elif fmt in ['latex']:
             if table['is_tagged']:  # Code in the tags
                 tex = '\n'.join([r'\let\oldthetable=\thetable',
                                  r'\renewcommand\thetable{%s}'%\
@@ -389,7 +389,7 @@ def main():
                                altered)
 
     # Insert supporting TeX
-    if fmt == 'latex':
+    if fmt in ['latex']:
 
         rawblocks = []
 
