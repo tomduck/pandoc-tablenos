@@ -3,8 +3,8 @@
 *NEW: Beamer slideshow support.*
 
 
-pandoc-tablenos 0.17
-====================
+pandoc-tablenos 0.17.1
+======================
 
 *pandoc-tablenos* is a [pandoc] filter for numbering tables and table references in processed markdown documents.  A cross-referencing syntax is added to markdown for this purpose.
 

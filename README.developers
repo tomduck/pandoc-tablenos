@@ -32,8 +32,12 @@ Tagging:
     $ git push origin <tag>
 
 
+Creating a source distribution:
+
+    $ python3 setup.py sdist
+
 Uploading to pypi (update the version number):
 
-    $ twine upload dist/pandoc_tablenos-0.17-py*
+    $ twine upload dist/pandoc-tablenos-0.17.1.tar.gz
 
-(from https://pypi.python.org/pypi/twine)
+(from https://pypi.python.org/pypi/twine).
