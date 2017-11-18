@@ -3,8 +3,8 @@
 *NOTE:  This will become the 1.0.0 release if no pandoc-2.0 compatibility Issues are reported.*
 
 
-pandoc-tablenos 1.0.0-rc.1
-==========================
+pandoc-tablenos 1.0.0rc.1
+=========================
 
 *pandoc-tablenos* is a [pandoc] filter for numbering tables and table references in processed markdown documents.  A cross-referencing syntax is added to markdown for this purpose.
 
