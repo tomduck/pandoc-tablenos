@@ -12,11 +12,11 @@ $ pip install --upgrade --pre pandoc-tablenos
 pandoc-tablenos 1.0.0rc2
 ========================
 
-*pandoc-tablenos* is a [pandoc] filter that extends markdown for table numbering and cross-referencing.
+*pandoc-tablenos* is a [pandoc] filter for numbering tables and table references.  An extension to markdown is provided for this purpose.
 
 Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats (including beamer slideshows).
 
-This version of pandoc-tablenos was tested using pandoc 1.15.2 - 2.0.4.  It works under linux, Mac OS X and Windows.  I am pleased to receive bug reports and feature requests on the project's [Issues tracker].  If you find pandoc-tablenos useful, then please give it a star [on GitHub].
+This version of pandoc-tablenos was tested using pandoc 1.15.2 - 2.0.5.  It works under linux, Mac OS X and Windows.  I am pleased to receive bug reports and feature requests on the project's [Issues tracker].  If you find pandoc-tablenos useful, then please give it a star [on GitHub].
 
 See also: [pandoc-fignos], [pandoc-eqnos]
 
