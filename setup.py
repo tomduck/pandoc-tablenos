@@ -24,6 +24,16 @@ from setuptools import setup, dist
 from setuptools.command.install import install
 from setuptools.command.install_scripts import install_scripts
 
+# Hack to overcome a bug in the pandoc-attributes 0.1.7 install script.
+# See https://github.com/aaren/pandoc-attributes/issues/1.
+try:
+    import pypandoc
+    def raiseImportError(*args, **kwargs):
+        raise ImportError
+    pypandoc.convert = raiseImportError
+except ImportError:
+    pass
+
 LONG_DESCRIPTION = """\
 A pandoc filter for numbering tables and table references.
 """
@@ -109,9 +119,7 @@ setup(
     download_url='https://github.com/tomduck/pandoc-tablenos/tarball/' + \
                  VERSION,
 
-    install_requires=['pandoc-xnos>=0.11',
-                      'pandocfilters',
-                      'pandoc-attributes'],
+    install_requires=['pandoc-xnos>=0.12'],
 
     py_modules=['pandoc_tablenos'],
     entry_points={'console_scripts':['pandoc-tablenos = pandoc_tablenos:main']},
