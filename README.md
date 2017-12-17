@@ -9,7 +9,7 @@ $ pip install --upgrade --pre pandoc-tablenos
 ~~~
 
 
-pandoc-tablenos 1.0.0rc2
+pandoc-tablenos 1.0.0rc3
 ========================
 
 *pandoc-tablenos* is a [pandoc] filter for numbering tables and table references.  An extension to markdown is provided for this purpose.

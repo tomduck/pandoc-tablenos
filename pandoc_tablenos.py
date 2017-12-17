@@ -41,9 +41,8 @@ import uuid
 from pandocfilters import walk
 from pandocfilters import Table, Str, Space, RawBlock, RawInline, Math
 
-from pandocattributes import PandocAttributes
-
 import pandocxnos
+from pandocxnos import PandocAttributes
 from pandocxnos import STRTYPES, STDIN, STDOUT
 from pandocxnos import get_meta, extract_attrs
 from pandocxnos import repair_refs, process_refs_factory, replace_refs_factory

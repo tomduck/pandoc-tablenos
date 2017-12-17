@@ -1,6 +1,6 @@
-pandoc-tablenos 1.0.0rc2 (2017-12-16)
+pandoc-tablenos 1.0.0rc3 (2017-12-16)
 
-    * Added workaround for a pandoc-attributes install error
+    * Removed dependency on pandoc-attributes
       (pandoc-fignos Issue #42).
 
 
