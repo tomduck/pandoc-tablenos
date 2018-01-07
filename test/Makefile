@@ -1,5 +1,5 @@
 
-v2.0 = 2.0.5
+v2.0 = 2.0.6
 v1.19 = 1.19.2
 v1.18 = 1.18
 v1.17 = 1.17.2
@@ -32,9 +32,9 @@ pdf: out/test-2.0.pdf \
      out/test-1.16.pdf \
      out/test-1.15.pdf
 
-html: out/test-1.19.html
+html: out/test-2.0.html
 
-docx: out/test-1.19.docx
+docx: out/test-2.0.docx
 
 
 out/test-%.html: test.md

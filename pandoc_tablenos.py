@@ -2,7 +2,7 @@
 
 """pandoc-tablenos: a pandoc filter that inserts table nos. and refs."""
 
-# Copyright 2015-2017 Thomas J. Duck.
+# Copyright 2015-2018 Thomas J. Duck.
 # All rights reserved.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -164,9 +164,14 @@ def _process_table(value, fmt):
             value[1] += [RawInline('tex', r'\label{%s}'%attrs[0])]
     else:  # Hard-code in the caption name and number/tag
         if type(references[attrs[0]]) is int:
-            value[1] = [Str(captionname), Space(),
-                        Str('%d:'%references[attrs[0]]), Space()] + \
-                        list(caption)
+            value[1] = [RawInline('html', r'<span>'),
+                        Str(captionname), Space(),
+                        Str('%d:'%references[attrs[0]]),
+                        RawInline('html', r'</span>')] \
+                if fmt in ['html', 'html5'] else \
+                    [Str(captionname), Space(),
+                     Str('%d:'%references[attrs[0]])]
+            value[1] += [Space()] + list(caption)
         else:  # Tagged reference
             assert type(references[attrs[0]]) in STRTYPES
             text = references[attrs[0]]
@@ -175,8 +180,13 @@ def _process_table(value, fmt):
                 els = [Math({"t":"InlineMath", "c":[]}, math), Str(':')]
             else:
                 els = [Str(text + ':')]
-            value[1] = [Str(captionname), Space()] + els + [Space()] + \
-              list(caption)
+            value[1] = \
+                [RawInline('html', r'<span>'), Str(captionname), Space()] + \
+                els + [RawInline('html', r'</span>')] \
+                if fmt in ['html', 'html5'] else \
+                [Str(captionname), Space()] + els
+
+            value[1] += [Space()] + list(caption)
 
     return table
 
