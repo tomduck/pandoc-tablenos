@@ -51,7 +51,7 @@ To mark a table for numbering, add an id to its attributes:
 
     Table: Caption. {#tbl:id}
 
-The prefix `#tbl:` is required. `id` should be replaced with a unique identifier composed of letters, numbers, dashes, slashes and underscores.  If `id` is omitted then the figure will be numbered but unreferenceable.
+The prefix `#tbl:` is required. `id` should be replaced with a unique identifier composed of letters, numbers, dashes and underscores.  If `id` is omitted then the figure will be numbered but unreferenceable.
 
 To reference the table, use
 
