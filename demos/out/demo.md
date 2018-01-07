@@ -14,5 +14,3 @@ by table @tbl:2:
   0   1
 
   : Even simpler. {\#tbl:2}
-
-

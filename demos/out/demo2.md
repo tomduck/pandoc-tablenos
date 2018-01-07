@@ -14,5 +14,3 @@
   0   1
 
   : Even simpler. {\#tbl:2}
-
-
