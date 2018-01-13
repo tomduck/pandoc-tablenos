@@ -38,7 +38,7 @@ LONG_DESCRIPTION = """\
 A pandoc filter for numbering tables and table references.
 """
 
-VERSION = '1.0.0'
+VERSION = '1.1.0'
 
 
 #-----------------------------------------------------------------------------
@@ -119,7 +119,7 @@ setup(
     download_url='https://github.com/tomduck/pandoc-tablenos/tarball/' + \
                  VERSION,
 
-    install_requires=['pandoc-xnos>=0.13'],
+    install_requires=['pandoc-xnos>=0.15'],
 
     py_modules=['pandoc_tablenos'],
     entry_points={'console_scripts':['pandoc-tablenos = pandoc_tablenos:main']},

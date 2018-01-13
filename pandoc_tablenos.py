@@ -68,8 +68,8 @@ unreferenceable = []   # List of labels that are unreferenceable
 # Meta variables; may be reset elsewhere
 captionname = 'Table'             # Used with \tablename
 plusname = ['table', 'tables']    # Used with \cref
-starname = ['Table', 'Tables']  # Used with \Cref
-cleveref_default = False        # Default setting for clever referencing
+starname = ['Table', 'Tables']    # Used with \Cref
+use_cleveref_default = False      # Default setting for clever referencing
 
 # Flag for unnumbered tables
 has_unnumbered_tables = False
@@ -315,7 +315,7 @@ def process(meta):
     computed fields."""
 
     # pylint: disable=global-statement
-    global captionname, cleveref_default, plusname, starname, numbersections
+    global captionname, use_cleveref_default, plusname, starname, numbersections
 
     # Read in the metadata fields and do some checking
 
@@ -324,12 +324,12 @@ def process(meta):
         assert type(captionname) in STRTYPES
 
     if 'cleveref' in meta:
-        cleveref_default = get_meta(meta, 'cleveref')
-        assert cleveref_default in [True, False]
+        use_cleveref_default = get_meta(meta, 'cleveref')
+        assert use_cleveref_default in [True, False]
 
     if 'tablenos-cleveref' in meta:
-        cleveref_default = get_meta(meta, 'tablenos-cleveref')
-        assert cleveref_default in [True, False]
+        use_cleveref_default = get_meta(meta, 'tablenos-cleveref')
+        assert use_cleveref_default in [True, False]
 
     if 'tablenos-plus-name' in meta:
         tmp = get_meta(meta, 'tablenos-plus-name')
@@ -391,7 +391,8 @@ def main():
 
     # Second pass
     process_refs = process_refs_factory(references.keys())
-    replace_refs = replace_refs_factory(references, cleveref_default,
+    replace_refs = replace_refs_factory(references,
+                                        use_cleveref_default, False,
                                         plusname, starname, 'table')
     altered = functools.reduce(lambda x, action: walk(x, action, fmt, meta),
                                [repair_refs, process_refs, replace_refs],

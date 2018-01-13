@@ -1,3 +1,8 @@
+pandoc-tablenos 1.1.0 (2018-01-13)
+
+    * Updated to use pandoc-xnos 0.15
+
+
 pandoc-tablenos 1.0.0 (2018-01-07)
 
     * Version number bumped to 1.0.0.
