@@ -1,3 +1,8 @@
+pandoc-tablenos 1.2.0 (2018-01-14)
+
+    * Added `tablenos-capitalise` meta variable.
+
+
 pandoc-tablenos 1.1.0 (2018-01-13)
 
     * Updated to use pandoc-xnos 0.15

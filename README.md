@@ -1,12 +1,16 @@
 
-pandoc-tablenos 1.1.0
+
+**New in 1.2.0:** Added `fignos-capitalise` meta variable to capitalise clever references (e.g., change "fig." to "Fig.").
+
+
+pandoc-tablenos 1.2.0
 =====================
 
 *pandoc-tablenos* is a [pandoc] filter for numbering tables and table references.  An extension to markdown is provided for this purpose.
 
 Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats (including beamer slideshows).
 
-This version of pandoc-tablenos was tested using pandoc 1.15.2 - 2.1.  It works under linux, Mac OS X and Windows.  I am pleased to receive bug reports and feature requests on the project's [Issues tracker].  If you find pandoc-tablenos useful, then please give it a star [on GitHub].
+This version of pandoc-tablenos was tested using pandoc 1.15.2 - 2.1.  It works under linux, Mac OS X and Windows.  I am pleased to receive bug reports and feature requests on the project's [Issues tracker].  If you find pandoc-tablenos useful, then please kindly give it a star [on GitHub].
 
 See also: [pandoc-fignos], [pandoc-eqnos]
 
@@ -90,7 +94,7 @@ to have the reference name (i.e., "table") automatically generated.  The above f
 
      *@tbl:id
 
-instead.  If clever referencing is enabled by default (see [Customization](#customization), below), you can disable it for a given reference using<sup>[1](#footnote1)</sup>
+instead.  If clever referencing is enabled by default (see [Customization](#customization), below), then you can disable it for a given reference using<sup>[1](#footnote1)</sup>
 
     !@tbl:id
 
@@ -123,6 +127,9 @@ Customization
 -------------
 
 Pandoc-tablenos may be customized by setting variables in the [metadata block] or on the command line (using `-M KEY=VAL`).  The following variables are supported:
+
+  * `tablenos-capitalise` or `xnos-capitalise` - Capitalizes the
+    names of "+" references (e.g., change from "table" to "Table");
 
   * `tablenos-caption-name` - Sets the name at the beginning of a
     caption (e.g., change it from "Table to "Tab.");
@@ -200,6 +207,10 @@ TeX/pdf:
     `\usepackage{cleveref}`), otherwise they are faked.  Set the 
     meta variable `xnos-cleveref-fake` to `Off` to disable cleveref
     faking.
+  * The clever reference names are set using `\crefformat` and
+    `\Crefformat`.  For this reason the cleveref package's
+    `capitalise` parameter has no effect.  Use the
+    `fignos-capitalise` meta variable instead.
 
 Other formats:
 
@@ -257,12 +268,12 @@ To determine which version of pandoc-tablenos you have installed, use
 
     pip show pandoc-tablenos
 
-Please be sure you have the latest version installed before reporting a bug on our [Issues tracker]
+Please be sure you have the latest version installed before reporting a bug on our [Issues tracker].
 
 
 #### Installing on linux ####
 
-If you are running linux, pip may be packaged separately from python.  On Debian-based systems (including Ubuntu), you can install pip as root using
+If you are running linux, then pip may be packaged separately from python.  On Debian-based systems (including Ubuntu), you can install pip as root using
 
     apt-get update
     apt-get install python-pip
@@ -305,7 +316,7 @@ Once python is installed, start the "Command Prompt" program.  Depending on wher
 Getting Help
 ------------
 
-If you have any difficulties with pandoc-tablenos, or would like to see a new feature, please submit a report to our [Issues tracker].
+If you have any difficulties with pandoc-tablenos, or would like to see a new feature, then please submit a report to our [Issues tracker].
 
 
 ----

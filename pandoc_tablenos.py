@@ -70,6 +70,7 @@ captionname = 'Table'             # Used with \tablename
 plusname = ['table', 'tables']    # Used with \cref
 starname = ['Table', 'Tables']    # Used with \Cref
 use_cleveref_default = False      # Default setting for clever referencing
+capitalize = False                # Default setting for capitalizing plusname
 
 # Flag for unnumbered tables
 has_unnumbered_tables = False
@@ -315,7 +316,12 @@ def process(meta):
     computed fields."""
 
     # pylint: disable=global-statement
-    global captionname, use_cleveref_default, plusname, starname, numbersections
+    global capitalize
+    global captionname
+    global use_cleveref_default
+    global plusname
+    global starname
+    global numbersections
 
     # Read in the metadata fields and do some checking
 
@@ -323,13 +329,22 @@ def process(meta):
         captionname = get_meta(meta, 'tablenos-caption-name')
         assert type(captionname) in STRTYPES
 
-    if 'cleveref' in meta:
-        use_cleveref_default = get_meta(meta, 'cleveref')
-        assert use_cleveref_default in [True, False]
+    for name in ['tablenos-cleveref', 'xnos-cleveref', 'cleveref']:
+        # 'xnos-cleveref' enables cleveref in all 3 of fignos/eqnos/tablenos
+        # 'cleveref' is deprecated
+        if name in meta:
+            use_cleveref_default = get_meta(meta, name)
+            assert use_cleveref_default in [True, False]
 
-    if 'tablenos-cleveref' in meta:
-        use_cleveref_default = get_meta(meta, 'tablenos-cleveref')
-        assert use_cleveref_default in [True, False]
+    for name in ['tablenos-capitalize', 'tablenos-capitalise',
+                 'xnos-capitalize', 'xnos-capitalise']:
+        # 'tablenos-capitalise' is an alternative spelling
+        # 'xnos-capitalise' enables capitalise in all 3 of fignos/eqnos/tablenos
+        # 'xnos-capitalize' is an alternative spelling
+        if name in meta:
+            capitalize = get_meta(meta, name)
+            assert capitalize in [True, False]
+            break
 
     if 'tablenos-plus-name' in meta:
         tmp = get_meta(meta, 'tablenos-plus-name')
@@ -393,7 +408,9 @@ def main():
     process_refs = process_refs_factory(references.keys())
     replace_refs = replace_refs_factory(references,
                                         use_cleveref_default, False,
-                                        plusname, starname, 'table')
+                                        plusname if not capitalize else
+                                        [name.title() for name in plusname],
+                                        starname, 'table')
     altered = functools.reduce(lambda x, action: walk(x, action, fmt, meta),
                                [repair_refs, process_refs, replace_refs],
                                altered)
