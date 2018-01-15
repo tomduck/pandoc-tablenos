@@ -3,7 +3,7 @@
 **New in 1.2.0:** Added `fignos-capitalise` meta variable to capitalise clever references (e.g., change "fig." to "Fig.").
 
 
-pandoc-tablenos 1.2.0
+pandoc-tablenos 1.3.0
 =====================
 
 *pandoc-tablenos* is a [pandoc] filter for numbering tables and table references.  An extension to markdown is provided for this purpose.
