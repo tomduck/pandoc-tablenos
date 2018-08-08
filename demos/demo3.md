@@ -1,5 +1,5 @@
 ---
-tablenos-cleveref: On
+tablenos-cleveref: True
 tablenos-plus-name: Tab.
 ...
 
