@@ -12,7 +12,7 @@ pandoc-tablenos 1.3.0
 
 Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats (including beamer slideshows).
 
-This version of pandoc-tablenos was tested using pandoc 1.15.2 - 2.1.  It works under linux, Mac OS X and Windows.  I am pleased to receive bug reports and feature requests on the project's [Issues tracker].  If you find pandoc-tablenos useful, then please kindly give it a star [on GitHub].
+This version of pandoc-tablenos was tested using pandoc 1.15.2 - 2.2.3.2.  It works under linux, Mac OS X and Windows.  I am pleased to receive bug reports and feature requests on the project's [Issues tracker].  If you find pandoc-tablenos useful, then please kindly give it a star [on GitHub].
 
 See also: [pandoc-fignos], [pandoc-eqnos]
 
