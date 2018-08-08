@@ -4,6 +4,7 @@ pandoc-tablenos 1.3.0 (unreleased)
       (pandoc-fignos Issue #46).
     * Gives more helpful error message regarding acceptable
       boolean metadata values (pandoc-fignos Issue #51).
+    * Removed blank line before caption in docx output (Issue #6).
 
 
 pandoc-tablenos 1.2.0 (2018-01-14)
