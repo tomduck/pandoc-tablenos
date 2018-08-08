@@ -1,5 +1,7 @@
 
 
+**New in 1.3.0:** Boolean metadata values must now be one of `true`, `True` `TRUE`, `false`, `False`, or `FALSE`.  This is following a [change of behaviour](https://pandoc.org/releases.html#pandoc-2.2.2-16-july-2018) with pandoc 2.2.2.
+
 **New in 1.2.0:** Added `fignos-capitalise` meta variable to capitalise clever references (e.g., change "fig." to "Fig.").
 
 
@@ -134,7 +136,7 @@ Pandoc-tablenos may be customized by setting variables in the [metadata block] o
   * `tablenos-caption-name` - Sets the name at the beginning of a
     caption (e.g., change it from "Table to "Tab.");
 
-  * `tablenos-cleveref` or just `cleveref` - Set to `On` to assume
+  * `tablenos-cleveref` or just `cleveref` - Set to `True` to assume
     "+" clever references by default;
 
   * `tablenos-plus-name` - Sets the name of a "+" reference 
@@ -159,9 +161,9 @@ Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` give
 
 The `--number-sections` option enables section numbers in pandoc.  Table numbers by section (e.g., "Tab. 2.1") can be obtained as follows:
 
- 1) **html:** Add `xnos-number-sections: On` to your YAML metadata or
-    use the `-M xnos-number-sections=On` option with pandoc.  This
-    variable is ignored for other output formats.
+ 1) **html:** Add `xnos-number-sections: True` to your YAML metadata
+    or use the `-M xnos-number-sections=True` option with pandoc. 
+    This variable is ignored for other output formats.
 
  2) **LaTeX/pdf:** Add 
     `header-includes: \numberwithin{table}{section}` to your YAML
@@ -205,7 +207,7 @@ TeX/pdf:
   * The clever referencing macros `\cref` and `\Cref` are used
     if they are available (i.e. included in your LaTeX template via
     `\usepackage{cleveref}`), otherwise they are faked.  Set the 
-    meta variable `xnos-cleveref-fake` to `Off` to disable cleveref
+    meta variable `xnos-cleveref-fake` to `False` to disable cleveref
     faking.
   * The clever reference names are set using `\crefformat` and
     `\Crefformat`.  For this reason the cleveref package's
