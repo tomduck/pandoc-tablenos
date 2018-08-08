@@ -28,7 +28,7 @@ out/%.epub: %.md
 
 out/%:
 	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
-	pandoc $^ --filter pandoc-eqnos -o $@
+	pandoc $^ --filter pandoc-tablenos -o $@
 
 
 restore: clean
