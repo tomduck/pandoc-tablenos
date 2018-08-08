@@ -139,7 +139,7 @@ def _process_table(value, fmt):
 
     # For html, hard-code in the section numbers as tags
     kvs = PandocAttributes(attrs, 'pandoc').kvs
-    if numbersections and fmt in ['html', 'html5'] and not 'tag' in kvs:
+    if numbersections and fmt in ['html', 'html5'] and 'tag' not in kvs:
         if kvs['secno'] != cursec:
             cursec = kvs['secno']
             Nreferences = 1
@@ -164,7 +164,7 @@ def _process_table(value, fmt):
         if not table['is_unreferenceable']:
             value[1] += [RawInline('tex', r'\label{%s}'%attrs[0])]
     else:  # Hard-code in the caption name and number/tag
-        if type(references[attrs[0]]) is int:
+        if isinstance(references[attrs[0]], int):
             value[1] = [RawInline('html', r'<span>'),
                         Str(captionname), Space(),
                         Str('%d:'%references[attrs[0]]),
@@ -174,7 +174,7 @@ def _process_table(value, fmt):
                      Str('%d:'%references[attrs[0]])]
             value[1] += [Space()] + list(caption)
         else:  # Tagged reference
-            assert type(references[attrs[0]]) in STRTYPES
+            assert isinstance(references[attrs[0]], STRTYPES)
             text = references[attrs[0]]
             if text.startswith('$') and text.endswith('$'):
                 math = text.replace(' ', r'\ ')[1:-1]
@@ -191,7 +191,7 @@ def _process_table(value, fmt):
 
     return table
 
-# pylint: disable=unused-argument
+# pylint: disable=unused-argument, too-many-return-statements
 def process_tables(key, value, fmt, meta):
     """Processes the attributed tables."""
 
@@ -205,10 +205,9 @@ def process_tables(key, value, fmt, meta):
             has_unnumbered_tables = True
             if fmt in ['latex']:
                 return [RawBlock('tex', r'\begin{no-prefix-table-caption}'),
-                        Table(*value),  # pylint: disable=star-args
+                        Table(*value),
                         RawBlock('tex', r'\end{no-prefix-table-caption}')]
-            else:
-                return
+            return None
 
         # Process the table
         table = _process_table(value, fmt)
@@ -218,7 +217,7 @@ def process_tables(key, value, fmt, meta):
         if table['is_unnumbered']:
             if fmt in ['latex']:
                 return [RawBlock('tex', r'\begin{no-prefix-table-caption}'),
-                        AttrTable(*value),  # pylint: disable=star-args
+                        AttrTable(*value),
                         RawBlock('tex', r'\end{no-prefix-table-caption}')]
 
         elif fmt in ['latex']:
@@ -230,14 +229,12 @@ def process_tables(key, value, fmt, meta):
                 tex = '\n'.join([r'\let\thetable=\oldthetable',
                                  r'\addtocounter{table}{-1}'])
                 post = RawBlock('tex', tex)
-                # pylint: disable=star-args
                 return [pre, AttrTable(*value), post]
         elif table['is_unreferenceable']:
             attrs[0] = ''  # The label isn't needed any further
         elif fmt in ('html', 'html5') and LABEL_PATTERN.match(attrs[0]):
             # Insert anchor
             anchor = RawBlock('html', '<a name="%s"></a>'%attrs[0])
-            # pylint: disable=star-args
             return [anchor, AttrTable(*value)]
         elif fmt == 'docx':
             # As per http://officeopenxml.com/WPhyperlink.php
@@ -247,9 +244,9 @@ def process_tables(key, value, fmt, meta):
                        %attrs[0])
             bookmarkend = \
               RawBlock('openxml', '</w:t></w:r><w:bookmarkEnd w:id="0"/></w:p>')
-            # pylint: disable=star-args
             return [bookmarkstart, AttrTable(*value), bookmarkend]
 
+    return None
 
 
 # Main program ---------------------------------------------------------------
@@ -327,7 +324,7 @@ def process(meta):
 
     if 'tablenos-caption-name' in meta:
         captionname = get_meta(meta, 'tablenos-caption-name')
-        assert type(captionname) in STRTYPES
+        assert isinstance(captionname, STRTYPES)
 
     for name in ['tablenos-cleveref', 'xnos-cleveref', 'cleveref']:
         # 'xnos-cleveref' enables cleveref in all 3 of fignos/eqnos/tablenos
@@ -346,23 +343,23 @@ def process(meta):
 
     if 'tablenos-plus-name' in meta:
         tmp = get_meta(meta, 'tablenos-plus-name')
-        if type(tmp) is list:
+        if isinstance(tmp, list):
             plusname = tmp
         else:
             plusname[0] = tmp
         assert len(plusname) == 2
         for name in plusname:
-            assert type(name) in STRTYPES
+            assert isinstance(name, STRTYPES)
 
     if 'tablenos-star-name' in meta:
         tmp = get_meta(meta, 'tablenos-star-name')
-        if type(tmp) is list:
+        if isinstance(tmp, list):
             starname = tmp
         else:
             starname[0] = tmp
         assert len(starname) == 2
         for name in starname:
-            assert type(name) in STRTYPES
+            assert isinstance(name, STRTYPES)
 
     if 'xnos-number-sections' in meta:
         numbersections = check_bool(get_meta(meta, 'xnos-number-sections'))
