@@ -5,10 +5,10 @@
 **New in 1.2.0:** Added `fignos-capitalise` meta variable to capitalise clever references (e.g., change "fig." to "Fig.").
 
 
-pandoc-tablenos 1.3.0
+pandoc-tablenos 1.3.1
 =====================
 
-*pandoc-tablenos* is a [pandoc] filter for numbering tables and table references.  An extension to markdown is provided for this purpose.
+*pandoc-tablenos* is a [pandoc] filter for numbering tables and table references when converting markdown documents to other formats.
 
 Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats (including beamer slideshows).
 
