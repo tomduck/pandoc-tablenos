@@ -151,7 +151,7 @@ Pandoc-tablenos may be customized by setting variables in the [metadata block] o
     Table 2.1, 2.2, etc in Section 2).  For html and LaTeX/pdf this
     feature works in conjunction with pandoc's `--section-numbers`
     command-line flag.  See
-    [Table Numbering by Section](#figure-numbering-by-section),
+    [Table Numbering by Section](#table-numbering-by-section),
     below.
 
     This feature is only presently enabled for html, LaTeX/pdf, and
@@ -171,7 +171,7 @@ Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` give
 
 #### Table Numbering by Section ####
 
-Pandoc's `--number-sections` option enables section numbering for LaTeX/pdf and html output.  For docx, use of [custom styles](https://pandoc.org/MANUAL.html#custom-styles) instead.  Table numbering by section (e.g., "Table 2.1") can then be obtained as follows:
+Pandoc's `--number-sections` option enables section numbering for LaTeX/pdf and html output.  For docx, use [custom styles](https://pandoc.org/MANUAL.html#custom-styles) instead.  Table numbering by section (e.g., "Table 2.1") can then be obtained as follows:
 
  1) **html and docx:** Add `xnos-number-sections: True` to your YAML
     metadata or use the `-M xnos-number-sections=True` option with
