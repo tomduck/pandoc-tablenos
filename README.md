@@ -1,4 +1,5 @@
 
+**New in 1.X.X:** Support for docx table numbering by section.
 
 **New in 1.3.0:** Boolean metadata values must now be one of `true`, `True` `TRUE`, `false`, `False`, or `FALSE`.  This is following a [change of behaviour](https://pandoc.org/releases.html#pandoc-2.2.2-16-july-2018) with pandoc 2.2.2.
 
@@ -145,6 +146,17 @@ Pandoc-tablenos may be customized by setting variables in the [metadata block] o
   * `tablenos-star-name` - Sets the name of a "*" reference 
     (e.g., change it from "Table" to "Tab.").
 
+  * `xnos-number-sections` - Set to `True` so that tables are
+    numbered per section (i.e. Table 1.1, 1.2, etc in Section 1, and
+    Table 2.1, 2.2, etc in Section 2).  For html and LaTeX/pdf this
+    feature works in conjunction with pandoc's `--section-numbers`
+    command-line flag.  See
+    [Table Numbering by Section](#figure-numbering-by-section),
+    below.
+
+    This feature is only presently enabled for html, LaTeX/pdf, and
+    docx.
+
 [metadata block]: http://pandoc.org/README.html#extension-yaml_metadata_block
 
 Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats.
@@ -157,13 +169,13 @@ Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` give
 [docx3]: https://github.com/tomduck/pandoc-tablenos/blob/master/demos/out/demo3.docx
 
 
-#### Table Numbers by Section ####
+#### Table Numbering by Section ####
 
-The `--number-sections` option enables section numbers in pandoc.  Table numbers by section (e.g., "Tab. 2.1") can be obtained as follows:
+Pandoc's `--number-sections` option enables section numbering for LaTeX/pdf and html output.  For docx, use of [custom styles](https://pandoc.org/MANUAL.html#custom-styles) instead.  Table numbering by section (e.g., "Table 2.1") can then be obtained as follows:
 
- 1) **html:** Add `xnos-number-sections: True` to your YAML metadata
-    or use the `-M xnos-number-sections=True` option with pandoc. 
-    This variable is ignored for other output formats.
+ 1) **html and docx:** Add `xnos-number-sections: True` to your YAML
+    metadata or use the `-M xnos-number-sections=True` option with
+    pandoc.  This variable is ignored for other output formats.
 
  2) **LaTeX/pdf:** Add 
     `header-includes: \numberwithin{table}{section}` to your YAML
