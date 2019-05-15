@@ -38,7 +38,7 @@ LONG_DESCRIPTION = """\
 A pandoc filter for numbering tables and table references.
 """
 
-VERSION = '1.3.1'
+VERSION = '1.3.2'
 
 
 #-----------------------------------------------------------------------------
