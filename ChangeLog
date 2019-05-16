@@ -1,3 +1,9 @@
+pandoc-tablenos 1.4.0 (2019-05-15)
+
+    * Support for references in bracketed spans (pandoc-fignos
+      Issue #58).
+
+
 pandoc-tablenos 1.3.2 (2019-05-15)
 
     * Enabled table numbering by section for docx (addresses

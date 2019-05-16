@@ -2,7 +2,7 @@
 
 """pandoc-tablenos: a pandoc filter that inserts table nos. and refs."""
 
-# Copyright 2015-2018 Thomas J. Duck.
+# Copyright 2015-2019 Thomas J. Duck.
 # All rights reserved.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -39,7 +39,7 @@ import json
 import uuid
 
 from pandocfilters import walk
-from pandocfilters import Table, Str, Space, RawBlock, RawInline, Math
+from pandocfilters import Table, Str, Space, RawBlock, RawInline, Math, Span
 
 import pandocxnos
 from pandocxnos import PandocAttributes
@@ -47,7 +47,7 @@ from pandocxnos import STRTYPES, STDIN, STDOUT
 from pandocxnos import check_bool, get_meta, extract_attrs
 from pandocxnos import repair_refs, process_refs_factory, replace_refs_factory
 from pandocxnos import insert_secnos_factory, delete_secnos_factory
-from pandocxnos import detach_attrs_factory
+from pandocxnos import attach_attrs_factory, detach_attrs_factory
 from pandocxnos import insert_rawblocks_factory
 from pandocxnos import elt
 
@@ -406,8 +406,10 @@ def main():
                                         plusname if not capitalize else
                                         [name.title() for name in plusname],
                                         starname, 'table')
+    attach_attrs_span = attach_attrs_factory(Span, replace=True)
     altered = functools.reduce(lambda x, action: walk(x, action, fmt, meta),
-                               [repair_refs, process_refs, replace_refs],
+                               [repair_refs, process_refs, replace_refs,
+                                attach_attrs_span],
                                altered)
 
     # Insert supporting TeX
