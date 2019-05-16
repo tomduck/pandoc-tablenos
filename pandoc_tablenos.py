@@ -139,7 +139,7 @@ def _process_table(value, fmt):
 
     # For html, hard-code in the section numbers as tags
     kvs = PandocAttributes(attrs, 'pandoc').kvs
-    if numbersections and fmt in ['html', 'html5'] and 'tag' not in kvs:
+    if numbersections and fmt in ['html', 'html5', 'docx'] and 'tag' not in kvs:
         if kvs['secno'] != cursec:
             cursec = kvs['secno']
             Nreferences = 1
@@ -232,7 +232,7 @@ def process_tables(key, value, fmt, meta):
                 return [pre, AttrTable(*value), post]
         elif table['is_unreferenceable']:
             attrs[0] = ''  # The label isn't needed any further
-        elif fmt in ('html', 'html5') and LABEL_PATTERN.match(attrs[0]):
+        elif fmt in ('html', 'html5', 'epub') and LABEL_PATTERN.match(attrs[0]):
             # Insert anchor
             anchor = RawBlock('html', '<a name="%s"></a>'%attrs[0])
             return [anchor, AttrTable(*value)]
