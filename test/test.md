@@ -6,7 +6,7 @@ tablenos-star-name: TABLE
 
 *@tbl:1 and +@tbl:2, Tables {@tbl:1}-{@tbl:3} and Tables {@tbl:1}-{@tbl:2}-{@tbl:3}.
 
-[*@tbl:1.]{style="color:red"}
+[Table @tbl:1.]{style="color:red"}
 
 ***
 
