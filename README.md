@@ -282,6 +282,10 @@ To determine which version of pandoc-tablenos you have installed, use
 
     pip show pandoc-tablenos
 
+As of pandoc-tablenos 1.4.1 you can also use
+
+    pandoc-tablenos --version
+
 Please be sure you have the latest version installed before reporting a bug on our [Issues tracker].
 
 
