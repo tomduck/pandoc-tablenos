@@ -1,12 +1,12 @@
 
-**New in 1.4.0:** Support for references in bracketed spans.
+**New in 1.4.1:** Working links in epub output.
 
-**New in 1.3.2:** Support for docx table numbering by section.
+**New in 1.4.0:** Support for references in bracketed spans.
 
 [more...](#whats-new)
 
 
-pandoc-tablenos 1.4.0
+pandoc-tablenos 1.4.1
 =====================
 
 *pandoc-tablenos* is a [pandoc] filter for numbering tables and table references when converting markdown documents to other formats.
