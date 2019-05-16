@@ -78,12 +78,11 @@ Demonstration: Processing [demo.md] with `pandoc --filter pandoc-tablenos` gives
 [this post]: https://github.com/jgm/pandoc/issues/813#issuecomment-70423503
 [@scaramouche1]: https://github.com/scaramouche1
 [demo.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo.md
-[pdf]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo.pdf
-[tex]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo.tex
-[html]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo.html
-[epub]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo.epub
-[docx]: https://github.com/tomduck/pandoc-tablenos/blob/master/demos/out/demo.docx
-
+[pdf]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo.pdf
+[tex]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo.tex
+[html]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo.html
+[epub]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo.epub
+[docx]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo.docx
 
 #### Clever References ####
 
@@ -108,10 +107,10 @@ Demonstration: Processing [demo2.md] with `pandoc --filter pandoc-tablenos` give
 Note: If you use `*tbl:id` and emphasis (e.g., `*italics*`) in the same sentence, then you must backslash escape the `*` in the clever reference; e.g., `\*tbl:id`.
 
 [demo2.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo2.md
-[pdf2]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo2.pdf
-[tex2]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo2.tex
-[html2]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo2.html
-[epub2]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo2.epub
+[pdf2]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo2.pdf
+[tex2]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo2.tex
+[html2]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo2.html
+[epub2]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo2.epub
 [docx2]: https://github.com/tomduck/pandoc-tablenos/blob/master/demos/out/demo2.docx
 
 
@@ -164,11 +163,11 @@ Pandoc-tablenos may be customized by setting variables in the [metadata block] o
 Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats.
 
 [demo3.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo3.md
-[pdf3]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo3.pdf
-[tex3]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo3.tex
-[html3]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo3.html
-[epub3]: https://rawgit.com/tomduck/pandoc-tablenos/master/demos/out/demo3.epub
-[docx3]: https://github.com/tomduck/pandoc-tablenos/blob/master/demos/out/demo3.docx
+[pdf3]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo3.pdf
+[tex3]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo3.tex
+[html3]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo3.html
+[epub3]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo3.epub
+[docx3]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo3.docx
 
 
 #### Table Numbering by Section ####
