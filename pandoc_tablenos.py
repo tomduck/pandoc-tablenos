@@ -235,9 +235,14 @@ def process_tables(key, value, fmt, meta):
                 return [pre, AttrTable(*value), post]
         elif table['is_unreferenceable']:
             attrs[0] = ''  # The label isn't needed any further
-        elif fmt in ('html', 'html5', 'epub') and LABEL_PATTERN.match(attrs[0]):
+        elif fmt in ('html', 'html5') and LABEL_PATTERN.match(attrs[0]):
             # Insert anchor
             anchor = RawBlock('html', '<a name="%s"></a>'%attrs[0])
+            return [anchor, AttrTable(*value)]
+        elif fmt in ('epub', 'epub2', 'epub3') and \
+          LABEL_PATTERN.match(attrs[0]):
+            # Insert anchor
+            anchor = RawBlock('html', '<a id="%s"></a>'%attrs[0])
             return [anchor, AttrTable(*value)]
         elif fmt == 'docx':
             # As per http://officeopenxml.com/WPhyperlink.php
