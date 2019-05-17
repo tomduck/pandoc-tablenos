@@ -34,7 +34,7 @@ PDFFLAGS = --variable geometry:margin=1in --standalone --variable urlcolor=blue
 HTMLFLAGS = --standalone --variable urlcolor=blue
 
 
-all: pdf html docx
+all: pdf html epub docx
 
 pdf: out/test-2.7.pdf \
      out/test-2.7-py2.7.pdf \
@@ -53,6 +53,8 @@ pdf: out/test-2.7.pdf \
      out/test-1.15.pdf
 
 html: out/test-2.7.html
+
+epub: out/test-2.7.epub
 
 docx: out/test-2.7.docx
 
@@ -77,7 +79,7 @@ out/test-%.pdf: test.md
 	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 	$(PANDOC-$*) $< --filter pandoc-tablenos $(PDFFLAGS) -o $@
 
-out/test-%.docx: test.md
+out/test-%.docx out/test-%.epub: test.md
 	@if [ ! -d $(dir $@) ]; then mkdir -p $(dir $@); fi
 	$(PANDOC-$*) $< --filter pandoc-tablenos -o $@
 
