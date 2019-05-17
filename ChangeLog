@@ -1,3 +1,8 @@
+pandoc-tablenos 1.4.2 (2019-05-17)
+
+    * Support epub2 and epub3 targets; use id tag (Issue #13).
+
+
 pandoc-tablenos 1.4.1 (2019-05-16)
 
     * Fixed links in epub output (pandoc-eqnos Issue #37).

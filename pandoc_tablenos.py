@@ -51,7 +51,7 @@ from pandocxnos import attach_attrs_factory, detach_attrs_factory
 from pandocxnos import insert_rawblocks_factory
 from pandocxnos import elt
 
-__version__ = '1.4.1'
+__version__ = '1.4.2'
 
 # Read the command-line arguments
 parser = argparse.ArgumentParser(description='Pandoc table numbers filter.')
