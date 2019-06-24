@@ -195,7 +195,7 @@ def _adjust_caption(fmt, table, value):
             if fmt in ['html', 'html5', 'epub', 'epub2', 'epub3']:
                 value[1] = [RawInline('html', r'<span>'),
                             Str(captionname), Space(),
-                            Str('%d:'%references[attrs.id]),
+                            Str('%d:'%references[attrs.id][0]),
                             RawInline('html', r'</span>')]
             else:
                 value[1] = [Str(captionname),
@@ -229,9 +229,10 @@ def _add_markup(fmt, table, value):
     if table['is_unnumbered']:
         if fmt in ['latex', 'beamer']:
             # Use the no-prefix-table-caption environment
-            return [RawBlock('tex', r'\begin{no-prefix-table-caption}'),
-                    Table(*value),
-                    RawBlock('tex', r'\end{no-prefix-table-caption}')]
+            return [RawBlock('tex',
+                             r'\begin{tablenos:no-prefix-table-caption}'),
+                    Table(*(value if len(value)==5 else value[1:])),
+                    RawBlock('tex', r'\end{tablenos:no-prefix-table-caption}')]
         return None  # Nothing to do
 
     attrs = table['attrs']
@@ -270,7 +271,7 @@ def process_tables(key, value, fmt, meta):
 
         # Process the table
         table = _process_table(value, fmt)
-        if 'attrs' in table:
+        if 'attrs' in table and table['attrs'].id:
             _adjust_caption(fmt, table, value)
         return _add_markup(fmt, table, value)
 
