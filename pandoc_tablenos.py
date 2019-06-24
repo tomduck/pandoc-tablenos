@@ -2,6 +2,10 @@
 
 """pandoc-tablenos: a pandoc filter that inserts table nos. and refs."""
 
+
+__version__ = '2.0.0b1'
+
+
 # Copyright 2015-2019 Thomas J. Duck.
 # All rights reserved.
 #
@@ -29,6 +33,10 @@
 #
 #   2. Replace each reference with a table number.  For LaTeX,
 #      replace with \ref{...} instead.
+#
+# This is followed by injecting header code as needed for certain output
+# formats.
+
 
 # pylint: disable=invalid-name
 
@@ -36,6 +44,8 @@ import re
 import functools
 import argparse
 import json
+import copy
+import textwrap
 import uuid
 
 from pandocfilters import walk
@@ -43,15 +53,13 @@ from pandocfilters import Table, Str, Space, RawBlock, RawInline, Math, Span
 
 import pandocxnos
 from pandocxnos import PandocAttributes
-from pandocxnos import STRTYPES, STDIN, STDOUT
+from pandocxnos import STRTYPES, STDIN, STDOUT, STDERR
 from pandocxnos import check_bool, get_meta, extract_attrs
 from pandocxnos import repair_refs, process_refs_factory, replace_refs_factory
 from pandocxnos import insert_secnos_factory, delete_secnos_factory
 from pandocxnos import attach_attrs_factory, detach_attrs_factory
-from pandocxnos import insert_rawblocks_factory
 from pandocxnos import elt
 
-__version__ = '1.4.2'
 
 # Read the command-line arguments
 parser = argparse.ArgumentParser(description='Pandoc table numbers filter.')
@@ -64,23 +72,26 @@ args = parser.parse_args()
 # Patterns for matching labels and references
 LABEL_PATTERN = re.compile(r'(tbl:[\w/-]*)')
 
-Nreferences = 0        # Global references counter
-references = {}        # Global references tracker
-unreferenceable = []   # List of labels that are unreferenceable
-
 # Meta variables; may be reset elsewhere
-captionname = 'Table'             # Used with \tablename
-plusname = ['table', 'tables']    # Used with \cref
-starname = ['Table', 'Tables']    # Used with \Cref
-use_cleveref_default = False      # Default setting for clever referencing
-capitalize = False                # Default setting for capitalizing plusname
+captionname = 'Table'   # The caption name
+cleveref = False        # Flags that clever references should be used
+capitalise = False      # Default setting for capitalizing plusname
+plusname = ['table', 'tables']  # Sets names for mid-sentence references
+starname = ['Table', 'Tables']  # Sets names for references at sentence start
+numbersections = False  # Flags that tables should be numbered by section
+warninglevel = 1        # 0 - no warnings; 1 - some warnings; 2 - all warnings
 
-# Flag for unnumbered tables
-has_unnumbered_tables = False
+# Processing state variables
+cursec = None    # Current section
+Nreferences = 0  # Number of references in current section (or document)
+references = {}  # Maps reference labels to [number/tag, table secno]
 
-# Variables for tracking section numbers
-numbersections = False
-cursec = None
+# Processing flags
+captionname_changed = False     # Flags the the caption name changed
+plusname_changed = False        # Flags that the plus name changed
+starname_changed = False        # Flags that the star name changed
+has_unnumbered_tables = False   # Flags unnumbered tables were found
+has_tagged_tables = False       # Flags a tagged table was found
 
 PANDOCVERSION = None
 AttrTable = None
@@ -105,7 +116,7 @@ def attach_attrs_table(key, value, fmt, meta):
 
         try:
             attrs = extract_attrs(caption, n)
-            value.insert(0, attrs)
+            value.insert(0, attrs.list)
         except (ValueError, IndexError):
             pass
 
@@ -114,263 +125,386 @@ def _process_table(value, fmt):
     """Processes the table.  Returns a dict containing table properties."""
 
     # pylint: disable=global-statement
-    global Nreferences            # Global references counter
+    global cursec       # Current section being processed
+    global Nreferences  # Number of refs in current section (or document)
     global has_unnumbered_tables  # Flags unnumbered tables were found
-    global cursec                 # Current section
-
-    # Parse the table
-    attrs, caption = value[:2]
 
     # Initialize the return value
     table = {'is_unnumbered': False,
              'is_unreferenceable': False,
-             'is_tagged': False,
-             'attrs': attrs}
+             'is_tagged': False}
 
-    # Bail out if the label does not conform
-    if not LABEL_PATTERN.match(attrs[0]):
+    # Bail out if there are no attributes
+    if len(value) == 5:
         has_unnumbered_tables = True
-        table['is_unnumbered'] = True
-        table['is_unreferenceable'] = True
+        table.update({'is_unnumbered': True, 'is_unreferenceable': True})
         return table
 
-    # Process unreferenceable tables
-    if attrs[0] == 'tbl:': # Make up a unique description
-        attrs[0] = 'tbl:' + str(uuid.uuid4())
+    # Parse the table
+    attrs = table['attrs'] = PandocAttributes(value[0], 'pandoc')
+    table['caption'] = value[1]
+
+    # Bail out if the label does not conform to expectations
+    if not LABEL_PATTERN.match(attrs.id):
+        has_unnumbered_tables = True
+        table.update({'is_unnumbered':True, 'is_unreferenceable':True})
+        return table
+
+    # Identify unreferenceable tables
+    if attrs.id == 'tbl:': # Make up a unique description
+        attrs.id = 'tbl:' + str(uuid.uuid4())
         table['is_unreferenceable'] = True
-        unreferenceable.append(attrs[0])
 
-    # For html, hard-code in the section numbers as tags
-    kvs = PandocAttributes(attrs, 'pandoc').kvs
-    if numbersections and fmt in ['html', 'html5', 'docx'] and 'tag' not in kvs:
-        if kvs['secno'] != cursec:
-            cursec = kvs['secno']
-            Nreferences = 1
-        kvs['tag'] = cursec + '.' + str(Nreferences)
-        Nreferences += 1
+    # Update the current section number
+    if attrs['secno'] != cursec:  # The section number changed
+        cursec = attrs['secno']   # Update the global section tracker
+        Nreferences = 1           # Resets the global reference counter
 
-    # Save to the global references tracker
-    table['is_tagged'] = 'tag' in kvs
+    # Pandoc's --number-sections supports section numbering latex/pdf, html,
+    # epub, and docx
+    if numbersections:
+        if fmt in ['html', 'html5', 'epub', 'epub2', 'epub3', 'docx'] and \
+          'tag' not in attrs:
+            attrs['tag'] = str(cursec) + '.' + str(Nreferences)
+            Nreferences += 1
+
+    # Save reference information
+    table['is_tagged'] = 'tag' in attrs
     if table['is_tagged']:
         # Remove any surrounding quotes
-        if kvs['tag'][0] == '"' and kvs['tag'][-1] == '"':
-            kvs['tag'] = kvs['tag'].strip('"')
-        elif kvs['tag'][0] == "'" and kvs['tag'][-1] == "'":
-            kvs['tag'] = kvs['tag'].strip("'")
-        references[attrs[0]] = kvs['tag']
-    else:
-        Nreferences += 1
-        references[attrs[0]] = Nreferences
+        if attrs['tag'][0] == '"' and attrs['tag'][-1] == '"':
+            attrs['tag'] = attrs['tag'].strip('"')
+        elif attrs['tag'][0] == "'" and attrs['tag'][-1] == "'":
+            attrs['tag'] = attrs['tag'].strip("'")
+        references[attrs.id] = [attrs['tag'], cursec]
+    else:  # ... then save the table number
+        references[attrs.id] = [Nreferences, cursec]
+        Nreferences += 1  # Increment the global reference counter
 
-    # Adjust caption depending on the output format
-    if fmt in['latex', 'beamer']:
+    return table
+
+
+def _adjust_caption(fmt, table, value):
+    """Adjusts the caption."""
+    attrs, caption = table['attrs'], table['caption']
+    if fmt in['latex', 'beamer']:  # Append a \label if this is referenceable
         if not table['is_unreferenceable']:
-            value[1] += [RawInline('tex', r'\label{%s}'%attrs[0])]
+            value[1] += [RawInline('tex', r'\label{%s}'%attrs.id)]
     else:  # Hard-code in the caption name and number/tag
-        if isinstance(references[attrs[0]], int):
-            value[1] = [RawInline('html', r'<span>'),
-                        Str(captionname), Space(),
-                        Str('%d:'%references[attrs[0]]),
-                        RawInline('html', r'</span>')] \
-                if fmt in ['html', 'html5'] else \
-                    [Str(captionname), Space(),
-                     Str('%d:'%references[attrs[0]])]
+        if isinstance(references[attrs.id][0], int):  # Numbered reference
+            if fmt in ['html', 'html5', 'epub', 'epub2', 'epub3']:
+                value[1] = [RawInline('html', r'<span>'),
+                            Str(captionname), Space(),
+                            Str('%d:'%references[attrs.id]),
+                            RawInline('html', r'</span>')]
+            else:
+                value[1] = [Str(captionname),
+                            Space(),
+                            Str('%d:'%references[attrs.id][0])]
             value[1] += [Space()] + list(caption)
         else:  # Tagged reference
-            assert isinstance(references[attrs[0]], STRTYPES)
-            text = references[attrs[0]]
+            assert isinstance(references[attrs.id][0], STRTYPES)
+            text = references[attrs.id][0]
             if text.startswith('$') and text.endswith('$'):
                 math = text.replace(' ', r'\ ')[1:-1]
                 els = [Math({"t":"InlineMath", "c":[]}, math), Str(':')]
-            else:
+            else:  # Text
                 els = [Str(text + ':')]
-            value[1] = \
-                [RawInline('html', r'<span>'), Str(captionname), Space()] + \
-                els + [RawInline('html', r'</span>')] \
-                if fmt in ['html', 'html5'] else \
-                [Str(captionname), Space()] + els
-
+            if fmt in ['html', 'html5', 'epub', 'epub2', 'epub3']:
+                value[1] = \
+                  [RawInline('html', r'<span>'),
+                   Str(captionname),
+                   Space()] + els + [RawInline('html', r'</span>')]
+            else:
+                value[1] = [Str(captionname), Space()] + els
             value[1] += [Space()] + list(caption)
 
-    return table
+
+def _add_markup(fmt, table, value):
+    """Adds markup to the output."""
+
+    # pylint: disable=global-statement
+    global has_tagged_tables  # Flags a tagged tables was found
+
+    if table['is_unnumbered']:
+        if fmt in ['latex', 'beamer']:
+            # Use the no-prefix-table-caption environment
+            return [RawBlock('tex', r'\begin{no-prefix-table-caption}'),
+                    Table(*value),
+                    RawBlock('tex', r'\end{no-prefix-table-caption}')]
+        return None  # Nothing to do
+
+    attrs = table['attrs']
+    ret = None
+
+    if fmt in ['latex', 'beamer']:
+        if table['is_tagged']:  # A table cannot be tagged if it is unnumbered
+            has_tagged_tables = True
+            ret = [RawBlock('tex', r'\begin{tablenos:tagged-table}[%s]' % \
+                            references[attrs.id][0]),
+                   AttrTable(*value),
+                   RawBlock('tex', r'\end{tablenos:tagged-table}')]
+    elif fmt in ('html', 'html5', 'epub', 'epub2', 'epub3'):
+        if LABEL_PATTERN.match(attrs.id):
+            # Insert anchor
+            anchor = RawBlock('html', '<a name="%s"></a>'%attrs.id)
+            ret = [anchor, AttrTable(*value)]
+    elif fmt == 'docx':
+        # As per http://officeopenxml.com/WPhyperlink.php
+        bookmarkstart = \
+          RawBlock('openxml',
+                   '<w:bookmarkStart w:id="0" w:name="%s"/>'
+                   %attrs.id)
+        bookmarkend = \
+          RawBlock('openxml', '<w:bookmarkEnd w:id="0"/>')
+        ret = [bookmarkstart, AttrTable(*value), bookmarkend]
+    return ret
+
 
 # pylint: disable=unused-argument, too-many-return-statements
 def process_tables(key, value, fmt, meta):
     """Processes the attributed tables."""
 
-    global has_unnumbered_tables  # pylint: disable=global-statement
-
     # Process block-level Table elements
     if key == 'Table':
 
-        # Inspect the table
-        if len(value) == 5:  # Unattributed, bail out
-            has_unnumbered_tables = True
-            if fmt in ['latex']:
-                return [RawBlock('tex', r'\begin{no-prefix-table-caption}'),
-                        Table(*value),
-                        RawBlock('tex', r'\end{no-prefix-table-caption}')]
-            return None
-
         # Process the table
         table = _process_table(value, fmt)
-
-        # Context-dependent output
-        attrs = table['attrs']
-        if table['is_unnumbered']:
-            if fmt in ['latex']:
-                return [RawBlock('tex', r'\begin{no-prefix-table-caption}'),
-                        AttrTable(*value),
-                        RawBlock('tex', r'\end{no-prefix-table-caption}')]
-
-        elif fmt in ['latex']:
-            if table['is_tagged']:  # Code in the tags
-                tex = '\n'.join([r'\let\oldthetable=\thetable',
-                                 r'\renewcommand\thetable{%s}'%\
-                                 references[attrs[0]]])
-                pre = RawBlock('tex', tex)
-                tex = '\n'.join([r'\let\thetable=\oldthetable',
-                                 r'\addtocounter{table}{-1}'])
-                post = RawBlock('tex', tex)
-                return [pre, AttrTable(*value), post]
-        elif table['is_unreferenceable']:
-            attrs[0] = ''  # The label isn't needed any further
-        elif fmt in ('html', 'html5') and LABEL_PATTERN.match(attrs[0]):
-            # Insert anchor
-            anchor = RawBlock('html', '<a name="%s"></a>'%attrs[0])
-            return [anchor, AttrTable(*value)]
-        elif fmt in ('epub', 'epub2', 'epub3') and \
-          LABEL_PATTERN.match(attrs[0]):
-            # Insert anchor
-            anchor = RawBlock('html', '<a id="%s"></a>'%attrs[0])
-            return [anchor, AttrTable(*value)]
-        elif fmt == 'docx':
-            # As per http://officeopenxml.com/WPhyperlink.php
-            bookmarkstart = \
-              RawBlock('openxml',
-                       '<w:bookmarkStart w:id="0" w:name="%s"/>'
-                       %attrs[0])
-            bookmarkend = \
-              RawBlock('openxml', '<w:bookmarkEnd w:id="0"/>')
-            return [bookmarkstart, AttrTable(*value), bookmarkend]
+        if 'attrs' in table:
+            _adjust_caption(fmt, table, value)
+        return _add_markup(fmt, table, value)
 
     return None
 
 
 # Main program ---------------------------------------------------------------
 
-# Define \LT@makenoprefixcaption to make a caption without a prefix.  This
-# should replace \@makecaption as needed.  See the standard \@makecaption TeX
-# at https://stackoverflow.com/questions/2039690.  The macro gets installed
-# using an environment.  The \thetable counter must be set to something unique
-# so that duplicate names are avoided.  This must be done the hyperref
-# counter \theHtable as well; see Sect. 3.9 of
-# http://ctan.mirror.rafal.ca/macros/latex/contrib/hyperref/doc/manual.html.
-
-TEX0 = r"""
-% pandoc-xnos: macro to create a caption without a prefix
-\makeatletter
-\def\LT@makenoprefixcaption#1#2#3{%
-  \LT@mcol\LT@cols c{\hbox to\z@{\hss\parbox[t]\LTcapwidth{
-    \sbox\@tempboxa{#1{}#3}
-    \ifdim\wd\@tempboxa>\hsize
-      #1{}#3
-    \else
-      \hbox to\hsize{\hfil\box\@tempboxa\hfil}%
-    \fi
-    \endgraf\vskip\baselineskip}
-  \hss}}}
-\makeatother
-""".strip()
-
-TEX1 = r"""
-% pandoc-tablenos: save original macros
-\makeatletter
-\let\LT@oldmakecaption=\LT@makecaption
-\let\oldthetable=\thetable
-\let\oldtheHtable=\theHtable
-\makeatother
-""".strip()
-
-TEX2 = r"""
-% pandoc-tablenos: environment disables table caption prefixes
+# Define an environment that disables table caption prefixes.  Counters
+# must be saved and later restored.  The \thetable and \theHtable counter
+# must be set to something unique so that duplicate internal names are avoided
+# (see Sect. 3.2 of
+# http://ctan.mirror.rafal.ca/macros/latex/contrib/hyperref/doc/manual.html).
+NO_PREFIX_CAPTION_ENV_TEX = r"""
+%% pandoc-tablenos: environment to disable table caption prefixes
 \makeatletter
 \newcounter{tableno}
-\newenvironment{no-prefix-table-caption}{
-  \let\LT@makecaption=\LT@makenoprefixcaption
-  \renewcommand\thetable{x.\thetableno}
-  \renewcommand\theHtable{x.\thetableno}
-  \stepcounter{tableno}
+\newenvironment{tablenos:no-prefix-table-caption}{
+  \caption@ifcompatibility{}{
+    \let\oldthetable\thetable
+    \let\oldtheHtable\theHtable
+    \renewcommand{\thetable}{tableno:\thetableno}
+    \renewcommand{\theHtable}{tableno:\thetableno}
+    \stepcounter{tableno}
+    \captionsetup{labelformat=empty}
+  }
 }{
-  \let\thetable=\oldthetable
-  \let\theHtable=\oldtheHtable
-  \let\LT@makecaption=\LT@oldmakecaption
-  \addtocounter{table}{-1}
+  \caption@ifcompatibility{}{
+    \captionsetup{labelformat=default}
+    \let\thetable\oldthetable
+    \let\theHtable\oldtheHtable
+    \addtocounter{table}{-1}
+  }
 }
 \makeatother
-""".strip()
+"""
 
-# TeX to set the caption name
-TEX3 = r"""
-%% pandoc-tablenos: caption name
+# Define an environment for tagged tables
+TAGGED_TABLE_ENV_TEX = r"""
+%% pandoc-tablenos: environment for tagged tables
+\newenvironment{tablenos:tagged-table}[1][]{
+  \let\oldthetable\thetable
+  \let\oldtheHtable\theHtable
+  \renewcommand{\thetable}{#1}
+  \renewcommand{\theHtable}{#1}
+}{
+  \let\thetable\oldthetable
+  \let\theHtable\oldtheHtable
+  \addtocounter{table}{-1}
+}
+"""
+
+# Reset the caption name; i.e. change "Table" at the beginning of a caption
+# to something else.
+CAPTION_NAME_TEX = r"""
+%% pandoc-tablenos: change the caption name
 \renewcommand{\tablename}{%s}
-""".strip()
+"""
 
+# Define some tex to number tables by section
+NUMBER_BY_SECTION_TEX = r"""
+%% pandoc-tablenos: number tables by section
+\numberwithin{table}{section}
+"""
+
+
+# Main program ---------------------------------------------------------------
+
+# pylint: disable=too-many-branches,too-many-statements
 def process(meta):
     """Saves metadata fields in global variables and returns a few
     computed fields."""
 
     # pylint: disable=global-statement
-    global capitalize
-    global captionname
-    global use_cleveref_default
-    global plusname
-    global starname
-    global numbersections
+    global captionname     # The caption name
+    global cleveref        # Flags that clever references should be used
+    global capitalise      # Flags that plusname should be capitalised
+    global plusname        # Sets names for mid-sentence references
+    global starname        # Sets names for references at sentence start
+    global numbersections  # Flags that sections should be numbered by section
+    global warninglevel    # 0 - no warnings; 1 - some; 2 - all
+    global captionname_changed  # Flags the the caption name changed
+    global plusname_changed     # Flags that the plus name changed
+    global starname_changed     # Flags that the star name changed
 
     # Read in the metadata fields and do some checking
 
+    for name in ['tablenos-warning-level', 'xnos-warning-level']:
+        if name in meta:
+            warninglevel = int(get_meta(meta, name))
+            break
+
+    metanames = ['tablenos-warning-level', 'xnos-warning-level',
+                 'tablenos-caption-name',
+                 'tablenos-cleveref', 'xnos-cleveref',
+                 'xnos-capitalise', 'xnos-capitalize',
+                 'tablenos-plus-name', 'tablenos-star-name',
+                 'tablenos-number-sections', 'xnos-number-sections']
+
+    if warninglevel:
+        for name in meta:
+            if (name.startswith('tablenos') or name.startswith('xnos')) and \
+              name not in metanames:
+                msg = textwrap.dedent("""
+                          pandoc-tablenos: unknown meta variable "%s"
+                      """ % name)
+                STDERR.write(msg)
+
     if 'tablenos-caption-name' in meta:
+        old_captionname = captionname
         captionname = get_meta(meta, 'tablenos-caption-name')
+        captionname_changed = captionname != old_captionname
         assert isinstance(captionname, STRTYPES)
 
-    for name in ['tablenos-cleveref', 'xnos-cleveref', 'cleveref']:
+    for name in ['tablenos-cleveref', 'xnos-cleveref']:
         # 'xnos-cleveref' enables cleveref in all 3 of fignos/eqnos/tablenos
-        # 'cleveref' is deprecated
         if name in meta:
-            use_cleveref_default = check_bool(get_meta(meta, name))
+            cleveref = check_bool(get_meta(meta, name))
+            break
 
-    for name in ['tablenos-capitalize', 'tablenos-capitalise',
-                 'xnos-capitalize', 'xnos-capitalise']:
-        # 'tablenos-capitalise' is an alternative spelling
-        # 'xnos-capitalise' enables capitalise in all 3 of fignos/eqnos/tablenos
-        # 'xnos-capitalize' is an alternative spelling
+    for name in ['xnos-capitalize', 'xnos-capitalise']:
+        # 'xnos-capitalise' enables capitalise in all 3 of
+        # fignos/eqnos/tablenos.  Since this uses an option in the caption
+        # package, it is not possible to select between the three (use
+        # 'tablenos-plus-name' instead.  'xnos-capitalize' is an alternative
+        # spelling
         if name in meta:
-            capitalize = check_bool(get_meta(meta, name))
+            capitalise = check_bool(get_meta(meta, name))
             break
 
     if 'tablenos-plus-name' in meta:
         tmp = get_meta(meta, 'tablenos-plus-name')
-        if isinstance(tmp, list):
+        old_plusname = copy.deepcopy(plusname)
+        if isinstance(tmp, list):  # The singular and plural forms were given
             plusname = tmp
-        else:
+        else:  # Only the singular form was given
             plusname[0] = tmp
+        plusname_changed = plusname != old_plusname
         assert len(plusname) == 2
         for name in plusname:
             assert isinstance(name, STRTYPES)
+        if plusname_changed:
+            starname = [name.title() for name in plusname]
 
     if 'tablenos-star-name' in meta:
         tmp = get_meta(meta, 'tablenos-star-name')
+        old_starname = copy.deepcopy(starname)
         if isinstance(tmp, list):
             starname = tmp
         else:
             starname[0] = tmp
+        starname_changed = starname != old_starname
         assert len(starname) == 2
         for name in starname:
             assert isinstance(name, STRTYPES)
 
-    if 'xnos-number-sections' in meta:
-        numbersections = check_bool(get_meta(meta, 'xnos-number-sections'))
+    for name in ['tablenos-number-sections', 'xnos-number-sections']:
+        if name in meta:
+            numbersections = check_bool(get_meta(meta, name))
+            break
+
+
+def add_tex(meta):
+    """Adds text to the meta data."""
+
+    # pylint: disable=too-many-boolean-expressions
+    warnings = warninglevel == 2 and  references and \
+      (pandocxnos.cleveref_required() or has_unnumbered_tables or
+       plusname_changed or starname_changed or has_tagged_tables or
+       captionname != 'Table' or numbersections)
+    if warnings:
+        msg = textwrap.dedent("""\
+                  pandoc-tablenos: Wrote the following blocks to
+                  header-includes.  If you use pandoc's
+                  --include-in-header option then you will need to
+                  manually include these yourself.
+              """)
+        STDERR.write('\n')
+        STDERR.write(textwrap.fill(msg))
+        STDERR.write('\n')
+
+    # Update the header-includes metadata.  Pandoc's
+    # --include-in-header option will override anything we do here.  This
+    # is a known issue and is owing to a design decision in pandoc.
+    # See https://github.com/jgm/pandoc/issues/3139.
+
+    if pandocxnos.cleveref_required() and references:
+        tex = """
+            %%%% pandoc-tablenos: required package
+            \\usepackage%s{cleveref}
+        """ % ('[capitalise]' if capitalise else '')
+        pandocxnos.add_tex_to_header_includes(
+            meta, tex, warninglevel, r'\\usepackage(\[[\w\s,]*\])?\{cleveref\}')
+
+    if has_unnumbered_tables and references:
+        tex = """
+            %%%% pandoc-tablenos: required package
+            \\usepackage{caption}
+        """
+        pandocxnos.add_tex_to_header_includes(
+            meta, tex, warninglevel, r'\\usepackage(\[[\w\s,]*\])?\{caption\}')
+
+    if plusname_changed and references:
+        tex = """
+            %%%% pandoc-tablenos: change cref names
+            \\crefname{table}{%s}{%s}
+        """ % (plusname[0], plusname[1])
+        pandocxnos.add_tex_to_header_includes(meta, tex, warninglevel)
+
+    if starname_changed and references:
+        tex = """\
+            %%%% pandoc-tablenos: change Cref names
+            \\Crefname{table}{%s}{%s}
+        """ % (starname[0], starname[1])
+        pandocxnos.add_tex_to_header_includes(meta, tex, warninglevel)
+
+    if has_unnumbered_tables and references:
+        pandocxnos.add_tex_to_header_includes(
+            meta, NO_PREFIX_CAPTION_ENV_TEX, warninglevel)
+
+    if has_tagged_tables and references:
+        pandocxnos.add_tex_to_header_includes(
+            meta, TAGGED_TABLE_ENV_TEX, warninglevel)
+
+    if captionname != 'Table' and references:
+        pandocxnos.add_tex_to_header_includes(
+            meta, CAPTION_NAME_TEX % captionname, warninglevel)
+
+    if numbersections and references:
+        pandocxnos.add_tex_to_header_includes(
+            meta, NUMBER_BY_SECTION_TEX, warninglevel)
+
+    if warnings:
+        STDERR.write('\n')
 
 
 def main():
@@ -408,35 +542,23 @@ def main():
                                 detach_attrs_table], blocks)
 
     # Second pass
-    process_refs = process_refs_factory(references.keys())
+    process_refs = process_refs_factory('pandoc-tablenos', references.keys(),
+                                        warninglevel)
     replace_refs = replace_refs_factory(references,
-                                        use_cleveref_default, False,
-                                        plusname if not capitalize else
+                                        cleveref, False,
+                                        plusname if not capitalise \
+                                        or plusname_changed else
                                         [name.title() for name in plusname],
-                                        starname, 'table')
-    attach_attrs_span = attach_attrs_factory(Span, replace=True)
+                                        starname)
+    attach_attrs_span = attach_attrs_factory('pandoc-tablenos', Span,
+                                             warninglevel, replace=True)
     altered = functools.reduce(lambda x, action: walk(x, action, fmt, meta),
                                [repair_refs, process_refs, replace_refs,
                                 attach_attrs_span],
                                altered)
 
-    # Insert supporting TeX
-    if fmt in ['latex']:
-
-        rawblocks = []
-
-        if has_unnumbered_tables:
-            rawblocks += [RawBlock('tex', TEX0),
-                          RawBlock('tex', TEX1),
-                          RawBlock('tex', TEX2)]
-
-        if captionname != 'Table':
-            rawblocks += [RawBlock('tex', TEX3 % captionname)]
-
-        insert_rawblocks = insert_rawblocks_factory(rawblocks)
-
-        altered = functools.reduce(lambda x, action: walk(x, action, fmt, meta),
-                                   [insert_rawblocks], altered)
+    if fmt in ['latex', 'beamer']:
+        add_tex(meta)
 
     # Update the doc
     if PANDOCVERSION >= '1.18':
