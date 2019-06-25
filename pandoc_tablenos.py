@@ -247,9 +247,10 @@ def _add_markup(fmt, table, value):
                    RawBlock('tex', r'\end{tablenos:tagged-table}')]
     elif fmt in ('html', 'html5', 'epub', 'epub2', 'epub3'):
         if LABEL_PATTERN.match(attrs.id):
-            # Insert anchor
-            anchor = RawBlock('html', '<a name="%s"></a>'%attrs.id)
-            ret = [anchor, AttrTable(*value)]
+            # Enclose table in hidden div
+            pre = RawBlock('html', '<div id="%s" class="tablenos">'%attrs.id)
+            post = RawBlock('html', '</div>')
+            ret = [pre, AttrTable(*value), post]
     elif fmt == 'docx':
         # As per http://officeopenxml.com/WPhyperlink.php
         bookmarkstart = \
@@ -496,7 +497,7 @@ def add_tex(meta):
         pandocxnos.add_tex_to_header_includes(
             meta, TAGGED_TABLE_ENV_TEX, warninglevel)
 
-    if captionname != 'Table' and references:
+    if captionname_changed and references:
         pandocxnos.add_tex_to_header_includes(
             meta, CAPTION_NAME_TEX % captionname, warninglevel)
 
