@@ -49,9 +49,6 @@ Testing
 Regression tests for pandoc-tablenos are provided in test/.  Read
 the README.md in that directory for instructions.
 
-Integration tests for pandoc-tablenos/eqnos/tablenos are provided in
-test/integration.
-
 
 Preparing a Release
 -------------------
