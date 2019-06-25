@@ -1,3 +1,7 @@
+---
+title: Pandoc-tablenos Demo
+...
+
   Right     Left     Center     Default
 -------     ------ ----------   -------
      12     12        12            12
@@ -12,4 +16,4 @@ A B
 - -
 0 1
 
-Table: Even simpler. {#tbl:2}
+Table: Even simpler. {#tbl:2 width=2in}

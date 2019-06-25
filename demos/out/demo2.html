@@ -4,8 +4,8 @@
   <meta charset="utf-8" />
   <meta name="generator" content="pandoc" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
-  <title>demo2</title>
-  <style type="text/css">
+  <title>Pandoc-tablenos Demo</title>
+  <style>
       code{white-space: pre-wrap;}
       span.smallcaps{font-variant: small-caps;}
       span.underline{text-decoration: underline;}
@@ -14,11 +14,18 @@
   <!--[if lt IE 9]>
     <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
   <![endif]-->
+  <style>
+  html {margin: 0 auto; max-width: 5in;}
+  .tablenos table {display:flex; flex-direction: column; align-items:center;}
+  </style>
 </head>
 <body>
-<a name="tbl:1"></a>
+<header id="title-block-header">
+<h1 class="title">Pandoc-tablenos Demo</h1>
+</header>
+<div id="tbl:1" class="tablenos">
 <table>
-<caption>Table 1: Demonstration of a simple table. </caption>
+<caption><span>Table 1:</span> Demonstration of a simple table. </caption>
 <thead>
 <tr class="header">
 <th style="text-align: right;">Right</th>
@@ -48,10 +55,11 @@
 </tr>
 </tbody>
 </table>
+</div>
 <p>Table <a href="#tbl:1">1</a> is from the Pandoc User’s Guide. A simpler table is given by table <a href="#tbl:2">2</a>:</p>
-<a name="tbl:2"></a>
+<div id="tbl:2" class="tablenos">
 <table>
-<caption>Table 2: Even simpler. </caption>
+<caption><span>Table 2:</span> Even simpler. </caption>
 <thead>
 <tr class="header">
 <th>A</th>
@@ -65,5 +73,6 @@
 </tr>
 </tbody>
 </table>
+</div>
 </body>
 </html>
