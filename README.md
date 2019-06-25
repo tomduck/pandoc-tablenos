@@ -1,19 +1,24 @@
 
-**New in 1.4.2:** Improved epub support.
 
-**New in 1.4.0:** Support for references in bracketed spans.
+**Notice:** A beta release for pandoc-tablenos 2.0.0 is now available.  It can be installed using
 
-[more...](#whats-new)
+    pip install pandoc-tablenos --upgrade --pre --user
+
+**New in 2.0.0:** This is a major release which is easier to use at the cost of minor incompatibilities with previous versions.
+
+[more...](#whats-new).
 
 
-pandoc-tablenos 1.4.2
+pandoc-tablenos 2.0.0
 =====================
 
-*pandoc-tablenos* is a [pandoc] filter for numbering tables and table references when converting markdown documents to other formats.
+*pandoc-tablenos* is a [pandoc] filter for numbering tables and their references when converting markdown documents to other formats.
 
 Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats (including beamer slideshows).
 
-This version of pandoc-tablenos was tested using pandoc 1.15.2 - 2.7.2<sup>[1](#footnote1)</sup>.  It works under linux, Mac OS X and Windows.  I am pleased to receive bug reports and feature requests on the project's [Issues tracker].  If you find pandoc-tablenos useful, then please kindly give it a star [on GitHub].
+This version of pandoc-tablenos was tested using pandoc 1.15.2 - 2.7.3, <sup>[1](#footnote1)</sup> and may be used with linux, macOS, and Windows.  Bug reports and feature requests may be posted on the project's [Issues tracker].  If you find pandoc-tablenos useful, then please kindly give it a star [on GitHub].
+
+The goals of pandoc-tablenos are to make cross-referencing easy, and to equally support pdf/latex, html, and epub output formats (more can be added with time).  The output of pandoc-tablenos may be customized, and helpful messages are provided when errors are detected.
 
 See also: [pandoc-fignos], [pandoc-eqnos]
 
@@ -30,26 +35,27 @@ Contents
  1. [Usage](#usage)
  2. [Markdown Syntax](#markdown-syntax)
  3. [Customization](#customization)
- 4. [Details](#details)
+ 4. [Technical Details](#technical-details)
  5. [Installation](#installation)
  6. [Getting Help](#getting-help)
- 7. [What's New](#whats-new)
+ 7. [Development](#development)
+ 8. [What's New](#whats-new)
 
 
 Usage
 -----
 
-Use the following option with pandoc:
+Pandoc-tablenos is activated by using the
 
     --filter pandoc-tablenos
 
-Note that any use of `--filter pandoc-citeproc` or `--bibliography=FILE` should come *after* the pandoc-tablenos filter call.
+option with pandoc.  Any use of `--filter pandoc-citeproc` or `--bibliography=FILE` should come *after* the pandoc-tablenos filter call.
 
 
 Markdown Syntax
 ---------------
 
-The markdown syntax extension used by pandoc-tablenos was worked out in [pandoc Issue #813] -- see [this post] by [@scaramouche1].
+The cross-referencing syntax used by pandoc-tablenos was worked out in [pandoc Issue #813] -- see [this post] by [@scaramouche1].
 
 To mark a table for numbering, add an id to its attributes:
 
@@ -59,7 +65,7 @@ To mark a table for numbering, add an id to its attributes:
 
     Table: Caption. {#tbl:id}
 
-The prefix `#tbl:` is required. `id` should be replaced with a unique identifier composed of letters, numbers, dashes and underscores.  If `id` is omitted then the figure will be numbered but unreferenceable.
+The prefix `#tbl:` is required. `id` should be replaced with a unique identifier composed of letters, numbers, dashes and underscores.  If `id` is omitted then the table will be numbered but unreferenceable.
 
 To reference the table, use
 
@@ -89,7 +95,7 @@ Writing markdown like
 
     See table @tbl:id.
 
-seems a bit redundant.  Pandoc-tablenos supports "clever referencing" via single-character modifiers in front of a reference.  You can write
+seems a bit redundant.  Pandoc-tablenos supports "clever references" via single-character modifiers in front of a reference.  Users may write
 
      See +@tbl:id.
 
@@ -97,13 +103,13 @@ to have the reference name (i.e., "table") automatically generated.  The above f
 
      *@tbl:id
 
-instead.  If clever referencing is enabled by default (see [Customization](#customization), below), then you can disable it for a given reference using<sup>[2](#footnote2)</sup>
+instead.  If clever references are enabled by default (see [Customization](#customization), below), then users may disable it for a given reference using<sup>[2](#footnote2)</sup>
 
     !@tbl:id
 
 Demonstration: Processing [demo2.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf2], [tex][tex2], [html][html2], [epub][epub2], [docx][docx2] and other formats.
 
-Note: If you use `*tbl:id` and emphasis (e.g., `*italics*`) in the same sentence, then you must backslash escape the `*` in the clever reference; e.g., `\*tbl:id`.
+Note: When using `*tbl:id` and emphasis (e.g., `*italics*`) in the same sentence, the `*` in the clever reference must be backslash-escaped; e.g., `\*tbl:id`.
 
 [demo2.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo2.md
 [pdf2]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo2.pdf
@@ -115,7 +121,7 @@ Note: If you use `*tbl:id` and emphasis (e.g., `*italics*`) in the same sentence
 
 #### Tagged Tables ####
 
-You may optionally override the table number by placing a tag in a table's attributes block as follows:
+The table number may be overridden by placing a tag in the table's attributes block as follows:
 
     A B
     - -
@@ -131,14 +137,16 @@ Customization
 
 Pandoc-tablenos may be customized by setting variables in the [metadata block] or on the command line (using `-M KEY=VAL`).  The following variables are supported:
 
-  * `tablenos-capitalise` or `xnos-capitalise` - Capitalizes the
-    names of "+" references (e.g., change from "table" to "Table");
-
-  * `tablenos-caption-name` - Sets the name at the beginning of a
-    caption (e.g., change it from "Table to "Tab.");
+  * `tablenos-warning-level` or `xnos-warning-level` - Set to `0` for
+    no warnings, `1` for critical warnings (default), or `2` for
+    critical warnings and informational messages.  Warning level 2
+    should be used when troubleshooting.
 
   * `tablenos-cleveref` or just `cleveref` - Set to `True` to assume
     "+" clever references by default;
+
+  * `tablenos-capitalise` or `xnos-capitalise` - Capitalizes the
+    names of "+" references (e.g., change from "table" to "Table");
 
   * `tablenos-plus-name` - Sets the name of a "+" reference 
     (e.g., change it from "table" to "tab."); and
@@ -146,21 +154,23 @@ Pandoc-tablenos may be customized by setting variables in the [metadata block] o
   * `tablenos-star-name` - Sets the name of a "*" reference 
     (e.g., change it from "Table" to "Tab.").
 
+  * `tablenos-caption-name` - Sets the name at the beginning of a
+    caption (e.g., change it from "Table to "Tab.");
+
   * `xnos-number-sections` - Set to `True` so that tables are
     numbered per section (i.e. Table 1.1, 1.2, etc in Section 1, and
-    Table 2.1, 2.2, etc in Section 2).  For html and LaTeX/pdf this
-    feature works in conjunction with pandoc's `--section-numbers`
-    command-line flag.  See
-    [Table Numbering by Section](#table-numbering-by-section),
-    below.
+    Table 2.1, 2.2, etc in Section 2).   This feature
+     should be used together with pandoc's `--number-sections`
+     [option](https://pandoc.org/MANUAL.html#option--number-sections)
+     enabled for LaTeX/pdf, html, and epub output.  For docx,
+     use [docx custom styles] instead.
 
-    This feature is only presently enabled for html, LaTeX/pdf, and
-    docx.
-
-[metadata block]: http://pandoc.org/README.html#extension-yaml_metadata_block
+Note that variables beginning with `tablenos-` apply to only pandoc-tablenos, whereas variables beginning with `xnos-` apply to all three of pandoc-fignos/eqnos/tablenos.
 
 Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats.
 
+[metadata block]: http://pandoc.org/README.html#extension-yaml_metadata_block
+[docx custom styles]: https://pandoc.org/MANUAL.html#custom-styles
 [demo3.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo3.md
 [pdf3]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo3.pdf
 [tex3]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo3.tex
@@ -169,166 +179,90 @@ Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` give
 [docx3]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo3.docx
 
 
-#### Table Numbering by Section ####
+Technical Details
+-----------------
 
-Pandoc's `--number-sections` option enables section numbering for LaTeX/pdf and html output.  For docx, use [custom styles](https://pandoc.org/MANUAL.html#custom-styles) instead.  Table numbering by section (e.g., "Table 2.1") can then be obtained as follows:
+#### TeX/pdf Output ####
 
- 1) **html and docx:** Add `xnos-number-sections: True` to your YAML
-    metadata or use the `-M xnos-number-sections=True` option with
-    pandoc.  This variable is ignored for other output formats.
+During processing, pandoc-tablenos inserts packages and supporting TeX into the `header-includes` metadata field.  To see what is inserted, set the `tablenos-warninglevel` meta variable to `2`.  Note that any use of pandoc's `--include-in-header` option [overrides](https://github.com/jgm/pandoc/issues/3139) all `header-includes`.  In such cases users will need to separately include the codes pandoc-tablenos needs.
 
- 2) **LaTeX/pdf:** Add 
-    `header-includes: \numberwithin{table}{section}` to your YAML
-    metadata.  If you need multiple header includes, then add
-    something like this:
+Other details:
 
-    ~~~
-    header-includes:
-      - \numberwithin{figure}{section}
-      - \numberwithin{equation}{section}
-      - \numberwithin{table}{section}
-    ~~~
-
-    Alternatively, write your header includes into FILE,
-    and use the `--include-in-header=FILE` option with pandoc.
-
-    If you set either `--top-level-division=part` or
-    `--top-level-division=chapter` then these header includes can be
-    dropped.
-
-    LaTeX header-includes are ignored for html output.
-
-
-#### Latex/PDF Specializations ####
-
-To make the table caption label bold, add `\usepackage[labelfont=bf]{caption}` to the `header-includes` field of your document's YAML metadata.  See the [LaTeX caption package] documentation for additional features.
-
-[LaTeX caption package]: https://www.ctan.org/pkg/caption
-
-
-Details
--------
-
-TeX/pdf:
-
+  * TeX is only inserted into the `header-includes` if it is
+    actually needed (in particular, packages are not installed
+    if they are found elsewhere in the `header-includes`);
+  * The `cleveref` and `caption` packages are used for clever
+    references and caption control, respectively; 
   * The `\label` and `\ref` macros are used for table labels and
-    references;
-  * `\figurename` is set for the caption name;
-  * Tags are supported by temporarily redefining `\thetable` around 
-    a table; and
-  * The clever referencing macros `\cref` and `\Cref` are used
-    if they are available (i.e. included in your LaTeX template via
-    `\usepackage{cleveref}`), otherwise they are faked.  Set the 
-    meta variable `xnos-cleveref-fake` to `False` to disable cleveref
-    faking.
-  * The clever reference names are set using `\crefformat` and
-    `\Crefformat`.  For this reason the cleveref package's
-    `capitalise` parameter has no effect.  Use the
-    `fignos-capitalise` meta variable instead.
+    references, respectively; `\Cref` and `\cref` are used for
+    clever references;
+  * Clever reference names are set with `\Crefname` and `\crefname`;
+  * The caption name is set with`\tablename`;
+  * Tags are supported by way of a custom environment that
+    temporarily redefines `\thetable`; and
+  * Caption prefixes (e.g., "Table 1:") are disabled for
+    unnumbered tables by way of a custom environment that uses
+    `\captionsetup`.
 
-Other formats:
 
-  * Links to figures use html's and docx's native capabilities; and
+#### Other Output Formats ####
+
+  * Linking uses native capabilities wherever possible;
 
   * The numbers, caption name, and (clever) references are hard-coded
-    into the output.
+    into the output;
+
+  * The output is structured such that references and table
+    captions may be styled (e.g., using
+    [css](https://pandoc.org/MANUAL.html#option--css) or
+    [docx custom styles]).
 
 
 Installation
 ------------
 
-Pandoc-tablenos requires [python], a programming language that comes pre-installed on linux and Mac OS X, and which is easily installed on Windows.  Either python 2.7 or 3.x will do.
+Pandoc-tablenos requires [python], a programming language that comes pre-installed on macOS and most linux distributions.  It is easily installed on Windows -- see [here](https://realpython.com/installing-python/).  Either python 2.7 or 3.x will do.
 
-[python]: https://www.python.org/
+Pandoc-tablenos may be installed using the shell command
 
-
-#### Standard installation ####
-
-Install pandoc-tablenos as root using the shell command
-
-    pip install pandoc-tablenos 
+    pip install pandoc-tablenos --user
 
 To upgrade to the most recent release, use
 
-    pip install --upgrade pandoc-tablenos 
+    pip install --upgrade pandoc-tablenos --user
 
-Pip is a program that downloads and installs modules from the Python Package Index, [PyPI].  It should come installed with your python distribution.
+Pip is a program that downloads and installs modules from the Python Package Index, [PyPI].  It is normally installed with a python distribution.
 
-Note that on some systems for `python3` you may need to use `pip3` instead.
+Alternative installation procedures are given in [README.developers].
 
+[python]: https://www.python.org/
 [PyPI]: https://pypi.python.org/pypi
+[README.developers]: README.developers
 
 
 #### Troubleshooting ####
 
-If you are prompted to upgrade `pip`, then do so.  Installation errors may occur with older versions.   The command you need to execute (as root) is
+When prompted to upgrade `pip`, follow the instructions given to do so.  Installation errors may occur with older versions.
 
-    python -m pip install --upgrade pip
+Installations from source may also require upgrading `setuptools` using:
 
-One user reported that they had to manually upgrade the `six` and `setuptools` modules:
+    pip install --upgrade setuptools
 
-    pip install --upgrade six
-    pip install pandoc-tablenos
+I usually perform the above two commands as root (or under sudo).  Everything else can be done as a regular user.
 
-This should not normally be necessary.
-
-You may test the installation as a regular user using the shell command
+When installing pandoc-tablenos, watch for any errors or warning messages.  In particular, pip may warn that pandoc-tablenos was installed into a directory that "is not on PATH".  This will need to be fixed before proceeding.  Access to pandoc-tablenos may be tested using the shell command
 
     which pandoc-tablenos
 
-This will tell you where pandoc-tablenos is installed.  If it is not found, then please submit a report to our [Issues tracker].
-
-To determine which version of pandoc-tablenos you have installed, use
+To determine which version of pandoc-tablenos is installed, use
 
     pip show pandoc-tablenos
 
-As of pandoc-tablenos 1.4.1 you can also use
+As of pandoc-tablenos 1.4.2 the shell command
 
     pandoc-tablenos --version
 
-Please be sure you have the latest version installed before reporting a bug on our [Issues tracker].
-
-
-#### Installing on linux ####
-
-If you are running linux, then pip may be packaged separately from python.  On Debian-based systems (including Ubuntu), you can install pip as root using
-
-    apt-get update
-    apt-get install python-pip
-
-During the install you may be asked to run
-
-    easy_install -U setuptools
-
-owing to the ancient version of setuptools that Debian provides.  The command should be executed as root.  You may now follow the [standard installation] procedure given above.
-
-[standard installation]: #standard-installation
-
-
-#### Installing on Mac OS X ####
-
-To install as root on Mac OS X, you will need to use the `sudo` command.  For example:
-
-    sudo pip install pandoc-tablenos
-
-Troubleshooting should be done as a regular user (i.e., without using `sudo`).
-
-
-#### Installing on Windows ####
-
-It is easy to install python on Windows.  First, [download] the latest release.  Run the installer and complete the following steps:
-
- 1. Install Python pane: Check "Add Python 3.5 to path" then
-    click "Customize installation".
-
- 2. Optional Features pane: Click "Next".
-
- 3. Advanced Options pane: Optionally check "Install for all
-    users" and customize the install location, then click "Install".
-
-Once python is installed, start the "Command Prompt" program.  Depending on where you installed python, you may need elevate your privileges by right-clicking the "Command Prompt" program and selecting "Run as administrator".  You may now follow the [standard installation] procedure given above.  Be sure to close the Command Prompt program when you have finished.
-
-[download]: https://www.python.org/downloads/windows/
+also works.  Please be sure to have the latest version of pandoc-tablenos installed before reporting a bug.
 
 
 Getting Help
@@ -337,20 +271,44 @@ Getting Help
 If you have any difficulties with pandoc-tablenos, or would like to see a new feature, then please submit a report to our [Issues tracker].
 
 
+Development
+-----------
+
+The philosophy of this project is make cross-referencing in markdown easy, and to equally support pdf/latex, html, and epub output formats.  Full docx support is awaiting input from a knowledgeable expert on how to structure the OOXML.
+
+Pandoc-tablenos will continue to support pandoc 1.15-onward and python 2 & 3 for the foreseeable future.  The reasons for this are that a) some users cannot upgrade pandoc and/or python; and b) supporting all versions tends to make pandoc-tablenos more robust.
+
+Developer notes are maintained in [README.developers].
+
+
 What's New
 ----------
 
-**New in 1.4.2:** Improved epub support.
+**New in 2.0.0:**  This version represents a major revision of pandoc-tablenos.  While the interface is similar to that of the 1.x series, some users may encounter minor compatibility issues.
 
-**New in 1.4.1:** Working links in epub output.
+Warning messages are a new feature of pandoc-tablenos.  The meta variable `tablenos-warning-level` may be set to `0`, `1`, or `2` depending on the degree of warnings desired.  Warning level `1` (the default) will alert users to bad references, malformed attributes, and unknown meta variables.  Warning level `2` adds informational messages that should be helpful with debugging.  Level `0` turns all messages off.
 
-**New in 1.4.0:** Support for references in bracketed spans.
+Meta variable names have been updated.  Deprecated names have been removed, and new variables have been added.
 
-**New in 1.3.2:** Support for docx table numbering by section.
+The basic filter and library codes have been refactored and improved with a view toward maintainability.  While extensive tests have been performed, some problems may have slipped through unnoticed.  Bug reports should be submitted to our [Issues tracker].
 
-**New in 1.3.0:** Boolean metadata values must now be one of `true`, `True` `TRUE`, `false`, `False`, or `FALSE`.  This is following a [change of behaviour](https://pandoc.org/releases.html#pandoc-2.2.2-16-july-2018) with pandoc 2.2.2.
 
-**New in 1.2.0:** Added `fignos-capitalise` meta variable to capitalise clever references (e.g., change "fig." to "Fig.").
+#### TeX/PDF ###
+
+TeX codes produced by pandoc-tablenos are massively improved.  The hacks used before were causing some users problems.  The new approach provides more flexibility and better compatibility with the LaTeX system.
+
+Supporting TeX is now written to the `header-includes` meta data.  Users no longer need to include LaTeX commands in the `header-includes` to get basic pandoc-tablenos functions to work.  Use `tablenos-warning-level: 2` to see what pandoc-tablenos adds to the `header-includes`.
+
+A word of warning: Pandoc-tablenos's additions to the `header-includes` are overridden when pandoc's `--include-in-header` option is used.  This is owing to a [design choice](https://github.com/jgm/pandoc/issues/3139) in pandoc.  Users may choose to deliberately override pandoc-tablenos's `header-includes` by providing their own TeX through `--include-in-header`.  If a user needs to include other bits of TeX in this way, then they will need to do the same for the TeX that pandoc-tablenos needs.
+
+Finally, the `\label` tags are now installed where pandoc chooses, which is currently outside the `\caption` field.  Pandoc-tablenos previously forced the `\label` to go inside `\caption`.
+
+
+#### Html/ Epub ####
+
+The table is now enclosed in a `<div>` which contains the `id` and class `tablenos`.  This change was made to facilitate styling.  The `id` was formerly contained in an anchor tag.
+
+Epub support is generally improved.
 
 
 ----

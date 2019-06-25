@@ -1,3 +1,15 @@
+pandoc-fignos 2.0.0 (unreleased)
+
+    * A warnings system has been added.
+    * Meta variable names have been updated.
+    * The basic filter and library codes have been refactored and
+      improved with a view toward maintainability.
+    * The documentation has been updated.
+    * TeX codes have been completely overhauled.
+    * Html/epub tables are now enclosed in a `<div>`.
+    * Epub support is generally improved.
+
+
 pandoc-tablenos 1.4.2 (2019-05-17)
 
     * Support epub2 and epub3 targets; use id tag (Issue #13).
