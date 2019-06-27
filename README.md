@@ -274,7 +274,7 @@ If you have any difficulties with pandoc-tablenos, or would like to see a new fe
 Development
 -----------
 
-The philosophy of this project is make cross-referencing in markdown easy, and to equally support pdf/latex, html, and epub output formats.  Full docx support is awaiting input from a knowledgeable expert on how to structure the OOXML.
+The philosophy of this to project is make cross-referencing in markdown easy, and to equally support pdf/latex, html, and epub output formats.  Full docx support is awaiting input from a knowledgeable expert on how to structure the OOXML.
 
 Pandoc-tablenos will continue to support pandoc 1.15-onward and python 2 & 3 for the foreseeable future.  The reasons for this are that a) some users cannot upgrade pandoc and/or python; and b) supporting all versions tends to make pandoc-tablenos more robust.
 
@@ -293,7 +293,7 @@ Meta variable names have been updated.  Deprecated names have been removed, and 
 The basic filter and library codes have been refactored and improved with a view toward maintainability.  While extensive tests have been performed, some problems may have slipped through unnoticed.  Bug reports should be submitted to our [Issues tracker].
 
 
-#### TeX/PDF ###
+*TeX/PDF:*
 
 TeX codes produced by pandoc-tablenos are massively improved.  The hacks used before were causing some users problems.  The new approach provides more flexibility and better compatibility with the LaTeX system.
 
@@ -304,7 +304,7 @@ A word of warning: Pandoc-tablenos's additions to the `header-includes` are over
 Finally, the `\label` tags are now installed where pandoc chooses, which is currently outside the `\caption` field.  Pandoc-tablenos previously forced the `\label` to go inside `\caption`.
 
 
-#### Html/ Epub ####
+*Html/Epub:*
 
 The table is now enclosed in a `<div>` which contains the `id` and class `tablenos`.  This change was made to facilitate styling.  The `id` was formerly contained in an anchor tag.
 
