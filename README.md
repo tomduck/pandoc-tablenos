@@ -1,9 +1,10 @@
 
-**New in 1.4.2:** Improved epub support.
 
-**New in 1.4.0:** Support for references in bracketed spans.
+**Notice:** A beta release for pandoc-tablenos 2.0.0 is now available.  It can be installed using
 
-[more...](#whats-new)
+    pip install pandoc-tablenos --upgrade --pre --user
+
+Please read the beta's [documentation](https://github.com/tomduck/pandoc-tablenos/tree/2.0) and in particular about [What's New](https://github.com/tomduck/pandoc-tablenos/tree/2.0#whats-new) first.
 
 
 pandoc-tablenos 1.4.2
