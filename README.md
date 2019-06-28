@@ -175,6 +175,11 @@ Pandoc-tablenos may be customized by setting variables in the [metadata block] o
   * `tablenos-caption-name` - Sets the name at the beginning of a
     caption (e.g., change it from "Table to "Tab.");
 
+  * `tablenos-caption-separator` or `xnos-caption-separator` - Sets 
+    the caption separator (e.g., the colon in "Table 1:") to
+    something else.  It must be one of `none`, `colon`,
+    `period`, `space`, `quad`, or `newline`; and
+
   * `xnos-number-sections` - Set to `True` so that tables are
     numbered per section (i.e. Table 1.1, 1.2, etc in Section 1, and
     Table 2.1, 2.2, etc in Section 2).   This feature
