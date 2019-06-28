@@ -14,7 +14,7 @@ pandoc-tablenos 2.0.0
 
 *pandoc-tablenos* is a [pandoc] filter for numbering tables and their references when converting markdown documents to other formats.
 
-Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats (including beamer slideshows).
+Demonstration: Processing [demo3.md] with pandoc + pandoc-tablenos gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats (including beamer slideshows).
 
 This version of pandoc-tablenos was tested using pandoc 1.15.2 - 2.7.3, <sup>[1](#footnote1)</sup> and may be used with linux, macOS, and Windows.  Bug reports and feature requests may be posted on the project's [Issues tracker].  If you find pandoc-tablenos useful, then please kindly give it a star [on GitHub].
 
@@ -95,7 +95,7 @@ or
 
 Curly braces around a reference are stripped from the output.
 
-Demonstration: Processing [demo.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf], [tex], [html], [epub], [docx] and other formats.
+Demonstration: Processing [demo.md] with pandoc + pandoc-tablenos gives numbered tables and references in [pdf], [tex], [html], [epub], [docx] and other formats.
 
 [pandoc Issue #813]: https://github.com/jgm/pandoc/issues/813
 [this post]: https://github.com/jgm/pandoc/issues/813#issuecomment-70423503
@@ -125,7 +125,7 @@ instead.  If clever references are enabled by default (see [Customization](#cust
 
     !@tbl:id
 
-Demonstration: Processing [demo2.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf2], [tex][tex2], [html][html2], [epub][epub2], [docx][docx2] and other formats.
+Demonstration: Processing [demo2.md] with pandoc + pandoc-tablenos gives numbered tables and references in [pdf][pdf2], [tex][tex2], [html][html2], [epub][epub2], [docx][docx2] and other formats.
 
 Note: When using `*tbl:id` and emphasis (e.g., `*italics*`) in the same sentence, the `*` in the clever reference must be backslash-escaped; e.g., `\*tbl:id`.
 
@@ -185,7 +185,7 @@ Pandoc-tablenos may be customized by setting variables in the [metadata block] o
 
 Note that variables beginning with `tablenos-` apply to only pandoc-tablenos, whereas variables beginning with `xnos-` apply to all three of pandoc-fignos/eqnos/tablenos.
 
-Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats.
+Demonstration: Processing [demo3.md] with pandoc + pandoc-tablenos gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats.
 
 [metadata block]: http://pandoc.org/README.html#extension-yaml_metadata_block
 [docx custom styles]: https://pandoc.org/MANUAL.html#custom-styles
