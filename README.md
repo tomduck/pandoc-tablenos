@@ -167,10 +167,11 @@ Pandoc-tablenos may be customized by setting variables in the [metadata block] o
     (e.g., change from "table" to "Table");
 
   * `tablenos-plus-name` - Sets the name of a "+" reference 
-    (e.g., change it from "table" to "tab."); and
+    (e.g., change it from "table" to "tab.").  Settings here take
+    precedence over `xnos-capitalise`;
 
   * `tablenos-star-name` - Sets the name of a "*" reference 
-    (e.g., change it from "Table" to "Tab.").
+    (e.g., change it from "Table" to "Tab.");
 
   * `tablenos-caption-name` - Sets the name at the beginning of a
     caption (e.g., change it from "Table to "Tab.");
