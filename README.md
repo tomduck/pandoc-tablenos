@@ -47,19 +47,11 @@ Installation
 
 Pandoc-tablenos requires [python], a programming language that comes pre-installed on macOS and linux.  It is easily installed on Windows -- see [here](https://realpython.com/installing-python/).  Either python 2.7 or 3.x will do.
 
-Pandoc-tablenos may be installed using the shell command
-
-    pip install pandoc-tablenos --user
-
-Pip is a program that downloads and installs modules from the Python Package Index, [PyPI].  It normally comes installed with a python distribution.
-
-To upgrade to the most recent release of pandoc-tablenos, use
+Pandoc-tablenos may be installed and upgraded using the shell command
 
     pip install pandoc-tablenos --user --upgrade
 
-To upgrade to a pre-release version, use
-
-    pip install pandoc-eqnos --user --upgrade --pre
+Pip is a program that downloads and installs modules from the Python Package Index, [PyPI].  It normally comes installed with a python distribution.
 
 Instructions for installing from source are given in [README.developers].
 
