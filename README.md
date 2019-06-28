@@ -32,14 +32,40 @@ See also: [pandoc-fignos], [pandoc-eqnos]
 Contents
 --------
 
- 1. [Usage](#usage)
- 2. [Markdown Syntax](#markdown-syntax)
- 3. [Customization](#customization)
- 4. [Technical Details](#technical-details)
- 5. [Installation](#installation)
+ 1. [Installation](#installation)
+ 2. [Usage](#usage)
+ 3. [Markdown Syntax](#markdown-syntax)
+ 4. [Customization](#customization)
+ 5. [Technical Details](#technical-details)
  6. [Getting Help](#getting-help)
  7. [Development](#development)
  8. [What's New](#whats-new)
+
+
+Installation
+------------
+
+Pandoc-tablenos requires [python], a programming language that comes pre-installed on macOS and linux.  It is easily installed on Windows -- see [here](https://realpython.com/installing-python/).  Either python 2.7 or 3.x will do.
+
+Pandoc-tablenos may be installed using the shell command
+
+    pip install pandoc-tablenos --user
+
+Pip is a program that downloads and installs modules from the Python Package Index, [PyPI].  It normally comes installed with a python distribution.
+
+To upgrade to the most recent release of pandoc-tablenos, use
+
+    pip install pandoc-tablenos --user --upgrade
+
+To upgrade to a pre-release version, use
+
+    pip install pandoc-eqnos --user --upgrade --pre
+
+Instructions for installing from source are given in [README.developers].
+
+[python]: https://www.python.org/
+[PyPI]: https://pypi.python.org/pypi
+[README.developers]: README.developers
 
 
 Usage
@@ -276,51 +302,6 @@ The table and its number are wrapped in a `<div></div>` with an `id` for linking
 ### Docx Output ###
 
 Docx OOXML output is under development and subject to change.  Native capabilities will be used wherever possible.
-
-
-Installation
-------------
-
-Pandoc-tablenos requires [python], a programming language that comes pre-installed on macOS and most linux distributions.  It is easily installed on Windows -- see [here](https://realpython.com/installing-python/).  Either python 2.7 or 3.x will do.
-
-Pandoc-tablenos may be installed using the shell command
-
-    pip install pandoc-tablenos --user
-
-Pip is a program that downloads and installs modules from the Python Package Index, [PyPI].  It normally comes installed with a python distribution.
-
-To upgrade to the most recent release, use
-
-    pip install pandoc-tablenos --user --upgrade
-
-To upgrade to a pre-release version, use
-
-    pip install pandoc-eqnos --user --upgrade --pre
-
-Instructions for installing from source are given in [README.developers].
-
-[python]: https://www.python.org/
-[PyPI]: https://pypi.python.org/pypi
-[README.developers]: README.developers
-
-
-### Troubleshooting ###
-
-When prompted to upgrade `pip`, follow the instructions given to do so.  This will probably need to be done as root, or under sudo.  The installation of pandoc-tablenos can be completed as a regular user.
-
-When installing pandoc-tablenos, watch for any errors or warning messages.  In particular, pip may warn that pandoc-tablenos was installed into a directory that "is not on PATH".  This will need to be fixed before proceeding.  Access to pandoc-tablenos may be tested using the shell command
-
-    which pandoc-tablenos
-
-To determine which version of pandoc-tablenos is installed, use
-
-    pip show pandoc-tablenos
-
-As of pandoc-tablenos 1.4.2 the shell command
-
-    pandoc-tablenos --version
-
-also works.  Please be sure to have the latest version of pandoc-tablenos installed before reporting a bug.
 
 
 Getting Help
