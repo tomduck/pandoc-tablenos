@@ -299,8 +299,6 @@ To upgrade to a pre-release version, use
 
 Instructions for installing from source are given in [README.developers].
 
-Alternative installation procedures are given in [README.developers].
-
 [python]: https://www.python.org/
 [PyPI]: https://pypi.python.org/pypi
 [README.developers]: README.developers
