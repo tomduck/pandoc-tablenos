@@ -12,7 +12,7 @@
 pandoc-tablenos 2.0.0
 =====================
 
-*pandoc-tablenos* is a [pandoc] filter for numbering tables and their references when converting markdown documents to other formats.
+*pandoc-tablenos* is a [pandoc] filter for numbering tables and their references (i.e., cross-referencing) when converting markdown documents to other formats.
 
 Demonstration: Processing [demo3.md] with pandoc + pandoc-tablenos gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats (including beamer slideshows).
 
