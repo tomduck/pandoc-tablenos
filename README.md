@@ -184,18 +184,41 @@ Technical Details
 
 #### TeX/pdf Output ####
 
-During processing, pandoc-tablenos inserts packages and supporting TeX into the `header-includes` metadata field.  To see what is inserted, set the `tablenos-warninglevel` meta variable to `2`.  Note that any use of pandoc's `--include-in-header` option [overrides](https://github.com/jgm/pandoc/issues/3139) all `header-includes`.  In such cases users will need to separately include the codes pandoc-tablenos needs.
+During processing, pandoc-tablenos inserts packages and supporting TeX into the `header-includes` metadata field.  To see what is inserted, set the `tablenos-warninglevel` meta variable to `2`.  Note that any use of pandoc's `--include-in-header` option [overrides](https://github.com/jgm/pandoc/issues/3139) all `header-includes`.
+
+An example reference in TeX looks like
+
+~~~latex
+See \cref{tbl:1}.
+~~~
+
+An example table looks like
+
+~~~latex
+\begin{longtable}[]{@{}rlcl@{}}
+  \caption{Demonstration of a simple table.
+  \label{tbl:1}}\tabularnewline
+  \toprule
+  Right & Left & Center & Default\tabularnewline
+  \midrule
+  \endfirsthead
+  \toprule
+  Right & Left & Center & Default\tabularnewline
+  \midrule
+  \endhead
+  12  & 12  & 12  & 12  \tabularnewline
+  123 & 123 & 123 & 123 \tabularnewline
+  \bottomrule
+\end{longtable}
+~~~
 
 Other details:
 
-  * TeX is only inserted into the `header-includes` if it is
-    actually needed (in particular, packages are not installed
-    if they are found elsewhere in the `header-includes`);
   * The `cleveref` and `caption` packages are used for clever
     references and caption control, respectively; 
   * The `\label` and `\ref` macros are used for table labels and
-    references, respectively; `\Cref` and `\cref` are used for
-    clever references;
+    references, respectively (`\Cref` and `\cref` are used for
+    clever references);
   * Clever reference names are set with `\Crefname` and `\crefname`;
   * The caption name is set with`\tablename`;
   * Tags are supported by way of a custom environment that
@@ -207,15 +230,52 @@ Other details:
 
 #### Other Output Formats ####
 
-  * Linking uses native capabilities wherever possible;
+An example reference in html looks like
 
-  * The numbers, caption name, and (clever) references are hard-coded
-    into the output;
+~~~html
+See table <a href="#tbl:1">1</a>.
+~~~
 
-  * The output is structured such that references and table
-    captions may be styled (e.g., using
-    [css](https://pandoc.org/MANUAL.html#option--css) or
-    [docx custom styles]).
+An example table looks like
+
+~~~html
+<div id="tbl:1" class="tablenos">
+  <table>
+    <caption>
+      <span>Table 1:</span> Demonstration of a simple table.
+    </caption>
+    <thead>
+      <tr class="header">
+        <th style="text-align: right;">Right</th>
+        <th style="text-align: left;">Left</th>
+        <th style="text-align: center;">Center</th>
+        <th>Default</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr class="odd">
+        <td style="text-align: right;">12</td>
+        <td style="text-align: left;">12</td>
+        <td style="text-align: center;">12</td>
+       <td>12</td>
+      </tr>
+      <tr class="even">
+        <td style="text-align: right;">123</td>
+        <td style="text-align: left;">123</td>
+        <td style="text-align: center;">123</td>
+        <td>123</td>
+      </tr>
+    </tbody>
+  </table>
+</div>
+~~~
+
+The table and its number are wrapped in a div with an `id` for linking and with class `eqnos` to allow for css styling.
+
+
+#### Docx Output ####
+
+Docx OOXML output is under development and subject to change.  Native capabilities will be used wherever possible.
 
 
 Installation
