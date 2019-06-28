@@ -163,7 +163,7 @@ Pandoc-tablenos may be customized by setting variables in the [metadata block] o
   * `tablenos-cleveref` or just `cleveref` - Set to `True` to assume
     "+" clever references by default;
 
-  * `xnos-capitalise` - Capitalszes the names of "+" references
+  * `xnos-capitalise` - Capitalises the names of "+" references
     (e.g., change from "table" to "Table");
 
   * `tablenos-plus-name` - Sets the name of a "+" reference 
