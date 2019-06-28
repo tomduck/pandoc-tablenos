@@ -89,7 +89,7 @@ Demonstration: Processing [demo.md] with `pandoc --filter pandoc-tablenos` gives
 [epub]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo.epub
 [docx]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo.docx
 
-#### Clever References ####
+### Clever References ###
 
 Writing markdown like
 
@@ -119,7 +119,7 @@ Note: When using `*tbl:id` and emphasis (e.g., `*italics*`) in the same sentence
 [docx2]: https://github.com/tomduck/pandoc-tablenos/blob/master/demos/out/demo2.docx
 
 
-#### Tagged Tables ####
+### Tagged Tables ###
 
 The table number may be overridden by placing a tag in the table's attributes block as follows:
 
@@ -182,7 +182,7 @@ Demonstration: Processing [demo3.md] with `pandoc --filter pandoc-tablenos` give
 Technical Details
 -----------------
 
-#### TeX/pdf Output ####
+### TeX/pdf Output ###
 
 During processing, pandoc-tablenos inserts packages and supporting TeX into the `header-includes` metadata field.  To see what is inserted, set the `tablenos-warninglevel` meta variable to `2`.  Note that any use of pandoc's `--include-in-header` option [overrides](https://github.com/jgm/pandoc/issues/3139) all `header-includes`.
 
@@ -228,7 +228,7 @@ Other details:
     `\captionsetup`.
 
 
-#### Other Output Formats ####
+### Other Output Formats ###
 
 An example reference in html looks like
 
@@ -273,7 +273,7 @@ An example table looks like
 The table and its number are wrapped in a div with an `id` for linking and with class `eqnos` to allow for css styling.
 
 
-#### Docx Output ####
+### Docx Output ###
 
 Docx OOXML output is under development and subject to change.  Native capabilities will be used wherever possible.
 
@@ -304,7 +304,7 @@ Instructions for installing from source are given in [README.developers].
 [README.developers]: README.developers
 
 
-#### Troubleshooting ####
+### Troubleshooting ###
 
 When prompted to upgrade `pip`, follow the instructions given to do so.  This will probably need to be done as root, or under sudo.  The installation of pandoc-tablenos can be completed as a regular user.
 
