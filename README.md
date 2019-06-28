@@ -294,7 +294,7 @@ An example table looks like
 </div>
 ~~~
 
-The table and its number are wrapped in a `<div></div>` with an `id` for linking and with class `eqnos` to allow for css styling.
+The table is wrapped in a `<div></div>` with an `id` for linking and with class `tablenos` to allow for css styling.
 
 
 ### Docx Output ###
