@@ -469,10 +469,10 @@ def add_tex(meta):
     """Adds text to the meta data."""
 
     # pylint: disable=too-many-boolean-expressions
-    warnings = warninglevel == 2 and  references and \
-      (pandocxnos.cleveref_required() or has_unnumbered_tables or
-       plusname_changed or starname_changed or has_tagged_tables or
-       captionname != 'Table' or numbersections)
+    warnings = warninglevel == 2 and (has_unnumbered_tables or \
+      (references and (pandocxnos.cleveref_required() or \
+       separator_changed or plusname_changed or starname_changed \
+       or has_tagged_tables or captionname_changed or numbersections)))
     if warnings:
         msg = textwrap.dedent("""\
                   pandoc-tablenos: Wrote the following blocks to
