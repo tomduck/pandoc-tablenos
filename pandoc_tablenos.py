@@ -580,8 +580,8 @@ def main():
                                 detach_attrs_table], blocks)
 
     # Second pass
-    process_refs = process_refs_factory('pandoc-tablenos', references.keys(),
-                                        warninglevel)
+    process_refs = process_refs_factory('pandoc-tablenos', LABEL_PATTERN,
+                                        references.keys(), warninglevel)
     replace_refs = replace_refs_factory(references,
                                         cleveref, False,
                                         plusname if not capitalise \
