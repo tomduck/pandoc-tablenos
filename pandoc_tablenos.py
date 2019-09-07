@@ -80,7 +80,7 @@ capitalise = False      # Default setting for capitalizing plusname
 plusname = ['table', 'tables']  # Sets names for mid-sentence references
 starname = ['Table', 'Tables']  # Sets names for references at sentence start
 numbersections = False  # Flags that tables should be numbered by section
-warninglevel = 1        # 0 - no warnings; 1 - some warnings; 2 - all warnings
+warninglevel = 2        # 0 - no warnings; 1 - some warnings; 2 - all warnings
 
 # Processing state variables
 cursec = None    # Current section
