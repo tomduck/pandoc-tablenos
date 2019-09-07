@@ -93,7 +93,7 @@ or
 
     {@tbl:id}
 
-Curly braces around a reference are stripped from the output.
+Curly braces protect a reference and are stripped from the output.
 
 Demonstration: Processing [demo.md] with pandoc + pandoc-tablenos gives numbered tables and references in [pdf], [tex], [html], [epub], [docx] and other formats.
 
@@ -106,6 +106,7 @@ Demonstration: Processing [demo.md] with pandoc + pandoc-tablenos gives numbered
 [html]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo.html
 [epub]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo.epub
 [docx]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo.docx
+
 
 ### Clever References ###
 
@@ -148,6 +149,13 @@ The table number may be overridden by placing a tag in the table's attributes bl
     Table: Caption. {#tbl:id tag="B.1"}
 
 The tag may be arbitrary text, or an inline equation such as `$\text{B.1}'$`.  Mixtures of the two are not currently supported.
+
+
+### Disabling Links ###
+
+To disable a link on a reference, set `nolink=True` in the reference's attributes:
+
+    @tbl:id{nolink=True}
 
 
 Customization
