@@ -80,6 +80,7 @@ capitalise = False      # Default setting for capitalizing plusname
 plusname = ['table', 'tables']  # Sets names for mid-sentence references
 starname = ['Table', 'Tables']  # Sets names for references at sentence start
 numbersections = False  # Flags that tables should be numbered by section
+secoffset = 0           # Section number offset
 warninglevel = 2        # 0 - no warnings; 1 - some warnings; 2 - all warnings
 
 # Processing state variables
@@ -167,7 +168,7 @@ def _process_table(value, fmt):
     if numbersections:
         if fmt in ['html', 'html5', 'epub', 'epub2', 'epub3', 'docx'] and \
           'tag' not in attrs:
-            attrs['tag'] = str(cursec) + '.' + str(Nreferences)
+            attrs['tag'] = str(cursec+secoffset) + '.' + str(Nreferences)
             Nreferences += 1
 
     # Save reference information
@@ -284,7 +285,7 @@ def process_tables(key, value, fmt, meta):
     return None
 
 
-# Main program ---------------------------------------------------------------
+# TeX blocks -----------------------------------------------------------------
 
 # Define an environment that disables table caption prefixes.  Counters
 # must be saved and later restored.  The \thetable and \theHtable counter
@@ -350,6 +351,12 @@ NUMBER_BY_SECTION_TEX = r"""
 \numberwithin{table}{section}
 """
 
+# Section number offset
+SECOFFSET_TEX = r"""
+%% pandoc-fignos: section number offset
+\setcounter{section}{%s}
+"""
+
 
 # Main program ---------------------------------------------------------------
 
@@ -366,6 +373,7 @@ def process(meta):
     global plusname        # Sets names for mid-sentence references
     global starname        # Sets names for references at sentence start
     global numbersections  # Flags that sections should be numbered by section
+    global secoffset       # Section number offset
     global warninglevel    # 0 - no warnings; 1 - some; 2 - all
     global captionname_changed  # Flags the caption name changed
     global separator_changed    # Flags the caption separator changed
@@ -385,7 +393,8 @@ def process(meta):
                  'tablenos-cleveref', 'xnos-cleveref',
                  'xnos-capitalise', 'xnos-capitalize',
                  'tablenos-plus-name', 'tablenos-star-name',
-                 'tablenos-number-sections', 'xnos-number-sections']
+                 'tablenos-number-sections', 'xnos-number-sections',
+                 'xnos-number-offset']
 
     if warninglevel:
         for name in meta:
@@ -464,6 +473,8 @@ def process(meta):
             numbersections = check_bool(get_meta(meta, name))
             break
 
+    if 'xnos-number-offset' in meta:
+        secoffset = int(get_meta(meta, name))
 
 def add_tex(meta):
     """Adds text to the meta data."""
@@ -472,7 +483,8 @@ def add_tex(meta):
     warnings = warninglevel == 2 and (has_unnumbered_tables or \
       (references and (pandocxnos.cleveref_required() or \
        separator_changed or plusname_changed or starname_changed \
-       or has_tagged_tables or captionname_changed or numbersections)))
+       or has_tagged_tables or captionname_changed or numbersections \
+       or secoffset)))
     if warnings:
         msg = textwrap.dedent("""\
                   pandoc-tablenos: Wrote the following blocks to
@@ -540,6 +552,11 @@ def add_tex(meta):
     if numbersections and references:
         pandocxnos.add_to_header_includes(
             meta, 'tex', NUMBER_BY_SECTION_TEX, warninglevel)
+
+    if secoffset and references:
+        pandocxnos.add_to_header_includes(
+            meta, 'tex', SECOFFSET_TEX % secoffset, warninglevel,
+            r'\\setcounter\{section\}')
 
     if warnings:
         STDERR.write('\n')
