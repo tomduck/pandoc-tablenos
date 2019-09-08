@@ -224,7 +224,7 @@ Technical Details
 
 ### TeX/pdf Output ###
 
-During processing, pandoc-tablenos inserts packages and supporting TeX into the `header-includes` metadata field.  To see what is inserted, set the `tablenos-warninglevel` meta variable to `2`.  Note that any use of pandoc's `--include-in-header` option [overrides](https://github.com/jgm/pandoc/issues/3139) all `header-includes`.
+During processing, pandoc-tablenos inserts packages and supporting TeX into the `header-includes` metadata field.  To see what is inserted, set the `tablenos-warning-level` meta variable to `2`.  Note that any use of pandoc's `--include-in-header` option [overrides](https://github.com/jgm/pandoc/issues/3139) all `header-includes`.
 
 An example reference in TeX looks like
 
