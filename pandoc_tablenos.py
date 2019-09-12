@@ -527,7 +527,7 @@ def add_tex(meta):
         pandocxnos.add_to_header_includes(meta, 'tex', tex, warninglevel)
 
     if starname_changed and references:
-        tex = """\
+        tex = """
             %%%% pandoc-tablenos: change Cref names
             \\Crefname{table}{%s}{%s}
         """ % (starname[0], starname[1])
