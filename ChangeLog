@@ -10,6 +10,10 @@ pandoc-fignos 2.0.0 (unreleased)
     * Support for disabling links on selected references
       (pandoc-fignos Issue #54).
     * Support for custom caption separators (pandoc-fignos Issue #67).
+    * Better handling of missing references.
+    * Changed `tablenos-number-sections` and `xnos-number-sections`
+      options to `tablenos-number-by-section` and
+      `xnos-number-by-section`
 
 
 pandoc-tablenos 1.4.2 (2019-05-17)

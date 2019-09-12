@@ -393,7 +393,7 @@ def process(meta):
                  'tablenos-cleveref', 'xnos-cleveref',
                  'xnos-capitalise', 'xnos-capitalize',
                  'tablenos-plus-name', 'tablenos-star-name',
-                 'tablenos-number-sections', 'xnos-number-sections',
+                 'tablenos-number-by-section', 'xnos-number-by-section',
                  'xnos-number-offset']
 
     if warninglevel:
@@ -468,7 +468,7 @@ def process(meta):
         for name in starname:
             assert isinstance(name, STRTYPES)
 
-    for name in ['tablenos-number-sections', 'xnos-number-sections']:
+    for name in ['tablenos-number-by-section', 'xnos-number-by-section']:
         if name in meta:
             numbersections = check_bool(get_meta(meta, name))
             break
