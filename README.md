@@ -173,8 +173,8 @@ Pandoc-tablenos may be customized by setting variables in the [metadata block] o
 
   * `tablenos-warning-level` or `xnos-warning-level` - Set to `0` for
     no warnings, `1` for critical warnings, or `2` (default) for
-    critical warnings and informational messages.  Warning level 2
-    should be used when troubleshooting.
+    all warnings.  Warning level 2 should be used when
+    troubleshooting.
 
   * `tablenos-cleveref` or just `cleveref` - Set to `True` to assume
     "+" clever references by default;
@@ -216,7 +216,7 @@ Pandoc-tablenos may be customized by setting variables in the [metadata block] o
     set to the same integer value.  For LaTeX/PDF, this option
     offsets the actual section numbers as required.
 
-Note that variables beginning with `tablenos-` apply to only pandoc-tablenos, whereas variables beginning with `xnos-` apply to all three of pandoc-fignos/eqnos/tablenos.
+Note that variables beginning with `tablenos-` apply to only pandoc-tablenos, whereas variables beginning with `xnos-` apply to all of the pandoc-fignos/eqnos/tablenos/secnos.
 
 Demonstration: Processing [demo3.md] with pandoc + pandoc-tablenos gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats.
 
