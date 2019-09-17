@@ -1,0 +1,32 @@
+\begin{longtable}[]{@{}rlcl@{}}
+\caption{Demonstration of a simple table. \label{tbl:1}}\tabularnewline
+\toprule
+Right & Left & Center & Default\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+Right & Left & Center & Default\tabularnewline
+\midrule
+\endhead
+12 & 12 & 12 & 12\tabularnewline
+123 & 123 & 123 & 123\tabularnewline
+1 & 1 & 1 & 1\tabularnewline
+\bottomrule
+\end{longtable}
+
+\Cref{tbl:1} is from the Pandoc User's Guide. A simpler table is given
+by \cref{tbl:2}:
+
+\begin{longtable}[]{@{}ll@{}}
+\caption{Even simpler. \label{tbl:2}}\tabularnewline
+\toprule
+A & B\tabularnewline
+\midrule
+\endfirsthead
+\toprule
+A & B\tabularnewline
+\midrule
+\endhead
+0 & 1\tabularnewline
+\bottomrule
+\end{longtable}
