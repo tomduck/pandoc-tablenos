@@ -1,4 +1,4 @@
-pandoc-fignos 2.0.0 (unreleased)
+pandoc-tablenos 2.0.0 (unreleased)
 
     * A warnings system has been added.
     * Meta variable names have been updated.
