@@ -103,11 +103,11 @@ Demonstration: Processing [demo.md] with pandoc + pandoc-tablenos gives numbered
 [this post]: https://github.com/jgm/pandoc/issues/813#issuecomment-70423503
 [@scaramouche1]: https://github.com/scaramouche1
 [demo.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo.md
-[pdf]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo.pdf
-[tex]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo.tex
-[html]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo.html
-[epub]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo.epub
-[docx]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo.docx
+[pdf]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/demo.pdf
+[tex]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/demo.tex
+[html]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/demo.html
+[epub]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/demo.epub
+[docx]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/demo.docx
 
 
 ### Clever References ###
@@ -133,11 +133,11 @@ Demonstration: Processing [demo2.md] with pandoc + pandoc-tablenos gives numbere
 Note: When using `*tbl:id` and emphasis (e.g., `*italics*`) in the same sentence, the `*` in the clever reference must be backslash-escaped; e.g., `\*tbl:id`.
 
 [demo2.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo2.md
-[pdf2]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo2.pdf
-[tex2]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo2.tex
-[html2]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo2.html
-[epub2]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo2.epub
-[docx2]: https://github.com/tomduck/pandoc-tablenos/blob/demos/out/demo2.docx
+[pdf2]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/demo2.pdf
+[tex2]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/demo2.tex
+[html2]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/demo2.html
+[epub2]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/demo2.epub
+[docx2]: https://github.com/tomduck/pandoc-tablenos/blob/demos/demo2.docx
 
 
 ### Tagged Tables ###
@@ -217,11 +217,11 @@ Demonstration: Processing [demo3.md] with pandoc + pandoc-tablenos gives numbere
 [metadata block]: http://pandoc.org/README.html#extension-yaml_metadata_block
 [docx custom styles]: https://pandoc.org/MANUAL.html#custom-styles
 [demo3.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo3.md
-[pdf3]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo3.pdf
-[tex3]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo3.tex
-[html3]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo3.html
-[epub3]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo3.epub
-[docx3]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo3.docx
+[pdf3]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/demo3.pdf
+[tex3]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/demo3.tex
+[html3]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/demo3.html
+[epub3]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/demo3.epub
+[docx3]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/demo3.docx
 
 
 Technical Details
