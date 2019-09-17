@@ -22,7 +22,7 @@ from setuptools import setup
 
 DESCRIPTION = """\
 A pandoc filter for numbering tables and their references
-when converting markdown documents to other formats.
+when converting markdown to other formats.
 """
 
 # From https://stackoverflow.com/a/39671214
@@ -45,7 +45,7 @@ setup(
     download_url='https://github.com/tomduck/pandoc-tablenos/tarball/' + \
                  __version__,
 
-    install_requires=['pandoc-xnos~=2.0.0b4'],
+    install_requires=['pandoc-xnos~=2.0.0'],
 
     py_modules=['pandoc_tablenos'],
     entry_points={'console_scripts':['pandoc-tablenos = pandoc_tablenos:main']},
