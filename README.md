@@ -1,18 +1,11 @@
 
-
-**Notice:** This beta release may be installed using
-
-    pip install pandoc-tablenos --upgrade --pre --user
-
 **New in 2.0.0:** This is a major release which is easier to use at the cost of minor incompatibilities with previous versions. [more...](#whats-new).
-
-Also: A [pandoc-secnos] filter has been added to the pandoc-xnos filter suite.
 
 
 pandoc-tablenos 2.0.0
 =====================
 
-*pandoc-tablenos* is a [pandoc] filter for numbering tables and their references (i.e., cross-referencing) when converting markdown documents to other formats.
+*pandoc-tablenos* is a [pandoc] filter for numbering tables and their references when converting markdown documents to other formats.  LaTeX/pdf, html, and epub output have native support.  Native support for docx output is a work in progress.
 
 Demonstration: Processing [demo3.md] with pandoc + pandoc-tablenos gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats (including beamer slideshows).
 
@@ -49,11 +42,11 @@ Installation
 
 Pandoc-tablenos requires [python], a programming language that comes pre-installed on macOS and linux.  It is easily installed on Windows -- see [here](https://realpython.com/installing-python/).  Either python 2.7 or 3.x will do.
 
-Pandoc-tablenos may be installed and upgraded using the shell command
+Pandoc-tablenos may be installed using the shell command
 
-    pip install pandoc-tablenos --user --upgrade
+    pip install pandoc-tablenos --user
 
-Pip is a program that downloads and installs software from the Python Package Index, [PyPI].  It normally comes installed with a python distribution.<sup>[2](#footnote2)</sup>
+and upgraded by appending `--upgrade` to the above command.  Pip is a program that downloads and installs software from the Python Package Index, [PyPI].  It normally comes installed with a python distribution.<sup>[2](#footnote2)</sup>
 
 Instructions for installing from source are given in [README.developers].
 
@@ -109,11 +102,11 @@ Demonstration: Processing [demo.md] with pandoc + pandoc-tablenos gives numbered
 [this post]: https://github.com/jgm/pandoc/issues/813#issuecomment-70423503
 [@scaramouche1]: https://github.com/scaramouche1
 [demo.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo.md
-[pdf]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo.pdf
-[tex]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo.tex
-[html]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo.html
-[epub]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo.epub
-[docx]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo.docx
+[pdf]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo.pdf
+[tex]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo.tex
+[html]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo.html
+[epub]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo.epub
+[docx]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo.docx
 
 
 ### Clever References ###
@@ -139,11 +132,11 @@ Demonstration: Processing [demo2.md] with pandoc + pandoc-tablenos gives numbere
 Note: When using `*tbl:id` and emphasis (e.g., `*italics*`) in the same sentence, the `*` in the clever reference must be backslash-escaped; e.g., `\*tbl:id`.
 
 [demo2.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo2.md
-[pdf2]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo2.pdf
-[tex2]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo2.tex
-[html2]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo2.html
-[epub2]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo2.epub
-[docx2]: https://github.com/tomduck/pandoc-tablenos/blob/master/demos/out/demo2.docx
+[pdf2]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo2.pdf
+[tex2]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo2.tex
+[html2]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo2.html
+[epub2]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo2.epub
+[docx2]: https://github.com/tomduck/pandoc-tablenos/blob/demos/out/demo2.docx
 
 
 ### Tagged Tables ###
@@ -223,11 +216,11 @@ Demonstration: Processing [demo3.md] with pandoc + pandoc-tablenos gives numbere
 [metadata block]: http://pandoc.org/README.html#extension-yaml_metadata_block
 [docx custom styles]: https://pandoc.org/MANUAL.html#custom-styles
 [demo3.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo3.md
-[pdf3]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo3.pdf
-[tex3]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo3.tex
-[html3]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo3.html
-[epub3]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo3.epub
-[docx3]: https://raw.githack.com/tomduck/pandoc-tablenos/master/demos/out/demo3.docx
+[pdf3]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo3.pdf
+[tex3]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo3.tex
+[html3]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo3.html
+[epub3]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo3.epub
+[docx3]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/out/demo3.docx
 
 
 Technical Details
