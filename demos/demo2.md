@@ -1,3 +1,7 @@
+---
+title: Pandoc-tablenos Demo
+...
+
   Right     Left     Center     Default
 -------     ------ ----------   -------
      12     12        12            12

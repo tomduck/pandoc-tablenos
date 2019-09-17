@@ -1,4 +1,5 @@
 ---
+title: Pandoc-tablenos Demo
 tablenos-cleveref: True
 tablenos-plus-name: Tab.
 ...

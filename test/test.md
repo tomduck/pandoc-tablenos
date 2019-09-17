@@ -1,4 +1,5 @@
 ---
+title: Pandoc-tablenos Test
 tablenos-caption-name: TABLE
 tablenos-plus-name: TAB.
 tablenos-star-name: TABLE
@@ -52,19 +53,13 @@ Table: Just as simple. {#tbl:3}
 ****
 
 
-An unreferenceable table:
+An unreferenceable, numbered table:
 
 X Y
 - -
 0 1
 
 Table: Cannot be referenced. {#tbl:}
-
-
-****
-
-
-A [regular link](http://example.com/), an [*italicized link*](http://example.com/) and an email.address@mailinator.com.
 
 
 \newpage

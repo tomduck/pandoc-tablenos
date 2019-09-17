@@ -1,3 +1,21 @@
+pandoc-tablenos 2.0.0 (unreleased)
+
+    * A warnings system has been added.
+    * Meta variable names have been updated.
+    * TeX codes have been completely overhauled.
+    * Html/epub tables are now enclosed in a `<div>`.
+    * Epub support is generally improved.
+    * Support section number offsets in table numbers
+      (pandoc-fignos Issue #47).
+    * Support for disabling links on selected references
+      (pandoc-fignos Issue #54).
+    * Support for custom caption separators (pandoc-fignos Issue #67).
+    * Better handling of missing references.
+    * Changed `tablenos-number-sections` and `xnos-number-sections`
+      options to `tablenos-number-by-section` and
+      `xnos-number-by-section`
+
+
 pandoc-tablenos 1.4.2 (2019-05-17)
 
     * Support epub2 and epub3 targets; use id tag (Issue #13).
