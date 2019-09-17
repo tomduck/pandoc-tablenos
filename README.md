@@ -5,7 +5,7 @@
 pandoc-tablenos 2.0.0
 =====================
 
-*pandoc-tablenos* is a [pandoc] filter for numbering tables and their references when converting markdown documents to other formats.  LaTeX/pdf, html, and epub output have native support.  Native support for docx output is a work in progress.
+*pandoc-tablenos* is a [pandoc] filter for numbering tables and their references when converting markdown to other formats.  LaTeX/pdf, html, and epub output have native support.  Native support for docx output is a work in progress.
 
 Demonstration: Processing [demo3.md] with pandoc + pandoc-tablenos gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats (including beamer slideshows).
 
@@ -66,7 +66,7 @@ option with pandoc.  Alternatively, use
 
     --filter pandoc-xnos
 
-to activate all of the `pandoc-fignos`, `pandoc-eqnos`, `pandoc-tablenos`, and `pandoc-secnos` filters (if installed).
+to activate all of the [pandoc-xnos] filters (if installed).
 
 Any use of `--filter pandoc-citeproc` or `--bibliography=FILE` should come *after* the `pandoc-tablenos` or `pandoc-xnos` filter calls.
 
