@@ -78,7 +78,8 @@ warninglevel = 2        # 0 - no warnings; 1 - some warnings; 2 - all warnings
 # Processing state variables
 cursec = None    # Current section
 Nreferences = 0  # Number of references in current section (or document)
-references = {}  # Maps reference labels to [number/tag, table secno]
+references = {}  # Maps reference labels to [number/tag, table secno,
+                 # duplicate flag]
 
 # Processing flags
 captionname_changed = False     # Flags the caption name changed
@@ -171,9 +172,11 @@ def _process_table(value, fmt):
             attrs['tag'] = attrs['tag'].strip('"')
         elif attrs['tag'][0] == "'" and attrs['tag'][-1] == "'":
             attrs['tag'] = attrs['tag'].strip("'")
-        references[attrs.id] = [attrs['tag'], cursec]
+        references[attrs.id] = pandocxnos.Target(attrs['tag'], cursec,
+                                                 attrs.id in references)
     else:  # ... then save the table number
-        references[attrs.id] = [Nreferences, cursec]
+        references[attrs.id] = pandocxnos.Target(Nreferences, cursec,
+                                                 attrs.id in references)
         Nreferences += 1  # Increment the global reference counter
 
     return table
@@ -182,6 +185,7 @@ def _process_table(value, fmt):
 def _adjust_caption(fmt, table, value):
     """Adjusts the caption."""
     attrs, caption = table['attrs'], table['caption']
+    num = references[attrs.id].num
     if fmt in['latex', 'beamer']:  # Append a \label if this is referenceable
         if not table['is_unreferenceable']:
             value[1] += [RawInline('tex', r'\label{%s}'%attrs.id)]
@@ -189,25 +193,24 @@ def _adjust_caption(fmt, table, value):
         sep = {'none':'', 'colon':':', 'period':'.', 'space':' ',
                'quad':u'\u2000', 'newline':'\n'}[separator]
 
-        if isinstance(references[attrs.id][0], int):  # Numbered reference
+        if isinstance(num, int):  # Numbered reference
             if fmt in ['html', 'html5', 'epub', 'epub2', 'epub3']:
                 value[1] = [RawInline('html', r'<span>'),
                             Str(captionname), Space(),
-                            Str('%d%s'%(references[attrs.id][0], sep)),
+                            Str('%d%s'%(num, sep)),
                             RawInline('html', r'</span>')]
             else:
                 value[1] = [Str(captionname),
                             Space(),
-                            Str('%d%s'%(references[attrs.id][0], sep))]
+                            Str('%d%s'%(num, sep))]
             value[1] += [Space()] + list(caption)
         else:  # Tagged reference
-            assert isinstance(references[attrs.id][0], STRTYPES)
-            text = references[attrs.id][0]
-            if text.startswith('$') and text.endswith('$'):
-                math = text.replace(' ', r'\ ')[1:-1]
+            assert isinstance(num, STRTYPES)
+            if num.startswith('$') and num.endswith('$'):
+                math = num.replace(' ', r'\ ')[1:-1]
                 els = [Math({"t":"InlineMath", "c":[]}, math), Str(sep)]
             else:  # Text
-                els = [Str(text + sep)]
+                els = [Str(num + sep)]
             if fmt in ['html', 'html5', 'epub', 'epub2', 'epub3']:
                 value[1] = \
                   [RawInline('html', r'<span>'),
@@ -240,7 +243,7 @@ def _add_markup(fmt, table, value):
         if table['is_tagged']:  # A table cannot be tagged if it is unnumbered
             has_tagged_tables = True
             ret = [RawBlock('tex', r'\begin{tablenos:tagged-table}[%s]' % \
-                            references[attrs.id][0]),
+                            references[attrs.id].num),
                    AttrTable(*value),
                    RawBlock('tex', r'\end{tablenos:tagged-table}')]
     elif fmt in ('html', 'html5', 'epub', 'epub2', 'epub3'):
@@ -599,16 +602,15 @@ def main(stdin=STDIN, stdout=STDOUT, stderr=STDERR):
                                 detach_attrs_table], blocks)
 
     # Second pass
-    process_refs = process_refs_factory('pandoc-tablenos', LABEL_PATTERN,
-                                        references.keys(), warninglevel)
+    process_refs = process_refs_factory(LABEL_PATTERN, references.keys(),
+                                        warninglevel)
     replace_refs = replace_refs_factory(references,
                                         cleveref, False,
                                         plusname if not capitalise \
                                         or plusname_changed else
                                         [name.title() for name in plusname],
                                         starname)
-    attach_attrs_span = attach_attrs_factory('pandoc-tablenos', Span,
-                                             warninglevel, replace=True)
+    attach_attrs_span = attach_attrs_factory(Span, warninglevel, replace=True)
     altered = functools.reduce(lambda x, action: walk(x, action, fmt, meta),
                                [repair_refs, process_refs, replace_refs,
                                 attach_attrs_span],
