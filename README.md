@@ -1,8 +1,12 @@
 
-**New in 2.0.0:** This is a major release which is easier to use at the cost of minor incompatibilities with previous versions. [more...](#whats-new).
+**New in 2.1.0:** Warnings are now given for duplicate reference targets.
+
+**New in 2.0.0:** This is a major release which is easier to use at the cost of minor incompatibilities with previous versions. 
+
+[more...](#whats-new).
 
 
-pandoc-tablenos 2.0.0
+pandoc-tablenos 2.1.0
 =====================
 
 *pandoc-tablenos* is a [pandoc] filter for numbering tables and their references when converting markdown to other formats.  It is part of the [pandoc-xnos] filter suite.  LaTeX/pdf, html, and epub output have native support.  Native support for docx output is a work in progress.
@@ -339,6 +343,8 @@ Developer notes are maintained in [README.developers].
 
 What's New
 ----------
+
+**New in 2.1.0:** Warnings are now given for duplicate reference targets.
 
 **New in 2.0.0:**  This version represents a major revision of pandoc-tablenos.  While the interface is similar to that of the 1.x series, some users may encounter minor compatibility issues.
 
