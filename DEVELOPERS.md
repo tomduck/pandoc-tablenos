@@ -53,6 +53,9 @@ Regression tests for pandoc-tablenos are provided in `test/`.  Read the README.m
 Preparing a Release
 -------------------
 
+These are notes for release managers.
+
+
 ### Merging ####
 
 Merge the `nextrelease` branch into `master` using
