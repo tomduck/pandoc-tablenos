@@ -134,7 +134,7 @@ instead.  If clever references are enabled by default (see [Customization](#cust
 
 Demonstration: Processing [demo2.md] with pandoc + pandoc-tablenos gives numbered tables and references in [pdf][pdf2], [tex][tex2], [html][html2], [epub][epub2], [docx][docx2] and other formats.
 
-Note: When using `*tbl:id` and emphasis (e.g., `*italics*`) in the same sentence, the `*` in the clever reference must be backslash-escaped; e.g., `\*tbl:id`.
+Note: When using `*@tbl:id` and emphasis (e.g., `*italics*`) in the same sentence, the `*` in the clever reference must be backslash-escaped; e.g., `\*@tbl:id`.
 
 [demo2.md]: https://raw.githubusercontent.com/tomduck/pandoc-tablenos/master/demos/demo2.md
 [pdf2]: https://raw.githack.com/tomduck/pandoc-tablenos/demos/demo2.pdf
