@@ -78,7 +78,7 @@ warninglevel = 2        # 0 - no warnings; 1 - some warnings; 2 - all warnings
 # Processing state variables
 cursec = None  # Current section
 Ntargets = 0   # Number of targets in current section (or document)
-targets = {}   # Maps target labels to [number/tag, table secno, duplicate flag]
+targets = {}   # Global targets tracker
 
 # Processing flags
 captionname_changed = False     # Flags the caption name changed
