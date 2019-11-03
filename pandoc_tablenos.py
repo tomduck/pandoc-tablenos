@@ -29,7 +29,7 @@ __version__ = '2.1.1'
 #   1. Insert text for the table number in each table caption.
 #      For LaTeX, insert \label{...} instead.  The table labels
 #      and associated table numbers are stored in the global
-#      references tracker.
+#      targets tracker.
 #
 #   2. Replace each reference with a table number.  For LaTeX,
 #      replace with \ref{...} instead.
@@ -76,10 +76,9 @@ secoffset = 0           # Section number offset
 warninglevel = 2        # 0 - no warnings; 1 - some warnings; 2 - all warnings
 
 # Processing state variables
-cursec = None    # Current section
-Nreferences = 0  # Number of references in current section (or document)
-references = {}  # Maps reference labels to [number/tag, table secno,
-                 # duplicate flag]
+cursec = None  # Current section
+Ntargets = 0   # Number of targets in current section (or document)
+targets = {}   # Maps target labels to [number/tag, table secno, duplicate flag]
 
 # Processing flags
 captionname_changed = False     # Flags the caption name changed
@@ -121,8 +120,8 @@ def _process_table(value, fmt):
     """Processes the table.  Returns a dict containing table properties."""
 
     # pylint: disable=global-statement
-    global cursec       # Current section being processed
-    global Nreferences  # Number of refs in current section (or document)
+    global cursec    # Current section being processed
+    global Ntargets  # Number of refs in current section (or document)
     global has_unnumbered_tables  # Flags unnumbered tables were found
 
     # Initialize the return value
@@ -154,15 +153,15 @@ def _process_table(value, fmt):
     # Update the current section number
     if attrs['secno'] != cursec:  # The section number changed
         cursec = attrs['secno']   # Update the global section tracker
-        Nreferences = 1           # Resets the global reference counter
+        Ntargets = 1              # Resets the global target counter
 
     # Pandoc's --number-sections supports section numbering latex/pdf, html,
     # epub, and docx
     if numbersections:
         if fmt in ['html', 'html5', 'epub', 'epub2', 'epub3', 'docx'] and \
           'tag' not in attrs:
-            attrs['tag'] = str(cursec+secoffset) + '.' + str(Nreferences)
-            Nreferences += 1
+            attrs['tag'] = str(cursec+secoffset) + '.' + str(Ntargets)
+            Ntargets += 1
 
     # Save reference information
     table['is_tagged'] = 'tag' in attrs
@@ -172,12 +171,12 @@ def _process_table(value, fmt):
             attrs['tag'] = attrs['tag'].strip('"')
         elif attrs['tag'][0] == "'" and attrs['tag'][-1] == "'":
             attrs['tag'] = attrs['tag'].strip("'")
-        references[attrs.id] = pandocxnos.Target(attrs['tag'], cursec,
-                                                 attrs.id in references)
+        targets[attrs.id] = pandocxnos.Target(attrs['tag'], cursec,
+                                              attrs.id in targets)
     else:  # ... then save the table number
-        references[attrs.id] = pandocxnos.Target(Nreferences, cursec,
-                                                 attrs.id in references)
-        Nreferences += 1  # Increment the global reference counter
+        targets[attrs.id] = pandocxnos.Target(Ntargets, cursec,
+                                              attrs.id in targets)
+        Ntargets += 1  # Increment the global targets counter
 
     return table
 
@@ -185,7 +184,7 @@ def _process_table(value, fmt):
 def _adjust_caption(fmt, table, value):
     """Adjusts the caption."""
     attrs, caption = table['attrs'], table['caption']
-    num = references[attrs.id].num
+    num = targets[attrs.id].num
     if fmt in['latex', 'beamer']:  # Append a \label if this is referenceable
         if not table['is_unreferenceable']:
             value[1] += [RawInline('tex', r'\label{%s}'%attrs.id)]
@@ -243,7 +242,7 @@ def _add_markup(fmt, table, value):
         if table['is_tagged']:  # A table cannot be tagged if it is unnumbered
             has_tagged_tables = True
             ret = [RawBlock('tex', r'\begin{tablenos:tagged-table}[%s]' % \
-                            references[attrs.id].num),
+                            targets[attrs.id].num),
                    AttrTable(*value),
                    RawBlock('tex', r'\end{tablenos:tagged-table}')]
     elif fmt in ('html', 'html5', 'epub', 'epub2', 'epub3'):
@@ -477,7 +476,7 @@ def add_tex(meta):
 
     # pylint: disable=too-many-boolean-expressions
     warnings = warninglevel == 2 and (has_unnumbered_tables or \
-      (references and (pandocxnos.cleveref_required() or \
+      (targets and (pandocxnos.cleveref_required() or \
        separator_changed or plusname_changed or starname_changed \
        or has_tagged_tables or captionname_changed or numbersections \
        or secoffset)))
@@ -497,7 +496,7 @@ def add_tex(meta):
     # is a known issue and is owing to a design decision in pandoc.
     # See https://github.com/jgm/pandoc/issues/3139.
 
-    if pandocxnos.cleveref_required() and references:
+    if pandocxnos.cleveref_required() and targets:
         tex = """
             %%%% pandoc-tablenos: required package
             \\usepackage%s{cleveref}
@@ -506,7 +505,7 @@ def add_tex(meta):
             meta, 'tex', tex,
             regex=r'\\usepackage(\[[\w\s,]*\])?\{cleveref\}')
 
-    if has_unnumbered_tables or (separator_changed and references):
+    if has_unnumbered_tables or (separator_changed and targets):
         tex = """
             %% pandoc-tablenos: required package
             \\usepackage{caption}
@@ -515,14 +514,14 @@ def add_tex(meta):
             meta, 'tex', tex,
             regex=r'\\usepackage(\[[\w\s,]*\])?\{caption\}')
 
-    if plusname_changed and references:
+    if plusname_changed and targets:
         tex = """
             %%%% pandoc-tablenos: change cref names
             \\crefname{table}{%s}{%s}
         """ % (plusname[0], plusname[1])
         pandocxnos.add_to_header_includes(meta, 'tex', tex)
 
-    if starname_changed and references:
+    if starname_changed and targets:
         tex = """
             %%%% pandoc-tablenos: change Cref names
             \\Crefname{table}{%s}{%s}
@@ -533,22 +532,22 @@ def add_tex(meta):
         pandocxnos.add_to_header_includes(
             meta, 'tex', NO_PREFIX_CAPTION_ENV_TEX)
 
-    if has_tagged_tables and references:
+    if has_tagged_tables and targets:
         pandocxnos.add_to_header_includes(meta, 'tex', TAGGED_TABLE_ENV_TEX)
 
-    if captionname_changed and references:
+    if captionname_changed and targets:
         pandocxnos.add_to_header_includes(
             meta, 'tex', CAPTION_NAME_TEX % captionname)
 
-    if separator_changed and references:
+    if separator_changed and targets:
         pandocxnos.add_to_header_includes(
             meta, 'tex', CAPTION_SEPARATOR_TEX % separator)
 
-    if numbersections and references:
+    if numbersections and targets:
         pandocxnos.add_to_header_includes(
             meta, 'tex', NUMBER_BY_SECTION_TEX)
 
-    if secoffset and references:
+    if secoffset and targets:
         pandocxnos.add_to_header_includes(
             meta, 'tex', SECOFFSET_TEX % secoffset,
             regex=r'\\setcounter\{section\}')
@@ -602,8 +601,8 @@ def main(stdin=STDIN, stdout=STDOUT, stderr=STDERR):
                                 detach_attrs_table], blocks)
 
     # Second pass
-    process_refs = process_refs_factory(LABEL_PATTERN, references.keys())
-    replace_refs = replace_refs_factory(references,
+    process_refs = process_refs_factory(LABEL_PATTERN, targets.keys())
+    replace_refs = replace_refs_factory(targets,
                                         cleveref, False,
                                         plusname if not capitalise \
                                         or plusname_changed else
