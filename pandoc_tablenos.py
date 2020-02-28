@@ -77,7 +77,7 @@ warninglevel = 2        # 0 - no warnings; 1 - some warnings; 2 - all warnings
 
 # Processing state variables
 cursec = None    # Current section
-Nreferences = 0  # Number of references in current section (or document)
+Nreferences = 1  # Number of references in current section (or document)
 references = {}  # Maps reference labels to [number/tag, table secno,
                  # duplicate flag]
 
@@ -154,7 +154,8 @@ def _process_table(value, fmt):
     # Update the current section number
     if attrs['secno'] != cursec:  # The section number changed
         cursec = attrs['secno']   # Update the global section tracker
-        Nreferences = 1           # Resets the global reference counter
+        if numbersections:
+            Nreferences = 1           # Resets the global reference counter
 
     # Pandoc's --number-sections supports section numbering latex/pdf, html,
     # epub, and docx
