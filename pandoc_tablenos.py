@@ -174,7 +174,12 @@ def _process_table(value, fmt):
     # Update the current section number
     if attrs['secno'] != cursec:  # The section number changed
         cursec = attrs['secno']   # Update the global section tracker
-        Ntargets = 1              # Resets the global target counter
+        if numbersections:
+            Ntargets = 0          # Resets the global target counter
+
+    # Increment the targets counter
+    if 'tag' not in attrs:
+        Ntargets += 1
 
     # Pandoc's --number-sections supports section numbering latex/pdf, html,
     # epub, and docx
@@ -182,7 +187,6 @@ def _process_table(value, fmt):
         if fmt in ['html', 'html5', 'epub', 'epub2', 'epub3', 'docx'] and \
           'tag' not in attrs:
             attrs['tag'] = str(cursec+secoffset) + '.' + str(Ntargets)
-            Ntargets += 1
 
     # Save reference information
     table['is_tagged'] = 'tag' in attrs
@@ -197,7 +201,6 @@ def _process_table(value, fmt):
     else:  # ... then save the table number
         targets[attrs.id] = pandocxnos.Target(Ntargets, cursec,
                                               attrs.id in targets)
-        Ntargets += 1  # Increment the global targets counter
 
     return table
 

@@ -1,6 +1,7 @@
 pandoc-tablenos 2.2.0 (unreleased)
 
     * Updated to work with pandoc 2.10.
+    * Fixed table number reset problem for html, docx (Issue #17).
 
 
 pandoc-tablenos 2.1.1 (2019-09-26)
