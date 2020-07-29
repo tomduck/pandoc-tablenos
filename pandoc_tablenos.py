@@ -3,10 +3,10 @@
 """pandoc-tablenos: a pandoc filter that inserts table nos. and refs."""
 
 
-__version__ = '2.1.1'
+__version__ = '2.2.0'
 
 
-# Copyright 2015-2019 Thomas J. Duck.
+# Copyright 2015-2020 Thomas J. Duck.
 # All rights reserved.
 #
 # This program is free software: you can redistribute it and/or modify
@@ -59,6 +59,7 @@ from pandocxnos import repair_refs, process_refs_factory, replace_refs_factory
 from pandocxnos import insert_secnos_factory, delete_secnos_factory
 from pandocxnos import attach_attrs_factory, detach_attrs_factory
 from pandocxnos import elt
+from pandocxnos import version
 
 
 # Patterns for matching labels and references
@@ -99,9 +100,20 @@ def attach_attrs_table(key, value, fmt, meta):
     """Extracts attributes and attaches them to element."""
 
     # We can't use attach_attrs_factory() because Table is a block-level element
+
+    # Tables are attributed as of pandoc 2.10.  There is no native mechanism
+    # (yet) to populate those attributes.  This is coming.  See the
+    # Revision history for pandoc 2.10.1 at https://pandoc.org/releases.html.
+
     if key in ['Table']:
-        assert len(value) == 5
-        caption = value[0]  # caption, align, x, head, body
+        if version(PANDOCVERSION) < version('2.10'):
+            assert len(value) == 5
+            caption = value[0]  # caption, align, x, head, body
+        else:
+            assert len(value) == 6
+            assert value[1]['t'] == 'Caption'
+            assert value[1]['c'][1][0]['t'] == 'Plain'
+            caption = value[1]['c'][1][0]['c']
 
         # Set n to the index where the attributes start
         n = 0
@@ -110,8 +122,14 @@ def attach_attrs_table(key, value, fmt, meta):
             n += 1
 
         try:
+            # Read the attributes from the caption
             attrs = extract_attrs(caption, n)
-            value.insert(0, attrs.list)
+            if version(PANDOCVERSION) < version('2.10'):
+                # Insert the attributes
+                value.insert(0, attrs.list)
+            else:
+                # Overwrite the attributes
+                value[0] = attrs.list
         except (ValueError, IndexError):
             pass
 
@@ -137,7 +155,10 @@ def _process_table(value, fmt):
 
     # Parse the table
     attrs = table['attrs'] = PandocAttributes(value[0], 'pandoc')
-    table['caption'] = value[1]
+    if version(PANDOCVERSION) < version('2.10'):
+        table['caption'] = value[1]
+    else:
+        table['caption'] = value[1]['c'][1][0]['c']
 
     # Bail out if the label does not conform to expectations
     if not LABEL_PATTERN.match(attrs.id):
@@ -181,28 +202,44 @@ def _process_table(value, fmt):
     return table
 
 
+# pylint: disable=too-many-statements
 def _adjust_caption(fmt, table, value):
     """Adjusts the caption."""
     attrs, caption = table['attrs'], table['caption']
     num = targets[attrs.id].num
     if fmt in['latex', 'beamer']:  # Append a \label if this is referenceable
         if not table['is_unreferenceable']:
-            value[1] += [RawInline('tex', r'\label{%s}'%attrs.id)]
+            tmp = [RawInline('tex', r'\label{%s}'%attrs.id)]
+            if version(PANDOCVERSION) < version('2.10'):
+                value[1] += tmp
+            else:
+                value[1]['c'][1][0]['c'] += tmp
+
     else:  # Hard-code in the caption name and number/tag
         sep = {'none':'', 'colon':':', 'period':'.', 'space':' ',
                'quad':u'\u2000', 'newline':'\n'}[separator]
 
         if isinstance(num, int):  # Numbered reference
             if fmt in ['html', 'html5', 'epub', 'epub2', 'epub3']:
-                value[1] = [RawInline('html', r'<span>'),
-                            Str(captionname), Space(),
-                            Str('%d%s'%(num, sep)),
-                            RawInline('html', r'</span>')]
+                tmp = [RawInline('html', r'<span>'),
+                       Str(captionname), Space(),
+                       Str('%d%s'%(num, sep)),
+                       RawInline('html', r'</span>')]
+                if version(PANDOCVERSION) < version('2.10'):
+                    value[1] = tmp
+                else:
+                    value[1]['c'][1][0]['c'] = tmp
             else:
-                value[1] = [Str(captionname),
-                            Space(),
-                            Str('%d%s'%(num, sep))]
-            value[1] += [Space()] + list(caption)
+                tmp = [Str(captionname), Space(), Str('%d%s'%(num, sep))]
+                if version(PANDOCVERSION) < version('2.10'):
+                    value[1] = tmp
+                else:
+                    value[1]['c'][1][0]['c'] = tmp
+            tmp = [Space()] + list(caption)
+            if version(PANDOCVERSION) <= version('2.10'):
+                value[1] += tmp
+            else:
+                value[1]['c'][1][0]['c'] += tmp
         else:  # Tagged reference
             assert isinstance(num, STRTYPES)
             if num.startswith('$') and num.endswith('$'):
@@ -211,14 +248,24 @@ def _adjust_caption(fmt, table, value):
             else:  # Text
                 els = [Str(num + sep)]
             if fmt in ['html', 'html5', 'epub', 'epub2', 'epub3']:
-                value[1] = \
-                  [RawInline('html', r'<span>'),
-                   Str(captionname),
-                   Space()] + els + [RawInline('html', r'</span>')]
+                tmp = [RawInline('html', r'<span>'),
+                       Str(captionname),
+                       Space()] + els + [RawInline('html', r'</span>')]
+                if version(PANDOCVERSION) < version('2.10'):
+                    value[1] = tmp
+                else:
+                    value[1]['c'][1][0]['c'] = tmp
             else:
-                value[1] = [Str(captionname), Space()] + els
-            value[1] += [Space()] + list(caption)
-
+                tmp = [Str(captionname), Space()] + els
+                if version(PANDOCVERSION) < version('2.10'):
+                    value[1] = tmp
+                else:
+                    value[1]['c'][1][0]['c'] = tmp
+            tmp = [Space()] + list(caption)
+            if version(PANDOCVERSION) <= version('2.10'):
+                value[1] += tmp
+            else:
+                value[1]['c'][1][0]['c'] += tmp
 
 def _add_markup(fmt, table, value):
     """Adds markup to the output."""
@@ -231,7 +278,9 @@ def _add_markup(fmt, table, value):
             # Use the no-prefix-table-caption environment
             return [RawBlock('tex',
                              r'\begin{tablenos:no-prefix-table-caption}'),
-                    Table(*(value if len(value) == 5 else value[1:])),
+                    Table(*(value if len(value) == 5 or \
+                            version(PANDOCVERSION) >= version('2.10') \
+                            else value[1:])),
                     RawBlock('tex', r'\end{tablenos:no-prefix-table-caption}')]
         return None  # Nothing to do
 
@@ -561,7 +610,7 @@ def main(stdin=STDIN, stdout=STDOUT, stderr=STDERR):
 
     # pylint: disable=global-statement
     global PANDOCVERSION
-    global AttrTable
+    global Table, AttrTable
 
     # Read the command-line arguments
     parser = argparse.ArgumentParser(\
@@ -583,10 +632,14 @@ def main(stdin=STDIN, stdout=STDOUT, stderr=STDERR):
 
     # Element primitives
     AttrTable = elt('Table', 6)
+    if version(PANDOCVERSION) >= version('2.10'):
+        Table = elt('Table', 6)
 
     # Chop up the doc
-    meta = doc['meta'] if PANDOCVERSION >= '1.18' else doc[0]['unMeta']
-    blocks = doc['blocks'] if PANDOCVERSION >= '1.18' else doc[1:]
+    meta = doc['meta'] if version(PANDOCVERSION) >= version('1.18')\
+      else doc[0]['unMeta']
+    blocks = doc['blocks'] if version(PANDOCVERSION) >= version('1.18')\
+      else doc[1:]
 
     # Process the metadata variables
     process(meta)
@@ -595,10 +648,11 @@ def main(stdin=STDIN, stdout=STDOUT, stderr=STDERR):
     detach_attrs_table = detach_attrs_factory(Table)
     insert_secnos = insert_secnos_factory(Table)
     delete_secnos = delete_secnos_factory(Table)
+    actions = [attach_attrs_table, insert_secnos, process_tables, delete_secnos]
+    if version(PANDOCVERSION) < version('2.10'):
+        actions.append(detach_attrs_table)
     altered = functools.reduce(lambda x, action: walk(x, action, fmt, meta),
-                               [attach_attrs_table, insert_secnos,
-                                process_tables, delete_secnos,
-                                detach_attrs_table], blocks)
+                               actions, blocks)
 
     # Second pass
     process_refs = process_refs_factory(LABEL_PATTERN, targets.keys())
@@ -618,7 +672,7 @@ def main(stdin=STDIN, stdout=STDOUT, stderr=STDERR):
         add_tex(meta)
 
     # Update the doc
-    if PANDOCVERSION >= '1.18':
+    if version(PANDOCVERSION) >= version('1.18'):
         doc['blocks'] = altered
     else:
         doc = doc[:1] + altered
