@@ -184,7 +184,8 @@ def _process_table(value, fmt):
     # Pandoc's --number-sections supports section numbering latex/pdf, html,
     # epub, and docx
     if numbersections:
-        if fmt in ['html', 'html5', 'epub', 'epub2', 'epub3', 'docx'] and \
+        if fmt in ['html', 'html4', 'html5', 'epub', 'epub2', 'epub3',
+                   'docx'] and \
           'tag' not in attrs:
             attrs['tag'] = str(cursec+secoffset) + '.' + str(Ntargets)
 
@@ -223,7 +224,7 @@ def _adjust_caption(fmt, table, value):
                'quad':u'\u2000', 'newline':'\n'}[separator]
 
         if isinstance(num, int):  # Numbered reference
-            if fmt in ['html', 'html5', 'epub', 'epub2', 'epub3']:
+            if fmt in ['html', 'html4', 'html5', 'epub', 'epub2', 'epub3']:
                 tmp = [RawInline('html', r'<span>'),
                        Str(captionname), Space(),
                        Str('%d%s'%(num, sep)),
@@ -250,7 +251,7 @@ def _adjust_caption(fmt, table, value):
                 els = [Math({"t":"InlineMath", "c":[]}, math), Str(sep)]
             else:  # Text
                 els = [Str(num + sep)]
-            if fmt in ['html', 'html5', 'epub', 'epub2', 'epub3']:
+            if fmt in ['html', 'html4', 'html5', 'epub', 'epub2', 'epub3']:
                 tmp = [RawInline('html', r'<span>'),
                        Str(captionname),
                        Space()] + els + [RawInline('html', r'</span>')]
@@ -297,7 +298,7 @@ def _add_markup(fmt, table, value):
                             targets[attrs.id].num),
                    AttrTable(*value),
                    RawBlock('tex', r'\end{tablenos:tagged-table}')]
-    elif fmt in ('html', 'html5', 'epub', 'epub2', 'epub3'):
+    elif fmt in ('html', 'html4', 'html5', 'epub', 'epub2', 'epub3'):
         if LABEL_PATTERN.match(attrs.id):
             # Enclose table in hidden div
             pre = RawBlock('html', '<div id="%s" class="tablenos">'%attrs.id)
