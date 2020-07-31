@@ -3,7 +3,7 @@
 """pandoc-tablenos: a pandoc filter that inserts table nos. and refs."""
 
 
-__version__ = '2.2.0'
+__version__ = '2.2.1'
 
 
 # Copyright 2015-2020 Thomas J. Duck.
