@@ -112,8 +112,11 @@ def attach_attrs_table(key, value, fmt, meta):
         else:
             assert len(value) == 6
             assert value[1]['t'] == 'Caption'
-            assert value[1]['c'][1][0]['t'] == 'Plain'
-            caption = value[1]['c'][1][0]['c']
+            if value[1]['c'][1]:
+                assert value[1]['c'][1][0]['t'] == 'Plain'
+                caption = value[1]['c'][1][0]['c']
+            else:
+                return  # There is no caption
 
         # Set n to the index where the attributes start
         n = 0
@@ -158,7 +161,10 @@ def _process_table(value, fmt):
     if version(PANDOCVERSION) < version('2.10'):
         table['caption'] = value[1]
     else:
-        table['caption'] = value[1]['c'][1][0]['c']
+        if value[1]['c'][1]:
+            table['caption'] = value[1]['c'][1][0]['c']
+        else:
+            table['caption'] = []
 
     # Bail out if the label does not conform to expectations
     if not LABEL_PATTERN.match(attrs.id):
