@@ -92,10 +92,8 @@ X Y
 Table: Another one. {}
 
 
-\newpage
-
-
 ****
+
 
 Tables @tbl:4 and @tbl:5 are tagged tables:
 
@@ -140,3 +138,13 @@ X Y
 0 1
 
 Table: Another one. {#tbl:}
+
+
+****
+
+
+An uncaptioned table:
+
+X Y
+- -
+0 1
