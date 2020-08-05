@@ -54,6 +54,7 @@ from pandocfilters import Table, Str, Space, RawBlock, RawInline, Math, Span
 import pandocxnos
 from pandocxnos import PandocAttributes
 from pandocxnos import STRTYPES, STDIN, STDOUT, STDERR
+from pandocxnos import NBSP
 from pandocxnos import check_bool, get_meta, extract_attrs
 from pandocxnos import repair_refs, process_refs_factory, replace_refs_factory
 from pandocxnos import insert_secnos_factory, delete_secnos_factory
@@ -232,24 +233,18 @@ def _adjust_caption(fmt, table, value):
         if isinstance(num, int):  # Numbered reference
             if fmt in ['html', 'html4', 'html5', 'epub', 'epub2', 'epub3']:
                 tmp = [RawInline('html', r'<span>'),
-                       Str(captionname), Space(),
-                       Str('%d%s'%(num, sep)),
+                       Str(captionname+NBSP), Str('%d%s'%(num, sep)),
                        RawInline('html', r'</span>')]
                 if version(PANDOCVERSION) < version('2.10'):
                     value[1] = tmp
                 else:
                     value[1]['c'][1][0]['c'] = tmp
             else:
-                tmp = [Str(captionname), Space(), Str('%d%s'%(num, sep))]
+                tmp = [Str(captionname+NBSP), Str('%d%s'%(num, sep))]
                 if version(PANDOCVERSION) < version('2.10'):
                     value[1] = tmp
                 else:
                     value[1]['c'][1][0]['c'] = tmp
-            tmp = [Space()] + list(caption)
-            if version(PANDOCVERSION) <= version('2.10'):
-                value[1] += tmp
-            else:
-                value[1]['c'][1][0]['c'] += tmp
         else:  # Tagged reference
             assert isinstance(num, STRTYPES)
             if num.startswith('$') and num.endswith('$'):
@@ -259,23 +254,23 @@ def _adjust_caption(fmt, table, value):
                 els = [Str(num + sep)]
             if fmt in ['html', 'html4', 'html5', 'epub', 'epub2', 'epub3']:
                 tmp = [RawInline('html', r'<span>'),
-                       Str(captionname),
-                       Space()] + els + [RawInline('html', r'</span>')]
+                       Str(captionname+NBSP)] + \
+                      els + [RawInline('html', r'</span>')]
                 if version(PANDOCVERSION) < version('2.10'):
                     value[1] = tmp
                 else:
                     value[1]['c'][1][0]['c'] = tmp
             else:
-                tmp = [Str(captionname), Space()] + els
+                tmp = [Str(captionname+NBSP)] + els
                 if version(PANDOCVERSION) < version('2.10'):
                     value[1] = tmp
                 else:
                     value[1]['c'][1][0]['c'] = tmp
-            tmp = [Space()] + list(caption)
-            if version(PANDOCVERSION) <= version('2.10'):
-                value[1] += tmp
-            else:
-                value[1]['c'][1][0]['c'] += tmp
+        tmp = [Space()] + list(caption)
+        if version(PANDOCVERSION) <= version('2.10'):
+            value[1] += tmp
+        else:
+            value[1]['c'][1][0]['c'] += tmp
 
 def _add_markup(fmt, table, value):
     """Adds markup to the output."""
