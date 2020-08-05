@@ -55,11 +55,10 @@ import pandocxnos
 from pandocxnos import PandocAttributes
 from pandocxnos import STRTYPES, STDIN, STDOUT, STDERR
 from pandocxnos import NBSP
-from pandocxnos import check_bool, get_meta, extract_attrs
+from pandocxnos import elt, check_bool, get_meta, extract_attrs
 from pandocxnos import repair_refs, process_refs_factory, replace_refs_factory
 from pandocxnos import insert_secnos_factory, delete_secnos_factory
 from pandocxnos import attach_attrs_factory, detach_attrs_factory
-from pandocxnos import elt
 from pandocxnos import version
 
 
