@@ -51,11 +51,11 @@ Pandoc-tablenos may be installed using the shell command
 
 and upgraded by appending `--upgrade` to the above command.  Pip is a program that downloads and installs software from the Python Package Index, [PyPI].  It normally comes installed with a python distribution.<sup>[2](#footnote2)</sup>
 
-Instructions for installing from source are given in [README.developers].
+Instructions for installing from source are given in [DEVELOPERS.md].
 
 [python]: https://www.python.org/
 [PyPI]: https://pypi.python.org/pypi
-[README.developers]: README.developers
+[DEVELOPERS.md]: DEVELOPERS.md
 
 
 Usage
@@ -336,7 +336,7 @@ Development
 
 Pandoc-tablenos will continue to support pandoc 1.15-onward and python 2 & 3 for the foreseeable future.  The reasons for this are that a) some users cannot upgrade pandoc and/or python; and b) supporting all versions tends to make pandoc-tablenos more robust.
 
-Developer notes are maintained in [README.developers].
+Developer notes are maintained in [DEVELOPERS.md].
 
 
 What's New
