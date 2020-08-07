@@ -103,8 +103,8 @@ Check that you are in the `master` branch.
 
 Tagging  (update the version number):
 
-    git tag -a 2.2.1 -m "New release."
-    git push origin 2.2.1
+    git tag -a 2.2.2 -m "New release."
+    git push origin 2.2.2
 
 
 ### Distributing ###
@@ -117,7 +117,7 @@ Create source and binary distributions using
     
 Upload to pypi (update the version number) using
 
-    twine upload dist/pandoc-tablenos-2.2.1.tar.gz \
-                 dist/pandoc_tablenos-2.2.1-py3-none-any.whl
+    twine upload dist/pandoc-tablenos-2.2.2.tar.gz \
+                 dist/pandoc_tablenos-2.2.2-py3-none-any.whl
 
 (see https://pypi.python.org/pypi/twine).

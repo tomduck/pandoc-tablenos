@@ -3,7 +3,7 @@
 """pandoc-tablenos: a pandoc filter that inserts table nos. and refs."""
 
 
-__version__ = '2.2.1'
+__version__ = '2.2.2'
 
 
 # Copyright 2015-2020 Thomas J. Duck.
@@ -266,7 +266,7 @@ def _adjust_caption(fmt, table, value):
                 else:
                     value[1]['c'][1][0]['c'] = tmp
         tmp = [Space()] + list(caption)
-        if version(PANDOCVERSION) <= version('2.10'):
+        if version(PANDOCVERSION) < version('2.10'):
             value[1] += tmp
         else:
             value[1]['c'][1][0]['c'] += tmp
