@@ -47,7 +47,7 @@ setup(
     download_url='https://github.com/tomduck/pandoc-tablenos/tarball/' + \
                  __version__,
 
-    install_requires=['pandoc-xnos >= 2.4.2, < 3.0'],
+    install_requires=['pandoc-xnos >= 2.4.3, < 3.0'],
 
     py_modules=['pandoc_tablenos'],
     entry_points={'console_scripts':['pandoc-tablenos = pandoc_tablenos:main']},
