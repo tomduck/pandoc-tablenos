@@ -1,3 +1,9 @@
+pandoc-tablenos 2.3.0 (2020-11-10)
+
+    * Require pandoc-xnos 2.5.0 (updated to work with pandoc 2.11;
+      pandoc-tablenos Issue #23).
+
+
 pandoc-tablenos 2.2.2 (2020-08-07)
 
     * Use nonbreaking space between ref name and number in caption

@@ -1,17 +1,17 @@
 
-**New in 2.2.2:** Updated for pandoc 2.10.1.
+**New in 2.3.0:** Updated for pandoc 2.11. 
 
 [more...](#whats-new)
 
 
-pandoc-tablenos 2.2.2
+pandoc-tablenos 2.3.0
 =====================
 
 *pandoc-tablenos* is a [pandoc] filter for numbering tables and their references when converting markdown to other formats.  It is part of the [pandoc-xnos] filter suite.  LaTeX/pdf, html, and epub output have native support.  Native support for docx output is a work in progress.
 
 Demonstration: Processing [demo3.md] with pandoc + pandoc-tablenos gives numbered tables and references in [pdf][pdf3], [tex][tex3], [html][html3], [epub][epub3], [docx][docx3] and other formats (including beamer slideshows).
 
-This version of pandoc-tablenos was tested using pandoc 1.15.2 - 2.10.1,<sup>[1](#footnote1)</sup> and may be used with linux, macOS, and Windows.  Bug reports and feature requests may be posted on the project's [Issues tracker].  If you find pandoc-tablenos useful, then please kindly give it a star [on GitHub].
+This version of pandoc-tablenos was tested using pandoc 1.15.2 - 2.11.1.1,<sup>[1](#footnote1)</sup> and may be used with linux, macOS, and Windows.  Bug reports and feature requests may be posted on the project's [Issues tracker].  If you find pandoc-tablenos useful, then please kindly give it a star [on GitHub].
 
 See also: [pandoc-fignos], [pandoc-eqnos], [pandoc-secnos] \
 Other filters: [pandoc-comments], [pandoc-latex-extensions]
@@ -341,6 +341,8 @@ Developer notes are maintained in [DEVELOPERS.md].
 
 What's New
 ----------
+
+**New in 2.3.0:** Updated for pandoc 2.11. 
 
 **New in 2.2.2:** Updated for pandoc 2.10.1.
 
