@@ -3,7 +3,7 @@
 """pandoc-tablenos: a pandoc filter that inserts table nos. and refs."""
 
 
-__version__ = '2.2.2'
+__version__ = '2.3.0'
 
 
 # Copyright 2015-2020 Thomas J. Duck.
@@ -109,12 +109,20 @@ def attach_attrs_table(key, value, fmt, meta):
         if version(PANDOCVERSION) < version('2.10'):
             assert len(value) == 5
             caption = value[0]  # caption, align, x, head, body
-        else:
+        elif version(PANDOCVERSION) < version('2.11'):
             assert len(value) == 6
             assert value[1]['t'] == 'Caption'
             if value[1]['c'][1]:
                 assert value[1]['c'][1][0]['t'] == 'Plain'
                 caption = value[1]['c'][1][0]['c']
+            else:
+                return  # There is no caption
+        else:
+            assert len(value) == 6
+            assert value[1][0] is None
+            if value[1][1]:
+                assert value[1][1][0]['t'] == 'Plain'
+                caption = value[1][1][0]['c']
             else:
                 return  # There is no caption
 
@@ -160,9 +168,14 @@ def _process_table(value, fmt):
     attrs = table['attrs'] = PandocAttributes(value[0], 'pandoc')
     if version(PANDOCVERSION) < version('2.10'):
         table['caption'] = value[1]
-    else:
+    elif version(PANDOCVERSION) < version('2.11'):
         if value[1]['c'][1]:
             table['caption'] = value[1]['c'][1][0]['c']
+        else:
+            table['caption'] = []
+    else:
+        if value[1][1]:
+            table['caption'] = value[1][1][0]['c']
         else:
             table['caption'] = []
 
@@ -222,8 +235,10 @@ def _adjust_caption(fmt, table, value):
             tmp = [RawInline('tex', r'\label{%s}'%attrs.id)]
             if version(PANDOCVERSION) < version('2.10'):
                 value[1] += tmp
-            else:
+            elif version(PANDOCVERSION) < version('2.11'):
                 value[1]['c'][1][0]['c'] += tmp
+            else:
+                value[1][1][0]['c'] += tmp
 
     else:  # Hard-code in the caption name and number/tag
         sep = {'none':'', 'colon':':', 'period':'.', 'space':' ',
@@ -236,14 +251,18 @@ def _adjust_caption(fmt, table, value):
                        RawInline('html', r'</span>')]
                 if version(PANDOCVERSION) < version('2.10'):
                     value[1] = tmp
-                else:
+                elif version(PANDOCVERSION) < version('2.11'):
                     value[1]['c'][1][0]['c'] = tmp
+                else:
+                    value[1][1][0]['c'] = tmp
             else:
                 tmp = [Str(captionname+NBSP), Str('%d%s'%(num, sep))]
                 if version(PANDOCVERSION) < version('2.10'):
                     value[1] = tmp
-                else:
+                elif version(PANDOCVERSION) < version('2.11'):
                     value[1]['c'][1][0]['c'] = tmp
+                else:
+                    value[1][1][0]['c'] = tmp
         else:  # Tagged reference
             assert isinstance(num, STRTYPES)
             if num.startswith('$') and num.endswith('$'):
@@ -257,19 +276,26 @@ def _adjust_caption(fmt, table, value):
                       els + [RawInline('html', r'</span>')]
                 if version(PANDOCVERSION) < version('2.10'):
                     value[1] = tmp
-                else:
+                elif version(PANDOCVERSION) < version('2.11'):
                     value[1]['c'][1][0]['c'] = tmp
+                else:
+                    value[1][1][0]['c'] = tmp
             else:
                 tmp = [Str(captionname+NBSP)] + els
                 if version(PANDOCVERSION) < version('2.10'):
                     value[1] = tmp
-                else:
+                elif version(PANDOCVERSION) < version('2.11'):
                     value[1]['c'][1][0]['c'] = tmp
+                else:
+                    value[1][1][0]['c'] = tmp
+
         tmp = [Space()] + list(caption)
         if version(PANDOCVERSION) < version('2.10'):
             value[1] += tmp
-        else:
+        elif version(PANDOCVERSION) < version('2.11'):
             value[1]['c'][1][0]['c'] += tmp
+        else:
+            value[1][1][0]['c'] += tmp
 
 def _add_markup(fmt, table, value):
     """Adds markup to the output."""
