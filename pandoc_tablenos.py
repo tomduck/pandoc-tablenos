@@ -73,6 +73,7 @@ capitalise = False      # Default setting for capitalizing plusname
 plusname = ['table', 'tables']  # Sets names for mid-sentence references
 starname = ['Table', 'Tables']  # Sets names for references at sentence start
 numbersections = False  # Flags that tables should be numbered by section
+sectionseparator = '.'  # Separator for section numbers
 secoffset = 0           # Section number offset
 warninglevel = 2        # 0 - no warnings; 1 - some warnings; 2 - all warnings
 
@@ -129,7 +130,7 @@ def attach_attrs_table(key, value, fmt, meta):
         # Set n to the index where the attributes start
         n = 0
         while n < len(caption) and not \
-          (caption[n]['t'] == 'Str' and caption[n]['c'].startswith('{')):
+                (caption[n]['t'] == 'Str' and caption[n]['c'].startswith('{')):
             n += 1
 
         try:
@@ -145,6 +146,8 @@ def attach_attrs_table(key, value, fmt, meta):
             pass
 
 # pylint: disable=too-many-branches
+
+
 def _process_table(value, fmt):
     """Processes the table.  Returns a dict containing table properties."""
 
@@ -182,11 +185,11 @@ def _process_table(value, fmt):
     # Bail out if the label does not conform to expectations
     if not LABEL_PATTERN.match(attrs.id):
         has_unnumbered_tables = True
-        table.update({'is_unnumbered':True, 'is_unreferenceable':True})
+        table.update({'is_unnumbered': True, 'is_unreferenceable': True})
         return table
 
     # Identify unreferenceable tables
-    if attrs.id == 'tbl:': # Make up a unique description
+    if attrs.id == 'tbl:':  # Make up a unique description
         attrs.id = 'tbl:' + str(uuid.uuid4())
         table['is_unreferenceable'] = True
 
@@ -205,8 +208,9 @@ def _process_table(value, fmt):
     if numbersections:
         if fmt in ['html', 'html4', 'html5', 'epub', 'epub2', 'epub3',
                    'docx'] and \
-          'tag' not in attrs:
-            attrs['tag'] = str(cursec+secoffset) + '.' + str(Ntargets)
+                'tag' not in attrs:
+            attrs['tag'] = str(cursec+secoffset) + \
+                sectionseparator + str(Ntargets)
 
     # Save reference information
     table['is_tagged'] = 'tag' in attrs
@@ -230,9 +234,9 @@ def _adjust_caption(fmt, table, value):
     """Adjusts the caption."""
     attrs, caption = table['attrs'], table['caption']
     num = targets[attrs.id].num
-    if fmt in['latex', 'beamer']:  # Append a \label if this is referenceable
+    if fmt in ['latex', 'beamer']:  # Append a \label if this is referenceable
         if not table['is_unreferenceable']:
-            tmp = [RawInline('tex', r'\label{%s}'%attrs.id)]
+            tmp = [RawInline('tex', r'\label{%s}' % attrs.id)]
             if version(PANDOCVERSION) < version('2.10'):
                 value[1] += tmp
             elif version(PANDOCVERSION) < version('2.11'):
@@ -241,13 +245,13 @@ def _adjust_caption(fmt, table, value):
                 value[1][1][0]['c'] += tmp
 
     else:  # Hard-code in the caption name and number/tag
-        sep = {'none':'', 'colon':':', 'period':'.', 'space':' ',
-               'quad':u'\u2000', 'newline':'\n'}[separator]
+        sep = {'none': '', 'colon': ':', 'period': '.', 'space': ' ',
+               'quad': u'\u2000', 'newline': '\n'}[separator]
 
         if isinstance(num, int):  # Numbered reference
             if fmt in ['html', 'html4', 'html5', 'epub', 'epub2', 'epub3']:
                 tmp = [RawInline('html', r'<span>'),
-                       Str(captionname+NBSP), Str('%d%s'%(num, sep)),
+                       Str(captionname+NBSP), Str('%d%s' % (num, sep)),
                        RawInline('html', r'</span>')]
                 if version(PANDOCVERSION) < version('2.10'):
                     value[1] = tmp
@@ -256,7 +260,7 @@ def _adjust_caption(fmt, table, value):
                 else:
                     value[1][1][0]['c'] = tmp
             else:
-                tmp = [Str(captionname+NBSP), Str('%d%s'%(num, sep))]
+                tmp = [Str(captionname+NBSP), Str('%d%s' % (num, sep))]
                 if version(PANDOCVERSION) < version('2.10'):
                     value[1] = tmp
                 elif version(PANDOCVERSION) < version('2.11'):
@@ -267,13 +271,13 @@ def _adjust_caption(fmt, table, value):
             assert isinstance(num, STRTYPES)
             if num.startswith('$') and num.endswith('$'):
                 math = num.replace(' ', r'\ ')[1:-1]
-                els = [Math({"t":"InlineMath", "c":[]}, math), Str(sep)]
+                els = [Math({"t": "InlineMath", "c": []}, math), Str(sep)]
             else:  # Text
                 els = [Str(num + sep)]
             if fmt in ['html', 'html4', 'html5', 'epub', 'epub2', 'epub3']:
                 tmp = [RawInline('html', r'<span>'),
                        Str(captionname+NBSP)] + \
-                      els + [RawInline('html', r'</span>')]
+                    els + [RawInline('html', r'</span>')]
                 if version(PANDOCVERSION) < version('2.10'):
                     value[1] = tmp
                 elif version(PANDOCVERSION) < version('2.11'):
@@ -297,6 +301,7 @@ def _adjust_caption(fmt, table, value):
         else:
             value[1][1][0]['c'] += tmp
 
+
 def _add_markup(fmt, table, value):
     """Adds markup to the output."""
 
@@ -308,8 +313,8 @@ def _add_markup(fmt, table, value):
             # Use the no-prefix-table-caption environment
             return [RawBlock('tex',
                              r'\begin{tablenos:no-prefix-table-caption}'),
-                    Table(*(value if len(value) == 5 or \
-                            version(PANDOCVERSION) >= version('2.10') \
+                    Table(*(value if len(value) == 5 or
+                            version(PANDOCVERSION) >= version('2.10')
                             else value[1:])),
                     RawBlock('tex', r'\end{tablenos:no-prefix-table-caption}')]
         return None  # Nothing to do
@@ -320,24 +325,24 @@ def _add_markup(fmt, table, value):
     if fmt in ['latex', 'beamer']:
         if table['is_tagged']:  # A table cannot be tagged if it is unnumbered
             has_tagged_tables = True
-            ret = [RawBlock('tex', r'\begin{tablenos:tagged-table}[%s]' % \
+            ret = [RawBlock('tex', r'\begin{tablenos:tagged-table}[%s]' %
                             targets[attrs.id].num),
                    AttrTable(*value),
                    RawBlock('tex', r'\end{tablenos:tagged-table}')]
     elif fmt in ('html', 'html4', 'html5', 'epub', 'epub2', 'epub3'):
         if LABEL_PATTERN.match(attrs.id):
             # Enclose table in hidden div
-            pre = RawBlock('html', '<div id="%s" class="tablenos">'%attrs.id)
+            pre = RawBlock('html', '<div id="%s" class="tablenos">' % attrs.id)
             post = RawBlock('html', '</div>')
             ret = [pre, AttrTable(*value), post]
     elif fmt == 'docx':
         # As per http://officeopenxml.com/WPhyperlink.php
         bookmarkstart = \
-          RawBlock('openxml',
-                   '<w:bookmarkStart w:id="0" w:name="%s"/>'
-                   %attrs.id)
+            RawBlock('openxml',
+                     '<w:bookmarkStart w:id="0" w:name="%s"/>'
+                     % attrs.id)
         bookmarkend = \
-          RawBlock('openxml', '<w:bookmarkEnd w:id="0"/>')
+            RawBlock('openxml', '<w:bookmarkEnd w:id="0"/>')
         ret = [bookmarkstart, AttrTable(*value), bookmarkend]
     return ret
 
@@ -446,6 +451,7 @@ def process(meta):
     global plusname        # Sets names for mid-sentence references
     global starname        # Sets names for references at sentence start
     global numbersections  # Flags that sections should be numbered by section
+    global sectionseparator  # The section separator
     global secoffset       # Section number offset
     global warninglevel    # 0 - no warnings; 1 - some; 2 - all
     global captionname_changed  # Flags the caption name changed
@@ -468,12 +474,13 @@ def process(meta):
                  'xnos-capitalise', 'xnos-capitalize',
                  'tablenos-plus-name', 'tablenos-star-name',
                  'tablenos-number-by-section', 'xnos-number-by-section',
+                 'tablenos-section-separator', 'xnos-section-separator',
                  'xnos-number-offset']
 
     if warninglevel:
         for name in meta:
             if (name.startswith('tablenos') or name.startswith('xnos')) and \
-              name not in metanames:
+                    name not in metanames:
                 msg = textwrap.dedent("""
                           pandoc-tablenos: unknown meta variable "%s"
                       """ % name)
@@ -490,7 +497,7 @@ def process(meta):
             old_separator = separator
             separator = get_meta(meta, name)
             if separator not in \
-              ['none', 'colon', 'period', 'space', 'quad', 'newline']:
+                    ['none', 'colon', 'period', 'space', 'quad', 'newline']:
                 msg = textwrap.dedent("""
                           pandoc-tablenos: caption separator must be one of
                           none, colon, period, space, quad, or newline.
@@ -547,18 +554,24 @@ def process(meta):
             numbersections = check_bool(get_meta(meta, name))
             break
 
+    for name in ['tablenos-section-separator', 'xnos-section-separator']:
+        if name in meta:
+            sectionseparator = get_meta(meta, name)
+            break
+
     if 'xnos-number-offset' in meta:
         secoffset = int(get_meta(meta, 'xnos-number-offset'))
+
 
 def add_tex(meta):
     """Adds text to the meta data."""
 
     # pylint: disable=too-many-boolean-expressions
-    warnings = warninglevel == 2 and (has_unnumbered_tables or \
-      (targets and (pandocxnos.cleveref_required() or \
-       separator_changed or plusname_changed or starname_changed \
-       or has_tagged_tables or captionname_changed or numbersections \
-       or secoffset)))
+    warnings = warninglevel == 2 and (has_unnumbered_tables or
+                                      (targets and (pandocxnos.cleveref_required() or
+                                                    separator_changed or plusname_changed or starname_changed
+                                                    or has_tagged_tables or captionname_changed or numbersections
+                                                    or secoffset)))
     if warnings:
         msg = textwrap.dedent("""\
                   pandoc-tablenos: Wrote the following blocks to
@@ -635,6 +648,8 @@ def add_tex(meta):
         STDERR.write('\n')
 
 # pylint: disable=too-many-locals, unused-argument
+
+
 def main(stdin=STDIN, stdout=STDOUT, stderr=STDERR):
     """Filters the document AST."""
 
@@ -643,11 +658,11 @@ def main(stdin=STDIN, stdout=STDOUT, stderr=STDERR):
     global Table, AttrTable
 
     # Read the command-line arguments
-    parser = argparse.ArgumentParser(\
-      description='Pandoc table numbers filter.')
-    parser.add_argument(\
-      '--version', action='version',
-      version='%(prog)s {version}'.format(version=__version__))
+    parser = argparse.ArgumentParser(
+        description='Pandoc table numbers filter.')
+    parser.add_argument(
+        '--version', action='version',
+        version='%(prog)s {version}'.format(version=__version__))
     parser.add_argument('fmt')
     parser.add_argument('--pandocversion', help='The pandoc version.')
     args = parser.parse_args()
@@ -667,9 +682,9 @@ def main(stdin=STDIN, stdout=STDOUT, stderr=STDERR):
 
     # Chop up the doc
     meta = doc['meta'] if version(PANDOCVERSION) >= version('1.18')\
-      else doc[0]['unMeta']
+        else doc[0]['unMeta']
     blocks = doc['blocks'] if version(PANDOCVERSION) >= version('1.18')\
-      else doc[1:]
+        else doc[1:]
 
     # Process the metadata variables
     process(meta)
@@ -678,7 +693,8 @@ def main(stdin=STDIN, stdout=STDOUT, stderr=STDERR):
     detach_attrs_table = detach_attrs_factory(Table)
     insert_secnos = insert_secnos_factory(Table)
     delete_secnos = delete_secnos_factory(Table)
-    actions = [attach_attrs_table, insert_secnos, process_tables, delete_secnos]
+    actions = [attach_attrs_table, insert_secnos,
+               process_tables, delete_secnos]
     if version(PANDOCVERSION) < version('2.10'):
         actions.append(detach_attrs_table)
     altered = functools.reduce(lambda x, action: walk(x, action, fmt, meta),
@@ -688,7 +704,7 @@ def main(stdin=STDIN, stdout=STDOUT, stderr=STDERR):
     process_refs = process_refs_factory(LABEL_PATTERN, targets.keys())
     replace_refs = replace_refs_factory(targets,
                                         cleveref, False,
-                                        plusname if not capitalise \
+                                        plusname if not capitalise
                                         or plusname_changed else
                                         [name.title() for name in plusname],
                                         starname)
@@ -712,6 +728,7 @@ def main(stdin=STDIN, stdout=STDOUT, stderr=STDERR):
 
     # Flush stdout
     stdout.flush()
+
 
 if __name__ == '__main__':
     main()
